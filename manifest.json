@@ -1,7 +1,8 @@
 {
   "name": "F1 Manager 2026",
   "short_name": "F1 Manager",
-  "start_url": "/index.html",
+  "start_url": "/f1-manager/index.html",
+  "scope": "/f1-manager/",
   "display": "standalone",
   "background_color": "#0a0a0a",
   "theme_color": "#0a0a0a",

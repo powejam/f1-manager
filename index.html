@@ -7,12 +7,16 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a0a0a">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Fonts are self-contained — no external font requests (privacy) -->
+<style>
+  /* Orbitron-style: monospace with tight tracking for that digital F1 feel */
+  @font-face { font-family: 'Orbitron'; src: local('Orbitron'); }
+  /* Fallback stack used when Orbitron isn't cached from a prior visit */
+</style>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--red:#E10600;--red-dark:#b00500;--red-glow:rgba(225,6,0,0.3);--bg:#0a0a0a;--bg-card:#141414;--border:#2a2a2a;--text:#f0f0f0;--text-dim:#888;--text-mid:#bbb;--green:#00d26a;--yellow:#ffc107;--blue:#0099ff;--orange:#ff6b00}
-html,body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+html,body{background:var(--bg);color:var(--text);font-family:'Barlow',system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(225,6,0,.04) 0%,transparent 50%)}
 .app{max-width:480px;margin:0 auto;padding:16px;padding-bottom:100px}
 .screen{display:none;animation:fadeIn .3s ease}.screen.active{display:block}
@@ -145,6 +149,9 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
 // F1 Manager 2026 - Career Mode
 // Due to the enormous scope, this build script creates the complete game
 
+// Security: sanitise any user-supplied string before inserting into innerHTML
+function esc(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML}
+
 
 var D=[
 {id:0,name:"Max Verstappen",flag:"\u{1F1F3}\u{1F1F1}",team:"Red Bull",skill:97,cost:50},
@@ -225,7 +232,7 @@ function ptl(){return game?game.teamName:''}
 
 function renderSlots(){var slots=gS(),isNew=slotsMode==='new';document.getElementById('slotsTitle').textContent=isNew?'Choose a Slot':'Saved Careers';document.getElementById('slotsHint').textContent=isNew?'Pick a slot.':'Load or delete.';
 var h='';for(var i=0;i<MS;i++){var s=slots[i];if(s){var rt=s.currentRace>=RACES.length?'Season Done':'Rd '+(s.currentRace+1)+'/24';var d1=D[s.drivers[0]],d2=D[s.drivers[1]];
-h+='<div class="save-slot filled"><div class="save-slot-number">'+(i+1)+'</div><div class="save-slot-info"><div class="save-slot-team">'+s.teamName+' (S'+(s.season||1)+')</div><div class="save-slot-details">'+d1.flag+' '+d1.name.split(' ').pop()+' & '+d2.flag+' '+d2.name.split(' ').pop()+'</div><div class="save-slot-details">'+rt+' \u2022 \u00a3'+s.budget+'M</div></div><div class="save-slot-actions">';
+h+='<div class="save-slot filled"><div class="save-slot-number">'+(i+1)+'</div><div class="save-slot-info"><div class="save-slot-team">'+esc(s.teamName)+' (S'+(s.season||1)+')</div><div class="save-slot-details">'+d1.flag+' '+d1.name.split(' ').pop()+' & '+d2.flag+' '+d2.name.split(' ').pop()+'</div><div class="save-slot-details">'+rt+' \u2022 \u00a3'+s.budget+'M</div></div><div class="save-slot-actions">';
 if(isNew)h+='<button class="slot-btn delete" onclick="event.stopPropagation();overwriteSlot('+i+')">Replace</button>';
 else h+='<button class="slot-btn load" onclick="event.stopPropagation();loadSlot('+i+')">Load</button><button class="slot-btn delete" onclick="event.stopPropagation();deleteSlot('+i+')">Delete</button>';
 h+='</div></div>'}else{if(isNew)h+='<div class="save-slot clickable" onclick="startNewInSlot('+i+')"><div class="save-slot-number">'+(i+1)+'</div><div class="save-slot-info"><div class="save-slot-empty">Empty \u2014 tap to start</div></div></div>';
@@ -563,8 +570,8 @@ document.getElementById('calendarList').innerHTML=h}
 
 function showStandingsTab(t,b){document.querySelectorAll('.tab-btn').forEach(function(x){x.classList.remove('active')});if(b)b.classList.add('active');renderStand(t)}
 function renderStand(tab){if(!game)return;var div=document.getElementById('standingsContent'),h='';
-if(tab==='drivers'){var s=Object.entries(game.driverPoints).sort(function(a,b){return b[1]-a[1]});for(var i=0;i<s.length;i++){var d=D[s[i][0]],ipl=ip(parseInt(s[i][0]));h+='<div class="standing-row'+(ipl?' player':'')+'"><div class="standing-pos">'+(i+1)+'</div><div style="flex:1"><div class="standing-name">'+d.flag+' '+d.name+'</div><div class="standing-team-label">'+(ipl?ptl():d.team)+'</div></div><div class="standing-pts">'+s[i][1]+'</div></div>'}}
-else{var s2=Object.entries(game.constructorPoints).sort(function(a,b){return b[1]-a[1]});for(var j=0;j<s2.length;j++){var ip2=s2[j][0]===ptl();h+='<div class="standing-row'+(ip2?' player':'')+'"><div class="standing-pos">'+(j+1)+'</div><div style="flex:1"><div class="standing-name">'+s2[j][0]+'</div></div><div class="standing-pts">'+s2[j][1]+'</div></div>'}}div.innerHTML=h}
+if(tab==='drivers'){var s=Object.entries(game.driverPoints).sort(function(a,b){return b[1]-a[1]});for(var i=0;i<s.length;i++){var d=D[s[i][0]],ipl=ip(parseInt(s[i][0]));h+='<div class="standing-row'+(ipl?' player':'')+'"><div class="standing-pos">'+(i+1)+'</div><div style="flex:1"><div class="standing-name">'+d.flag+' '+d.name+'</div><div class="standing-team-label">'+(ipl?esc(ptl()):d.team)+'</div></div><div class="standing-pts">'+s[i][1]+'</div></div>'}}
+else{var s2=Object.entries(game.constructorPoints).sort(function(a,b){return b[1]-a[1]});for(var j=0;j<s2.length;j++){var ip2=s2[j][0]===ptl();h+='<div class="standing-row'+(ip2?' player':'')+'"><div class="standing-pos">'+(j+1)+'</div><div style="flex:1"><div class="standing-name">'+esc(s2[j][0])+'</div></div><div class="standing-pts">'+s2[j][1]+'</div></div>'}}div.innerHTML=h}
 
 (function(){chkSaved()})();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
