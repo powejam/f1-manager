@@ -585,7 +585,8 @@ if(game&&game.penalties){game.drivers.forEach(function(did){game.penalties[did]=
 function startRaceSim(skip){skipMode=skip;document.getElementById('preRace').style.display='none';document.getElementById('preStartRace').style.display='none';document.getElementById('qualifyingPhase').style.display='none';document.getElementById('duringRace').style.display='block';
 var race=RACES[game.currentRace],tl=race.laps;var tB={soft:6,medium:3,hard:0},sB={conservative:-2,balanced:2,aggressive:6},sDNF={conservative:.02,balanced:.05,aggressive:.12};
 var pC=(game.car.speed+game.car.aero)/10;var grid=[];
-for(var i=0;i<D.length;i++){var d=D[i],ispl=ip(d.id);var aiCar=game.aiCars&&game.aiCars[d.team]?game.aiCars[d.team]:null;var car=ispl?pC:aiCar?(aiCar.speed+aiCar.aero)/10:TC[d.team];var mb=ispl?((game.morale[d.id]||50)-50)/8:0;grid.push({id:d.id,name:d.name,flag:d.flag,team:ispl?ptl():d.team,isPlayer:ispl,base:d.skill+car+mb,tyreWear:0,pitted:false,dnf:false,pos:0,rP:0})}
+var aiTyres=['soft','medium','medium','hard','medium','soft','hard','medium','medium','soft','hard','medium','medium','medium','soft','hard','medium','medium','hard','medium','soft','medium'];
+for(var i=0;i<D.length;i++){var d=D[i],ispl=ip(d.id);var aiCar=game.aiCars&&game.aiCars[d.team]?game.aiCars[d.team]:null;var car=ispl?pC:aiCar?(aiCar.speed+aiCar.aero)/10:TC[d.team];var mb=ispl?((game.morale[d.id]||50)-50)/8:0;grid.push({id:d.id,name:d.name,flag:d.flag,team:ispl?ptl():d.team,isPlayer:ispl,base:d.skill+car+mb,tyreWear:0,tyreLaps:0,tyreType:aiTyres[i%aiTyres.length],pitted:false,dnf:false,pos:0,rP:0})}
 // Use qualifying order if available, else random
 if(qualiState){var qSorted=qualiState.finalGrid||qualiState.entries.slice().sort(function(a,b){if(a.elim&&!b.elim)return 1;if(!a.elim&&b.elim)return-1;return a.bestTime-b.bestTime});var qOrder={};qSorted.forEach(function(e,i){qOrder[e.id]=i+1});grid.forEach(function(g){g.pos=qOrder[g.id]||22;g.rP=g.base});grid.sort(function(a,b){return a.pos-b.pos})}else{grid.forEach(function(g){g.qP=g.base+(Math.random()-.5)*16});grid.sort(function(a,b){return b.qP-a.qP});grid.forEach(function(g,i){g.pos=i+1;g.rP=g.base})};
 rs={grid:grid,lap:0,tl:tl,pitW:Math.floor(tl*.4)+Math.floor(Math.random()*10),scLap:Math.random()<.3?Math.floor(tl*.3)+Math.floor(Math.random()*Math.floor(tl*.3)):-1,weather:Math.random()<.15?'rain':'dry',pPit:false,tS:game.strategy.tyre,sS:game.strategy.style,tB:tB,sB:sB,sDNF:sDNF,race:race,sc:false,aPit:false,aPush:false,aW:false};
@@ -595,34 +596,149 @@ addLog(D[game.drivers[0]].name+' starts P'+p1p+', '+D[game.drivers[1]].name+' st
 if(rs.weather==='rain')addLog('\u{1F327}\uFE0F Rain!','yellow');else addLog('\u2600\uFE0F '+race.loc,'dim');addLog('Lights out!','');updateHud();
 if(skipMode){while(rs.lap<rs.tl)simLap(true);finishRace()}else setTimeout(function(){advLap()},800)}
 
-function simLap(silent){if(!rs)return;rs.lap++;var twR={soft:.018,medium:.01,hard:.005};
-var raceName=rs.race.name;var nDRS=(DRS[raceName]||[]).length;
-rs.grid.forEach(function(g){if(!g.dnf){var tw=g.isPlayer?twR[rs.tS]:twR['medium'];if(g.pitted)tw*=.5;g.tyreWear+=tw;var strat=g.isPlayer?(rs.tB[rs.tS]+rs.sB[rs.sS]):(Math.random()*8);var luck=(Math.random()-.5)*16;g.rP=g.base+strat+luck-g.tyreWear*12+(rs.weather==='rain'?(Math.random()-.5)*10:0)+(g.pitted?3:0)}});
-// DRS boost: drivers close behind (pos 2+) get a boost per DRS zone, simulating overtake chances
-if(nDRS>0){var sorted=rs.grid.filter(function(g){return!g.dnf}).sort(function(a,b){return b.rP-a.rP});
-for(var di=1;di<sorted.length;di++){var gap=sorted[di-1].rP-sorted[di].rP;if(gap<4){sorted[di].rP+=nDRS*0.5*(Math.random()*0.8+0.2)}}}
-rs.grid.forEach(function(g){if(!g.dnf){var dc=g.isPlayer?(1-game.car.reliability/100)*.003+rs.sDNF[rs.sS]*.005:.002;if(Math.random()<dc){g.dnf=true;if(!silent)addLog('\u{1F4A5} '+g.name+' retires!','highlight')}}});
-var act=rs.grid.filter(function(g){return!g.dnf});act.sort(function(a,b){return b.rP-a.rP});act.forEach(function(g,i){g.pos=i+1});
-// Auto pit AI around pit window
-rs.grid.forEach(function(g){if(!g.isPlayer&&!g.pitted&&!g.dnf&&rs.lap>=rs.pitW-2+Math.floor(Math.random()*5)){g.pitted=true;g.tyreWear*=.2}});
-if(rs.lap>=rs.scLap&&rs.scLap>0&&!rs.sc){rs.sc=true;if(!silent)addLog('\u{1F7E1} SAFETY CAR!','yellow')}
-// Auto decisions in skip mode
-if(skipMode){if(!rs.pPit&&rs.lap>=rs.pitW){rs.pPit=true;rs.grid.forEach(function(g){if(g.isPlayer){g.pitted=true;g.tyreWear*=.2;g.rP-=(100-game.car.pitstops)/100*3}})}}}
+function simLap(silent){
+  if(!rs)return;
+  rs.lap++;
+
+  var twR={soft:.018,medium:.01,hard:.005};
+  var tyreLife={soft:22,medium:35,hard:50};
+  var raceName=rs.race.name;
+  var nDRS=(DRS[raceName]||[]).length;
+
+  // --- TYRE WEAR + PUNCTURE CHECK ---
+  rs.grid.forEach(function(g){
+    if(g.dnf)return;
+    var tyre=g.isPlayer?rs.tS:(g.tyreType||'medium');
+    g.tyreLaps=(g.tyreLaps||0)+1;
+    g.tyreWear+=(twR[tyre]||twR.medium);
+
+    // Puncture: risk rises sharply past tyre life limit
+    var overLife=g.tyreLaps-(tyreLife[tyre]||35);
+    if(overLife>0&&!g.pitted){
+      var punctureChance=overLife*0.045; // 4.5% per lap over limit
+      if(Math.random()<punctureChance){
+        g.dnf=false; // doesn't retire, but massive time loss
+        g.puncture=true;
+        g.rP-=50; // drops to back
+        g.pitted=true;
+        g.tyreLaps=0;
+        g.tyreWear*=0.1;
+        if(!silent){
+          if(g.isPlayer)addLog('\u{1F4A5} PUNCTURE! '+g.name+' limping to pits — tyre destroyed!','highlight');
+          else addLog('\u{1F4A5} '+g.name+' puncture — drops to the back!','yellow');
+        }
+      }
+    }
+  });
+
+  // --- PACE CALCULATION (small variance so positions stay stable) ---
+  rs.grid.forEach(function(g){
+    if(g.dnf)return;
+    var tyre=g.isPlayer?rs.tS:(g.tyreType||'medium');
+    var stratBonus=g.isPlayer?(rs.tB[rs.tS]+rs.sB[rs.sS]):(Math.random()*6);
+    var luck=(Math.random()-.5)*2.5; // was ±8, now ±1.25 — much more stable
+    var tyrePenalty=g.tyreWear*12;
+    var rainEffect=rs.weather==='rain'?(Math.random()-.5)*6:0;
+    var freshBoost=g.pitted?3:0;
+    g.rP=g.base+stratBonus+luck-tyrePenalty+rainEffect+freshBoost;
+  });
+
+  // --- DRS: only boost cars that are genuinely close ---
+  if(nDRS>0){
+    var sorted=rs.grid.filter(function(g){return!g.dnf}).sort(function(a,b){return b.rP-a.rP});
+    for(var di=1;di<sorted.length;di++){
+      var gap=sorted[di-1].rP-sorted[di].rP;
+      if(gap<2)sorted[di].rP+=nDRS*0.35*(Math.random()*0.5+0.5);
+    }
+  }
+
+  // --- POSITION LIMITER: max 2 places gained per lap through pure pace ---
+  // (pit stops bypass this, creating the realistic jump from last to mid-field)
+  var prevOrder={};
+  rs.grid.filter(function(g){return!g.dnf}).forEach(function(g){prevOrder[g.id]=g.pos;});
+  var act=rs.grid.filter(function(g){return!g.dnf});
+  act.sort(function(a,b){return b.rP-a.rP});
+  act.forEach(function(g,i){
+    var newPos=i+1;
+    var prev=prevOrder[g.id]||newPos;
+    var recentPit=g.pitted&&g.tyreLaps<=2; // just pitted this lap or last
+    if(!recentPit){
+      // cap position gain at 2 per lap, any number of drops allowed
+      var maxGain=2;
+      if(newPos<prev-maxGain)newPos=prev-maxGain;
+    }
+    g.pos=newPos;
+  });
+  // Re-resolve any duplicate positions
+  act.sort(function(a,b){return a.pos-b.pos});
+  act.forEach(function(g,i){g.pos=i+1;});
+
+  // --- DNF ---
+  rs.grid.forEach(function(g){
+    if(!g.dnf){
+      var dc=g.isPlayer?(1-game.car.reliability/100)*.003+rs.sDNF[rs.sS]*.005:.002;
+      if(Math.random()<dc){g.dnf=true;if(!silent)addLog('\u{1F4A5} '+g.name+' retires!','highlight');}
+    }
+  });
+
+  // --- AI PIT STOPS ---
+  rs.grid.forEach(function(g){
+    if(!g.isPlayer&&!g.pitted&&!g.dnf&&rs.lap>=rs.pitW-2+Math.floor(Math.random()*5)){
+      g.pitted=true;g.tyreWear*=0.15;g.tyreLaps=0;
+    }
+  });
+
+  if(rs.lap>=rs.scLap&&rs.scLap>0&&!rs.sc){rs.sc=true;if(!silent)addLog('\u{1F7E1} SAFETY CAR!','yellow');}
+
+  // --- SKIP MODE AUTO-PIT ---
+  if(skipMode){
+    if(!rs.pPit&&rs.lap>=rs.pitW){
+      rs.pPit=true;
+      rs.grid.forEach(function(g){
+        if(g.isPlayer){g.pitted=true;g.tyreWear*=0.15;g.tyreLaps=0;g.rP-=(100-game.car.pitstops)/100*3;}
+      });
+    }
+  }
+}
 
 function advLap(){if(!rs||rs.lap>=rs.tl)return;
-// Save previous positions for player drivers
 var prevPos={};rs.grid.forEach(function(g){if(g.isPlayer)prevPos[g.id]=g.pos});
 simLap(false);
 var p1=null,p2=null;rs.grid.forEach(function(g){if(g.id===game.drivers[0])p1=g;if(g.id===game.drivers[1])p2=g});
-// DRS overtake messages
-var nDRS=(DRS[rs.race.name]||[]).length;
-rs.grid.forEach(function(g){if(g.isPlayer&&!g.dnf&&prevPos[g.id]&&g.pos<prevPos[g.id]){if(nDRS>0&&Math.random()<0.5)addLog('\u{1F7E2} '+g.name+' uses DRS to pass! Now P'+g.pos,'green');else addLog(g.name+' overtakes! P'+g.pos,'green')}});
-if(rs.lap%3===0||rs.lap>=rs.tl-2)addLog('Lap '+rs.lap+' \u2014 '+p1.name+' P'+(p1.dnf?'OUT':p1.pos),'');
+// Overtake/loss messages (only when position actually changes)
+rs.grid.forEach(function(g){
+  if(g.isPlayer&&!g.dnf&&prevPos[g.id]&&g.pos!==prevPos[g.id]){
+    var nDRS=(DRS[rs.race.name]||[]).length;
+    if(g.pos<prevPos[g.id]){
+      if(nDRS>0&&Math.random()<0.5)addLog('\u{1F7E2} '+g.name+' uses DRS — P'+g.pos,'green');
+      else addLog('\u{1F7E2} '+g.name+' overtakes! P'+g.pos,'green');
+    }else if(g.pos>prevPos[g.id]+1){
+      addLog('\u{1F534} '+g.name+' loses positions — P'+g.pos,'highlight');
+    }
+  }
+});
+// Tyre age warnings for player drivers
+rs.grid.forEach(function(g){
+  if(g.isPlayer&&!g.dnf&&!g.pitted){
+    var tyre=rs.tS;var life={soft:22,medium:35,hard:50};
+    var lapsOver=(g.tyreLaps||0)-life[tyre];
+    if(lapsOver===3)addLog('\u26A0\uFE0F Tyres '+lapsOver+' laps past life — puncture risk!','yellow');
+    if(lapsOver>=6&&rs.lap%3===0)addLog('\u{1F6A8} CRITICAL tyre wear on '+(g.tyreLaps||0)+' laps — pit NOW!','highlight');
+  }
+});
+if(rs.lap%5===0||rs.lap>=rs.tl-2)addLog('Lap '+rs.lap+'/'+rs.tl+' \u2014 P'+p1.pos+(p1.dnf?' OUT':''),'dim');
 updateHud();
 // Decisions
-if(!rs.pPit&&rs.lap>=rs.pitW&&!rs.aPit){rs.aPit=true;showDec('PIT STOP','Box now?',[{label:'BOX',desc:'Fresh tyres',action:function(){rs.pPit=true;rs.grid.forEach(function(g){if(g.isPlayer){g.pitted=true;g.tyreWear*=.2;g.rP-=(100-game.car.pitstops)/100*3}});addLog('\u{1F527} Pitting!',game.car.pitstops>60?'green':'yellow');updateHud();setTimeout(function(){advLap()},400)}},{label:'STAY',desc:'Push on',action:function(){addLog('Staying out...','dim');setTimeout(function(){advLap()},300)}},{label:'SPLIT',desc:'Pit #1 only',action:function(){rs.pPit=true;rs.grid.forEach(function(g){if(g.id===game.drivers[0]){g.pitted=true;g.tyreWear*=.2}});addLog('\u{1F527} Split!','yellow');updateHud();setTimeout(function(){advLap()},400)}}]);return}
+if(!rs.pPit&&rs.lap>=rs.pitW&&!rs.aPit){rs.aPit=true;
+  // Show how worn tyres are
+  var worn=p1?(Math.round((p1.tyreWear||0)*100))+'% worn':'';
+  showDec('PIT STOP','Tyres '+worn+'. Box now?',[
+    {label:'BOX',desc:'Fresh tyres',action:function(){rs.pPit=true;rs.grid.forEach(function(g){if(g.isPlayer){g.pitted=true;g.tyreWear*=0.15;g.tyreLaps=0;g.rP-=(100-game.car.pitstops)/100*3;}});addLog('\u{1F527} Pitting! Fresh rubber on.',game.car.pitstops>60?'green':'yellow');updateHud();setTimeout(function(){advLap()},400);}},
+    {label:'STAY',desc:'Push on',action:function(){addLog('Staying out — tyres degrading...','dim');setTimeout(function(){advLap()},300);}},
+    {label:'SPLIT',desc:'Pit car 1 only',action:function(){rs.pPit=true;rs.grid.forEach(function(g){if(g.id===game.drivers[0]){g.pitted=true;g.tyreWear*=0.15;g.tyreLaps=0;}});addLog('\u{1F527} Split strategy!','yellow');updateHud();setTimeout(function(){advLap()},400);}}
+  ]);return;}
 if(rs.lap>=Math.floor(rs.tl*.65)&&!rs.aPush){rs.aPush=true;showDec('ORDERS','Final stint?',[{label:'PUSH',desc:'+Speed +Risk',action:function(){rs.grid.forEach(function(g){if(g.isPlayer){g.rP+=5;if(Math.random()<.15)g.rP-=12}});addLog('\u26A1 Attack!','green');setTimeout(function(){advLap()},300)}},{label:'HOLD',desc:'Protect',action:function(){addLog('Holding...','dim');setTimeout(function(){advLap()},300)}},{label:'MANAGE',desc:'Save car',action:function(){rs.grid.forEach(function(g){if(g.isPlayer)g.rP+=1});addLog('\u{1F6E1}\uFE0F Managing','');setTimeout(function(){advLap()},300)}}]);return}
-if(rs.weather==='dry'&&rs.lap>=Math.floor(rs.tl*.45)&&!rs.aW&&Math.random()<.02){rs.aW=true;rs.weather='rain';addLog('\u{1F327}\uFE0F Rain!','yellow');showDec('RAIN!','Pit for wets?',[{label:'WETS',desc:'Pit now',action:function(){rs.grid.forEach(function(g){if(g.isPlayer){g.pitted=true;g.rP+=4;g.tyreWear*=.3}});addLog('\u{1F527} Wets!','green');updateHud();setTimeout(function(){advLap()},400)}},{label:'GAMBLE',desc:'Stay on slicks',action:function(){addLog('Gambling...','yellow');setTimeout(function(){advLap()},300)}}]);return}
+if(rs.weather==='dry'&&rs.lap>=Math.floor(rs.tl*.45)&&!rs.aW&&Math.random()<.02){rs.aW=true;rs.weather='rain';addLog('\u{1F327}\uFE0F Rain!','yellow');showDec('RAIN!','Pit for wets?',[{label:'WETS',desc:'Pit now',action:function(){rs.grid.forEach(function(g){if(g.isPlayer){g.pitted=true;g.rP+=4;g.tyreWear*=0.15;g.tyreLaps=0;}});addLog('\u{1F527} Wets on!','green');updateHud();setTimeout(function(){advLap()},400)}},{label:'GAMBLE',desc:'Stay on slicks',action:function(){addLog('Gambling on slicks...','yellow');setTimeout(function(){advLap()},300)}}]);return}
 if(rs.lap>=rs.tl){finishRace();return}
 setTimeout(function(){advLap()},250)}
 
