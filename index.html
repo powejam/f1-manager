@@ -690,68 +690,146 @@ var PARTS=[
   {id:'crew',     area:'pit',    icon:'👥', name:'Crew Training',  desc:'Stop practice & coordination',  stats:[{k:'pitstops',v:4}],                     costs:[4,7,11],        max:3}
 ];
 var DEV_LEAD={power:3,aero:2,chassis:2,pit:1};
-var AREA_TABS=[{id:'power',label:'⚡ Power'},{id:'aero',label:'💨 Aero'},{id:'chassis',label:'🔧 Chassis'},{id:'pit',label:'🔩 Pit Ops'}];
+var AREA_TABS=[{id:'power',label:'Power Unit'},{id:'aero',label:'Aero'},{id:'chassis',label:'Chassis'},{id:'pit',label:'Pit Ops'}];
 var devTab='power';
 
 function renderDev(){
   if(!game)return;fix();
   var capL=game.costCap-game.capSpent;
-  var cpP=Math.min(100,Math.round(game.capSpent/game.costCap*100)),cpC=cpP>=90?'var(--red)':cpP>=70?'var(--yellow)':'var(--green)';
-  document.getElementById('costCapDisplay').innerHTML='<div class="costcap-bar"><div class="costcap-label"><span>Cost Cap</span><span style="color:'+cpC+'">\u00a3'+game.capSpent+'M / \u00a3'+game.costCap+'M</span></div><div class="costcap-track"><div class="costcap-fill" style="width:'+cpP+'%;background:'+cpC+'"></div></div><div class="costcap-info"><span>\u00a3'+capL+'M left</span><span>'+(capL<=0?'\u{1F6A8} CAP REACHED':'')+'</span></div></div>';
+  var cpP=Math.min(100,Math.round(game.capSpent/game.costCap*100));
+  var cpC=cpP>=90?'var(--red)':cpP>=70?'var(--yellow)':'var(--green)';
+
+  // Cost cap bar
+  document.getElementById('costCapDisplay').innerHTML=
+    '<div class="costcap-bar">'+
+    '<div class="costcap-label"><span>Cost Cap</span><span style="color:'+cpC+'">\u00a3'+game.capSpent+'M / \u00a3'+game.costCap+'M</span></div>'+
+    '<div class="costcap-track"><div class="costcap-fill" style="width:'+cpP+'%;background:'+cpC+'"></div></div>'+
+    '<div class="costcap-info"><span>\u00a3'+capL+'M left</span></div>'+
+    '</div>';
+
   document.getElementById('devBudget').textContent='\u00a3'+game.budget+'M';
   document.getElementById('devBudget').className='budget-amount'+(game.budget<=0?' over':'');
 
-  // Factory queue banner
-  var qH='';
-  if(game.devQueue&&game.devQueue.length>0){
-    qH='<div class="dev-queue-banner"><div class="dev-queue-title">🏭 In The Factory</div>';
-    for(var q=0;q<game.devQueue.length;q++){
-      var qi=game.devQueue[q];var qp=PARTS.find(function(x){return x.id===qi.partId});if(!qp)continue;
-      var racesLeft=qi.arrivesRace-game.currentRace;
-      qH+='<div class="dev-queue-item"><span>'+qp.icon+' '+qp.name+'</span><span class="dev-queue-eta">'+racesLeft+' race'+(racesLeft!==1?'s':'')+' away</span></div>';
-    }
-    qH+='</div>';
+  // Render tabs using data attributes so no quote escaping needed
+  var tabsEl=document.getElementById('devTabs');
+  tabsEl.innerHTML='';
+  for(var t=0;t<AREA_TABS.length;t++){
+    var btn=document.createElement('button');
+    btn.className='dev-tab'+(devTab===AREA_TABS[t].id?' active':'');
+    btn.textContent=AREA_TABS[t].label;
+    btn.setAttribute('data-tab',AREA_TABS[t].id);
+    btn.addEventListener('click',function(){devTab=this.getAttribute('data-tab');renderDev();});
+    tabsEl.appendChild(btn);
   }
 
-  // Tabs
-  var th='';for(var t=0;t<AREA_TABS.length;t++){var at=AREA_TABS[t];th+='<button class="dev-tab'+(devTab===at.id?' active':'')+'\" onclick="switchDevTab(\''+at.id+'\')">'+at.label+'</button>'}
-  document.getElementById('devTabs').innerHTML=th;
+  var cardsEl=document.getElementById('upgradeCards');
+  cardsEl.innerHTML='';
 
-  // Parts
-  var parts=PARTS.filter(function(p){return p.area===devTab});
-  var h=qH;
+  // Factory queue banner
+  if(game.devQueue&&game.devQueue.length>0){
+    var banner=document.createElement('div');
+    banner.className='dev-queue-banner';
+    var bTitle=document.createElement('div');
+    bTitle.className='dev-queue-title';
+    bTitle.textContent='In The Factory';
+    banner.appendChild(bTitle);
+    for(var q=0;q<game.devQueue.length;q++){
+      var qi=game.devQueue[q];
+      var qp=PARTS.find(function(x){return x.id===qi.partId});
+      if(!qp)continue;
+      var racesLeft=qi.arrivesRace-game.currentRace;
+      var row=document.createElement('div');
+      row.className='dev-queue-item';
+      row.innerHTML='<span>'+qp.name+'</span><span class="dev-queue-eta">'+racesLeft+' race'+(racesLeft!==1?'s':'')+' away</span>';
+      banner.appendChild(row);
+    }
+    cardsEl.appendChild(banner);
+  }
+
+  // Parts cards
+  var parts=PARTS.filter(function(p){return p.area===devTab;});
+  var pipColors={power:'var(--red)',aero:'var(--blue)',chassis:'var(--green)',pit:'var(--orange)'};
+
   for(var i=0;i<parts.length;i++){
     var p=parts[i];
     var level=game.upgrades[p.id]||0;
     var maxed=level>=p.max;
-    // Check if this part is currently in the factory queue
-    var inDev=game.devQueue&&game.devQueue.some(function(qi){return qi.partId===p.id});
-    var cost=p.costs[level]||0;
-    var canAfford=!maxed&&!inDev&&game.budget>=cost&&capL>=cost;
+    var inDev=!!(game.devQueue&&game.devQueue.some(function(qi){return qi.partId===p.id;}));
+    var cost=maxed?0:(p.costs[level]||0);
     var leadTime=DEV_LEAD[p.area];
-    // Stat gain tags
-    var gainHtml='';
-    if(!maxed&&!inDev){for(var g=0;g<p.stats.length;g++){gainHtml+='<span class="upg-gain '+p.stats[g].k+'">+'+p.stats[g].v+' '+p.stats[g].k.toUpperCase()+'</span>'}}
-    // Level pips
-    var pipColor=p.area==='power'?'var(--red)':p.area==='aero'?'var(--blue)':p.area==='chassis'?'var(--green)':'var(--orange)';
-    var pipHtml='';for(var lv=0;lv<p.max;lv++){pipHtml+='<div class="upg-pip'+(lv<level?' filled':'')+'\" style="color:'+pipColor+'"></div>'}
-    h+='<div class="upgrade-card'+(maxed?' maxed':inDev?' in-dev':'')+'\">';
-    h+='<div class="upg-head"><div class="upg-icon">'+p.icon+'</div><div class="upg-info"><div class="upg-name">'+p.name+(inDev?' <span class="arrive-badge">🔨 BUILDING</span>':'')+'</div><div class="upg-desc">'+p.desc+'</div><div class="upg-pips">'+pipHtml+'</div></div></div>';
-    if(gainHtml)h+='<div class="upg-gains">'+gainHtml+'</div>';
-    if(!inDev){
-      h+='<div style="font-size:10px;color:var(--text-dim);margin-bottom:8px;font-family:Barlow Condensed,sans-serif;letter-spacing:1px">⏱ ARRIVES IN '+leadTime+' RACE'+(leadTime!==1?'S':'')+'</div>';
-      h+='<button class="upgrade-btn" onclick="upg(\''+p.id+'\')"'+(maxed||!canAfford?' disabled':'')+'>';
-      if(maxed)h+='\u2713 MAXED';
-      else if(capL<cost)h+='CAP REACHED';
-      else if(game.budget<cost)h+='NEED \u00a3'+cost+'M';
-      else h+='ORDER — \u00a3'+cost+'M';
-      h+='</button>';
+    var pipColor=pipColors[p.area];
+
+    var card=document.createElement('div');
+    card.className='upgrade-card'+(maxed?' maxed':inDev?' in-dev':'');
+
+    // Header row
+    var head=document.createElement('div');
+    head.className='upg-head';
+
+    var nameDiv=document.createElement('div');
+    nameDiv.className='upg-info';
+
+    var nameLine=document.createElement('div');
+    nameLine.className='upg-name';
+    nameLine.textContent=p.name;
+    if(inDev){var badge=document.createElement('span');badge.className='arrive-badge';badge.textContent=' BUILDING';nameLine.appendChild(badge);}
+    nameDiv.appendChild(nameLine);
+
+    var descLine=document.createElement('div');
+    descLine.className='upg-desc';
+    descLine.textContent=p.desc;
+    nameDiv.appendChild(descLine);
+
+    // Pip dots
+    var pips=document.createElement('div');
+    pips.className='upg-pips';
+    for(var lv=0;lv<p.max;lv++){
+      var pip=document.createElement('div');
+      pip.className='upg-pip'+(lv<level?' filled':'');
+      pip.style.color=pipColor;
+      pips.appendChild(pip);
     }
-    h+='</div>';
+    nameDiv.appendChild(pips);
+    head.appendChild(nameDiv);
+    card.appendChild(head);
+
+    // Stat gain tags
+    if(!maxed&&!inDev){
+      var gains=document.createElement('div');
+      gains.className='upg-gains';
+      for(var g=0;g<p.stats.length;g++){
+        var tag=document.createElement('span');
+        tag.className='upg-gain '+p.stats[g].k;
+        tag.textContent='+'+p.stats[g].v+' '+p.stats[g].k.toUpperCase();
+        gains.appendChild(tag);
+      }
+      card.appendChild(gains);
+    }
+
+    // Lead time info + button
+    if(!inDev){
+      var eta=document.createElement('div');
+      eta.style.cssText='font-size:10px;color:var(--text-dim);margin-bottom:8px;font-family:Barlow Condensed,sans-serif;letter-spacing:1px';
+      eta.textContent='Arrives in '+leadTime+' race'+(leadTime!==1?'s':'');
+      card.appendChild(eta);
+
+      var canAfford=!maxed&&game.budget>=cost&&capL>=cost;
+      var upgBtn=document.createElement('button');
+      upgBtn.className='upgrade-btn';
+      if(maxed){upgBtn.textContent='MAXED';upgBtn.disabled=true;}
+      else if(capL<cost){upgBtn.textContent='CAP REACHED';upgBtn.disabled=true;}
+      else if(game.budget<cost){upgBtn.textContent='NEED \u00a3'+cost+'M';upgBtn.disabled=true;}
+      else{upgBtn.textContent='ORDER \u2014 \u00a3'+cost+'M';upgBtn.disabled=false;}
+      upgBtn.setAttribute('data-part',p.id);
+      upgBtn.addEventListener('click',function(){upg(this.getAttribute('data-part'));});
+      card.appendChild(upgBtn);
+    }
+
+    cardsEl.appendChild(card);
   }
-  document.getElementById('upgradeCards').innerHTML=h;
 }
-function switchDevTab(tab){devTab=tab;renderDev()}
+
+function switchDevTab(tab){devTab=tab;renderDev();}
 function upg(id){
   var p=PARTS.find(function(x){return x.id===id});if(!p)return;
   var level=game.upgrades[p.id]||0;if(level>=p.max)return;
