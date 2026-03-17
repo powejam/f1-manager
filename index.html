@@ -130,6 +130,27 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
 .skip-btn{position:absolute;top:8px;right:8px;padding:6px 12px;background:rgba(0,0,0,.7);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-family:'Barlow',sans-serif;font-size:11px;font-weight:600;cursor:pointer;z-index:10;text-transform:uppercase;letter-spacing:1px}.skip-btn:hover{border-color:var(--red);color:var(--red)}
+/* ===== DEV TERMINAL ===== */
+.term-fab{position:fixed;bottom:80px;right:16px;width:44px;height:44px;border-radius:50%;background:#0d0d0d;border:1px solid #2a2a2a;color:#00ff88;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:150;box-shadow:0 2px 12px rgba(0,255,136,.15);transition:all .2s}.term-fab:hover{border-color:#00ff88;box-shadow:0 2px 20px rgba(0,255,136,.35);transform:scale(1.05)}
+.term-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:300;display:flex;align-items:flex-end;justify-content:center;padding:0;animation:fadeIn .2s ease}
+.term-panel{width:100%;max-width:480px;height:80vh;background:#080808;border-top:2px solid #00ff88;border-left:1px solid #1a1a1a;border-right:1px solid #1a1a1a;display:flex;flex-direction:column;font-family:'Courier New',monospace}
+.term-titlebar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #1a1a1a;flex-shrink:0}
+.term-title{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88}
+.term-close{background:none;border:1px solid #333;color:#666;font-size:12px;padding:4px 10px;border-radius:4px;cursor:pointer;font-family:'Courier New',monospace;letter-spacing:1px}.term-close:hover{border-color:#00ff88;color:#00ff88}
+.term-body{flex:1;overflow-y:auto;padding:12px 16px;font-size:12px;line-height:1.7;color:#00cc66}
+.term-prompt{color:#555;font-size:11px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #0f0f0f}
+.term-entry{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #0d0d0d;animation:fadeIn .4s ease}
+.term-entry:last-child{border-bottom:none}
+.term-ver{color:#00ff88;font-weight:700;font-size:13px}
+.term-date{color:#444;font-size:10px;margin-left:10px}
+.term-tag{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:6px;letter-spacing:1px;vertical-align:middle}
+.term-tag.feat{background:rgba(0,255,136,.12);color:#00ff88;border:1px solid rgba(0,255,136,.3)}
+.term-tag.fix{background:rgba(255,193,7,.1);color:#ffc107;border:1px solid rgba(255,193,7,.25)}
+.term-tag.new{background:rgba(0,153,255,.12);color:#0099ff;border:1px solid rgba(0,153,255,.3)}
+.term-tag.sec{background:rgba(225,6,0,.12);color:#E10600;border:1px solid rgba(225,6,0,.3)}
+.term-line{color:#777;font-size:11px;padding:2px 0;padding-left:18px}
+.term-line::before{content:'›  ';color:#2a2a2a}
+.term-cursor{display:inline-block;width:8px;height:13px;background:#00ff88;animation:pulse 1s infinite;vertical-align:middle;margin-left:4px}
 </style>
 </head>
 <body>
@@ -146,6 +167,25 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
   <div class="screen" id="seasonEnd"><div class="trophy">&#127942;</div><div class="champ-text" id="seasonEndTitle"></div><div style="text-align:center;color:var(--text-dim);margin-bottom:16px" id="seasonEndSub"></div><div class="card" style="padding:0;overflow:hidden" id="finalStandings"></div><div id="transferNewsSect" style="margin-top:8px"></div><div style="margin-top:16px;display:flex;flex-direction:column;gap:10px"><button class="btn btn-primary" onclick="nextSeason()">NEXT SEASON</button><button class="btn btn-secondary" onclick="moveTeam()">MOVE TO ANOTHER TEAM</button><button class="btn-ghost btn" onclick="backToMenu()">MAIN MENU</button></div></div>
 </div>
 <div id="dialogOverlay"></div>
+
+<!-- DEV TERMINAL BUTTON -->
+<button class="term-fab" onclick="openTerminal()" title="Dev Changelog">⌨</button>
+
+<!-- DEV TERMINAL MODAL -->
+<div id="termOverlay" style="display:none">
+  <div class="term-overlay" onclick="closeTerminal(event)">
+    <div class="term-panel" onclick="event.stopPropagation()">
+      <div class="term-titlebar">
+        <span class="term-title">// DEV TERMINAL — F1 MANAGER 2026</span>
+        <button class="term-close" onclick="closeTerminal()">✕ CLOSE</button>
+      </div>
+      <div class="term-body" id="termBody">
+        <div class="term-prompt">$ git log --oneline --decorate f1-manager<span class="term-cursor"></span></div>
+        <div id="termEntries"></div>
+      </div>
+    </div>
+  </div>
+</div>
 <nav class="nav-bar" id="navBar" style="display:none">
   <button class="nav-btn active" onclick="navigate('hq',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 001 1h3a1 1 0 001-1v-4h4v4a1 1 0 001 1h3a1 1 0 001-1V10"/></svg>HQ</button>
   <button class="nav-btn" onclick="navigate('race',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>Race</button>
@@ -826,6 +866,77 @@ function promoteJunior(jId,slot){
 function mTalk(d){if(!game.moraleActs[d])game.moraleActs[d]={t:false,b:false,d:false};if(game.moraleActs[d].t)return;game.moraleActs[d].t=true;game.morale[d]=Math.min(100,(game.morale[d]||50)+1+Math.floor(Math.random()*4));sv();renderDrivers()}
 function mBonus(d){if(game.budget<5)return;if(!game.moraleActs[d])game.moraleActs[d]={t:false,b:false,d:false};if(game.moraleActs[d].b)return;game.moraleActs[d].b=true;game.budget-=5;game.morale[d]=Math.min(100,(game.morale[d]||50)+4+Math.floor(Math.random()*5));sv();renderDrivers()}
 function mDay(d){if(!game.moraleActs[d])game.moraleActs[d]={t:false,b:false,d:false};if(game.moraleActs[d].d)return;game.moraleActs[d].d=true;game.morale[d]=Math.min(100,(game.morale[d]||50)+2+Math.floor(Math.random()*4));sv();renderDrivers()}
+
+// ===== DEV TERMINAL CHANGELOG =====
+var CHANGELOG=[
+  {
+    ver:'v1.3.0',date:'17 Mar 2026',
+    changes:[
+      {tag:'new',text:'Dev Terminal added — live changelog accessible from any screen'},
+      {tag:'new',text:'Floating ⌨ button on all screens opens this terminal view'},
+      {tag:'new',text:'All future updates logged here automatically with version + date'}
+    ]
+  },
+  {
+    ver:'v1.2.0',date:'17 Mar 2026',
+    changes:[
+      {tag:'feat',text:'R&D Centre overhauled — 13 specific car parts replace 4 generic ones'},
+      {tag:'feat',text:'Parts split into 4 tabs: Power Unit, Aero, Chassis, Pit Ops'},
+      {tag:'feat',text:'Level pip dots (●●●○○) show upgrade progress per part'},
+      {tag:'feat',text:'Each upgrade shows exact stat gains before you spend (e.g. +5 SPEED)'},
+      {tag:'feat',text:'Upgrade costs scale up per level — early cheap, max level expensive'}
+    ]
+  },
+  {
+    ver:'v1.1.0',date:'17 Mar 2026',
+    changes:[
+      {tag:'sec',text:'Removed Google Fonts connection — browser uses system fonts for privacy'},
+      {tag:'sec',text:'Added XSS sanitiser esc() — team names stripped of any injected code'},
+      {tag:'fix',text:'PWA start_url corrected to /f1-manager/index.html — home screen icon works'}
+    ]
+  },
+  {
+    ver:'v1.0.0',date:'17 Mar 2026',
+    changes:[
+      {tag:'new',text:'Initial build — F1 Manager 2026 Career Mode PWA'},
+      {tag:'new',text:'Welcome screen, 5 save slots, real team or custom team setup'},
+      {tag:'new',text:'Full 2026 F1 driver roster with ratings and salaries'},
+      {tag:'new',text:'Qualifying: Q1/Q2/Q3 knockout sessions with lap times'},
+      {tag:'new',text:'Race simulation: live lap-by-lap with track view and race log'},
+      {tag:'new',text:'Race decisions: pit stops, tyre changes, driver orders mid-race'},
+      {tag:'new',text:'Driver management: morale system, talk/bonus/media day actions'},
+      {tag:'new',text:'Junior Academy: sign F2/F3 drivers, develop them, promote to F1'},
+      {tag:'new',text:'Transfer news feed after each season'},
+      {tag:'new',text:'Championship standings: drivers and constructors tables'},
+      {tag:'new',text:'24-race season calendar with race status indicators'},
+      {tag:'new',text:'Multi-season career: move teams between seasons'}
+    ]
+  }
+];
+
+var TAG_LABELS={feat:'FEAT',fix:'FIX',new:'NEW',sec:'SEC'};
+
+function openTerminal(){
+  var h='';
+  for(var i=0;i<CHANGELOG.length;i++){
+    var entry=CHANGELOG[i];
+    h+='<div class="term-entry">';
+    h+='<div style="margin-bottom:6px"><span class="term-ver">'+entry.ver+'</span><span class="term-date">'+entry.date+'</span></div>';
+    for(var j=0;j<entry.changes.length;j++){
+      var c=entry.changes[j];
+      h+='<div class="term-line"><span class="term-tag '+c.tag+'">'+(TAG_LABELS[c.tag]||c.tag)+'</span>'+c.text+'</div>';
+    }
+    h+='</div>';
+  }
+  document.getElementById('termEntries').innerHTML=h;
+  document.getElementById('termOverlay').style.display='block';
+  document.body.style.overflow='hidden';
+}
+function closeTerminal(e){
+  if(e&&e.target!==e.currentTarget)return;
+  document.getElementById('termOverlay').style.display='none';
+  document.body.style.overflow='';
+}
 
 function renderCalendar(){if(!game)return;document.getElementById('calTitle').textContent='Season '+(game.season||1)+' Calendar';
 var h='';for(var i=0;i<RACES.length;i++){var r=RACES[i];var done=i<game.currentRace;var next=i===game.currentRace;var cls='cal-race'+(done?' completed':'')+(next?' next':'');
