@@ -73,6 +73,14 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
 .dev-tab.active{border-color:var(--red);color:var(--red);background:rgba(225,6,0,.08)}
 .upgrade-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;transition:border-color .2s}
 .upgrade-card.maxed{opacity:.6;border-color:#1e1e1e}
+.upgrade-card.in-dev{border-color:#ffc107;background:rgba(255,193,7,.04)}
+.dev-queue-banner{background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.25);border-radius:10px;padding:10px 14px;margin-bottom:14px}
+.dev-queue-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);margin-bottom:6px}
+.dev-queue-item{display:flex;align-items:center;justify-content:space-between;font-size:12px;padding:3px 0;color:var(--text-mid)}
+.dev-queue-eta{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:var(--yellow)}
+.arrive-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(255,193,7,.15);color:var(--yellow);border:1px solid rgba(255,193,7,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+.hq-upgrade-arrive{background:rgba(0,210,106,.08);border:1px solid rgba(0,210,106,.25);border-radius:10px;padding:12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:13px;animation:slideUp .3s ease}
+.hq-upgrade-arrive .hq-alert-icon{font-size:20px;flex-shrink:0}
 .upg-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
 .upg-icon{font-size:22px;width:30px;text-align:center;flex-shrink:0;margin-top:1px}
 .upg-info{flex:1}
@@ -279,7 +287,7 @@ var RACES=[
 var PTS=[25,18,15,12,10,8,6,4,2,1],MS=5,CAP=135,MAX_STAT=150;
 var game=null,activeSlot=null,setupSelected=[],slotsMode='new',setupMode='real',selectedTeamIdx=-1,rs=null,skipMode=false;
 
-function fg(){return{teamName:"",budget:150,drivers:[],car:{speed:40,aero:40,reliability:40,pitstops:40},morale:{},moraleActs:{},currentRace:0,driverPoints:{},constructorPoints:{},raceHistory:[],strategy:{tyre:"medium",style:"balanced"},isRealTeam:false,costCap:CAP,capSpent:0,season:1,aiCars:{},engines:{},penalties:{},incidentLog:[],upgrades:{}}}
+function fg(){return{teamName:"",budget:150,drivers:[],car:{speed:40,aero:40,reliability:40,pitstops:40},morale:{},moraleActs:{},currentRace:0,driverPoints:{},constructorPoints:{},raceHistory:[],strategy:{tyre:"medium",style:"balanced"},isRealTeam:false,costCap:CAP,capSpent:0,season:1,aiCars:{},engines:{},penalties:{},incidentLog:[],upgrades:{},devQueue:[]}}
 
 // SAVE
 function gS(){try{return JSON.parse(localStorage.getItem('f1m26c'))||[null,null,null,null,null]}catch(e){return[null,null,null,null,null]}}
@@ -287,7 +295,7 @@ function sS(s){localStorage.setItem('f1m26c',JSON.stringify(s))}
 function sv(){if(activeSlot===null||!game)return;var s=gS();s[activeSlot]=JSON.parse(JSON.stringify(game));sS(s)}
 function hS(){return gS().some(function(s){return s!==null})}
 function loadSlot(i){var s=gS();if(!s[i])return;game=JSON.parse(JSON.stringify(s[i]));fix();activeSlot=i;document.getElementById('navBar').style.display='flex';showScreen('hq')}
-function fix(){if(!game.moraleActs)game.moraleActs={};if(!game.capSpent)game.capSpent=0;if(!game.costCap)game.costCap=CAP;if(!game.season)game.season=1;if(!game.aiCars)game.aiCars={};if(!game.engines)game.engines={};if(!game.penalties)game.penalties={};if(!game.incidentLog)game.incidentLog=[];if(!game.upgrades)game.upgrades={};
+function fix(){if(!game.moraleActs)game.moraleActs={};if(!game.capSpent)game.capSpent=0;if(!game.costCap)game.costCap=CAP;if(!game.season)game.season=1;if(!game.aiCars)game.aiCars={};if(!game.engines)game.engines={};if(!game.penalties)game.penalties={};if(!game.incidentLog)game.incidentLog=[];if(!game.upgrades)game.upgrades={};if(!game.devQueue)game.devQueue=[];
 game.drivers.forEach(function(did){if(!game.engines[did])game.engines[did]=1;if(!game.penalties[did])game.penalties[did]=0})}
 function deleteSlot(i){dlg('Delete?','Delete this career?','Delete','Cancel',function(){var s=gS();s[i]=null;sS(s);renderSlots()})}
 function dlg(t,tx,cl,ca,fn){document.getElementById('dialogOverlay').innerHTML='<div class="overlay" onclick="cDlg(event)"><div class="dialog" onclick="event.stopPropagation()"><div class="dialog-title">'+t+'</div><div class="dialog-text">'+tx+'</div><div class="dialog-btns"><button class="btn btn-secondary" style="font-size:13px;padding:10px" onclick="cDlg()">'+ca+'</button><button class="btn btn-primary" style="font-size:13px;padding:10px" id="dC">'+cl+'</button></div></div></div>';document.getElementById('dC').onclick=function(){cDlg();fn()}}
@@ -347,6 +355,11 @@ var nrc=document.getElementById('nextRaceCard');if(game.currentRace>=RACES.lengt
 else{var r=RACES[game.currentRace];var nDRS=(DRS[r.name]||[]).length;nrc.innerHTML='<div class="race-round">Round '+(game.currentRace+1)+' of 24</div><div class="race-flag">'+r.flag+'</div><div class="race-name">'+r.name+'</div><div style="font-size:13px;color:var(--text-dim)">'+r.loc+' \u2022 '+r.laps+' laps \u2022 '+nDRS+' DRS zone'+(nDRS!==1?'s':'')+'</div>'}
 // Alerts
 var alerts='';var cpP=Math.min(100,Math.round(game.capSpent/game.costCap*100));
+// Show any upgrades that just arrived (logged in incidentLog for this race)
+var justArrived=game.incidentLog.filter(function(x){return x.type==='upgrade'&&x.race===game.currentRace-1});
+justArrived.forEach(function(x){alerts+='<div class="hq-upgrade-arrive"><div class="hq-alert-icon">✅</div><div class="hq-alert-text" style="color:var(--green)"><strong>'+x.text+'</strong> — now on the car!</div></div>';});
+// Parts still in factory
+if(game.devQueue&&game.devQueue.length>0){var qNames=game.devQueue.map(function(qi){var qp=PARTS.find(function(x){return x.id===qi.partId});return qp?(qp.name+' ('+(qi.arrivesRace-game.currentRace)+' race'+(qi.arrivesRace-game.currentRace!==1?'s':'')+')'):qi.partId});alerts+='<div class="hq-alert" style="border-color:rgba(255,193,7,.3);background:rgba(255,193,7,.06)"><div class="hq-alert-icon">🏭</div><div class="hq-alert-text" style="color:var(--yellow)"><strong>In the factory:</strong> '+qNames.join(', ')+'</div></div>';}
 if(cpP>=85)alerts+='<div class="hq-alert"><div class="hq-alert-icon">\u{1F6A8}</div><div class="hq-alert-text"><strong>Cost cap at '+cpP+'%</strong> \u2014 only \u00a3'+(game.costCap-game.capSpent)+'M of upgrades left this season</div></div>';
 game.drivers.forEach(function(did){var d=D[did];if(game.penalties[did]>0)alerts+='<div class="hq-alert"><div class="hq-alert-icon">\u26A0\uFE0F</div><div class="hq-alert-text"><strong>'+d.name+'</strong> has a <strong>'+game.penalties[did]+'-place grid penalty</strong> for next race</div></div>';
 if((game.morale[did]||50)<35)alerts+='<div class="hq-alert"><div class="hq-alert-icon">\u{1F621}</div><div class="hq-alert-text"><strong>'+d.name+'</strong> morale is critical! Performance suffering.</div></div>';
@@ -629,13 +642,26 @@ var arr=mC>0?'\u2191':mC<0?'\u2193':'\u2192';var col=mC>0?'var(--green)':mC<0?'v
 document.getElementById('raceResults').innerHTML=h;document.getElementById('moraleChanges').innerHTML=mH;game.raceHistory.push({r:game.currentRace})}
 
 function afterRace(){game.currentRace++;var prize=3+Math.floor(Math.random()*6);game.budget+=prize;aiDevelop();
-// ENGINE WEAR: ~20% chance per driver per race that engine degrades and needs changing
-// 4 engines allowed per season - 5th+ triggers 10-place grid penalty
+
+// PROCESS DEV QUEUE — apply upgrades that have arrived this race
+var arrived=[];
+game.devQueue=game.devQueue.filter(function(item){
+  if(item.arrivesRace<=game.currentRace){
+    var p=PARTS.find(function(x){return x.id===item.partId});
+    if(p){for(var g=0;g<p.stats.length;g++){game.car[p.stats[g].k]=Math.min(MAX_STAT,game.car[p.stats[g].k]+p.stats[g].v);}
+    if(game.isRealTeam&&game.aiCars)game.aiCars[game.teamName]=JSON.parse(JSON.stringify(game.car));
+    arrived.push(p.name);}
+    return false;
+  }return true;
+});
+if(arrived.length)game.incidentLog.push({race:game.currentRace-1,type:'upgrade',text:'\u{1F527} Upgrade arrived: '+arrived.join(', ')});
+
+// ENGINE WEAR
 game.drivers.forEach(function(did){var d=D[did];
 var reliabilityFactor=(100-game.car.reliability)/100;var wearChance=0.12+reliabilityFactor*0.12;
 if(Math.random()<wearChance){var eng=(game.engines[did]||1)+1;game.engines[did]=eng;
 if(eng>4){game.penalties[did]=(game.penalties[did]||0)+10;game.incidentLog.push({race:game.currentRace-1,driver:d.name,type:'engine',text:d.name+' takes new engine (#'+eng+') \u2014 10-PLACE GRID PENALTY'})}}});
-// RACE INCIDENTS: ~8% chance per driver of a time penalty converted to grid drop for next race
+// RACE INCIDENTS
 game.drivers.forEach(function(did){var d=D[did];if(Math.random()<0.08){var pen=Math.random()<0.6?3:5;game.penalties[did]=(game.penalties[did]||0)+pen;
 var reasons=['track limits','unsafe pit release','causing a collision','ignoring blue flags','pit lane speeding'];var reason=reasons[Math.floor(Math.random()*reasons.length)];
 game.incidentLog.push({race:game.currentRace-1,driver:d.name,type:'incident',text:d.name+' \u2014 '+pen+'-place penalty for '+reason})}});
@@ -663,8 +689,7 @@ var PARTS=[
   {id:'pitequip', area:'pit',    icon:'🔩', name:'Pit Equipment',  desc:'Wheel guns & jack technology',  stats:[{k:'pitstops',v:6}],                     costs:[6,9,13,18],     max:4},
   {id:'crew',     area:'pit',    icon:'👥', name:'Crew Training',  desc:'Stop practice & coordination',  stats:[{k:'pitstops',v:4}],                     costs:[4,7,11],        max:3}
 ];
-var AREA_TABS=[{id:'power',label:'⚡ Power'},{id:'aero',label:'💨 Aero'},{id:'chassis',label:'🔧 Chassis'},{id:'pit',label:'🔩 Pit Ops'}];
-var devTab='power';
+var DEV_LEAD={power:3,aero:2,chassis:2,pit:1};
 
 function renderDev(){
   if(!game)return;fix();
@@ -673,33 +698,54 @@ function renderDev(){
   document.getElementById('costCapDisplay').innerHTML='<div class="costcap-bar"><div class="costcap-label"><span>Cost Cap</span><span style="color:'+cpC+'">\u00a3'+game.capSpent+'M / \u00a3'+game.costCap+'M</span></div><div class="costcap-track"><div class="costcap-fill" style="width:'+cpP+'%;background:'+cpC+'"></div></div><div class="costcap-info"><span>\u00a3'+capL+'M left</span><span>'+(capL<=0?'\u{1F6A8} CAP REACHED':'')+'</span></div></div>';
   document.getElementById('devBudget').textContent='\u00a3'+game.budget+'M';
   document.getElementById('devBudget').className='budget-amount'+(game.budget<=0?' over':'');
-  // Render tabs
+
+  // Factory queue banner
+  var qH='';
+  if(game.devQueue&&game.devQueue.length>0){
+    qH='<div class="dev-queue-banner"><div class="dev-queue-title">🏭 In The Factory</div>';
+    for(var q=0;q<game.devQueue.length;q++){
+      var qi=game.devQueue[q];var qp=PARTS.find(function(x){return x.id===qi.partId});if(!qp)continue;
+      var racesLeft=qi.arrivesRace-game.currentRace;
+      qH+='<div class="dev-queue-item"><span>'+qp.icon+' '+qp.name+'</span><span class="dev-queue-eta">'+racesLeft+' race'+(racesLeft!==1?'s':'')+' away</span></div>';
+    }
+    qH+='</div>';
+  }
+
+  // Tabs
   var th='';for(var t=0;t<AREA_TABS.length;t++){var at=AREA_TABS[t];th+='<button class="dev-tab'+(devTab===at.id?' active':'')+'\" onclick="switchDevTab(\''+at.id+'\')">'+at.label+'</button>'}
   document.getElementById('devTabs').innerHTML=th;
-  // Render parts for active tab
+
+  // Parts
   var parts=PARTS.filter(function(p){return p.area===devTab});
-  var h='';
+  var h=qH;
   for(var i=0;i<parts.length;i++){
     var p=parts[i];
     var level=game.upgrades[p.id]||0;
     var maxed=level>=p.max;
+    // Check if this part is currently in the factory queue
+    var inDev=game.devQueue&&game.devQueue.some(function(qi){return qi.partId===p.id});
     var cost=p.costs[level]||0;
-    var canAfford=!maxed&&game.budget>=cost&&capL>=cost;
+    var canAfford=!maxed&&!inDev&&game.budget>=cost&&capL>=cost;
+    var leadTime=DEV_LEAD[p.area];
     // Stat gain tags
     var gainHtml='';
-    if(!maxed){for(var g=0;g<p.stats.length;g++){gainHtml+='<span class="upg-gain '+p.stats[g].k+'">+'+p.stats[g].v+' '+p.stats[g].k.toUpperCase()+'</span>'}}
+    if(!maxed&&!inDev){for(var g=0;g<p.stats.length;g++){gainHtml+='<span class="upg-gain '+p.stats[g].k+'">+'+p.stats[g].v+' '+p.stats[g].k.toUpperCase()+'</span>'}}
     // Level pips
     var pipColor=p.area==='power'?'var(--red)':p.area==='aero'?'var(--blue)':p.area==='chassis'?'var(--green)':'var(--orange)';
     var pipHtml='';for(var lv=0;lv<p.max;lv++){pipHtml+='<div class="upg-pip'+(lv<level?' filled':'')+'\" style="color:'+pipColor+'"></div>'}
-    h+='<div class="upgrade-card'+(maxed?' maxed':'')+'\">';
-    h+='<div class="upg-head"><div class="upg-icon">'+p.icon+'</div><div class="upg-info"><div class="upg-name">'+p.name+'</div><div class="upg-desc">'+p.desc+'</div><div class="upg-pips">'+pipHtml+'</div></div></div>';
-    h+='<div class="upg-gains">'+gainHtml+'</div>';
-    h+='<button class="upgrade-btn" onclick="upg(\''+p.id+'\')"'+(maxed||!canAfford?' disabled':'')+'>';
-    if(maxed)h+='✓ MAXED';
-    else if(capL<cost)h+='CAP REACHED';
-    else if(game.budget<cost)h+='NEED \u00a3'+cost+'M';
-    else h+='UPGRADE — \u00a3'+cost+'M';
-    h+='</button></div>';
+    h+='<div class="upgrade-card'+(maxed?' maxed':inDev?' in-dev':'')+'\">';
+    h+='<div class="upg-head"><div class="upg-icon">'+p.icon+'</div><div class="upg-info"><div class="upg-name">'+p.name+(inDev?' <span class="arrive-badge">🔨 BUILDING</span>':'')+'</div><div class="upg-desc">'+p.desc+'</div><div class="upg-pips">'+pipHtml+'</div></div></div>';
+    if(gainHtml)h+='<div class="upg-gains">'+gainHtml+'</div>';
+    if(!inDev){
+      h+='<div style="font-size:10px;color:var(--text-dim);margin-bottom:8px;font-family:Barlow Condensed,sans-serif;letter-spacing:1px">⏱ ARRIVES IN '+leadTime+' RACE'+(leadTime!==1?'S':'')+'</div>';
+      h+='<button class="upgrade-btn" onclick="upg(\''+p.id+'\')"'+(maxed||!canAfford?' disabled':'')+'>';
+      if(maxed)h+='\u2713 MAXED';
+      else if(capL<cost)h+='CAP REACHED';
+      else if(game.budget<cost)h+='NEED \u00a3'+cost+'M';
+      else h+='ORDER — \u00a3'+cost+'M';
+      h+='</button>';
+    }
+    h+='</div>';
   }
   document.getElementById('upgradeCards').innerHTML=h;
 }
@@ -707,13 +753,16 @@ function switchDevTab(tab){devTab=tab;renderDev()}
 function upg(id){
   var p=PARTS.find(function(x){return x.id===id});if(!p)return;
   var level=game.upgrades[p.id]||0;if(level>=p.max)return;
+  if(game.devQueue.some(function(qi){return qi.partId===id}))return;
   var cost=p.costs[level];
   var capL=game.costCap-game.capSpent;
   if(game.budget<cost||capL<cost)return;
+  // Deduct money immediately — factory starts building
   game.budget-=cost;game.capSpent+=cost;
+  // Increment upgrade level now (for pip tracking) but stats apply on arrival
   game.upgrades[p.id]=(game.upgrades[p.id]||0)+1;
-  for(var g=0;g<p.stats.length;g++){game.car[p.stats[g].k]=Math.min(MAX_STAT,game.car[p.stats[g].k]+p.stats[g].v);}
-  if(game.isRealTeam&&game.aiCars)game.aiCars[game.teamName]=JSON.parse(JSON.stringify(game.car));
+  var lead=DEV_LEAD[p.area];
+  game.devQueue.push({partId:p.id,arrivesRace:game.currentRace+lead,partName:p.name});
   sv();renderDev();
 }
 
@@ -757,6 +806,14 @@ else{var s2=Object.entries(game.constructorPoints).sort(function(a,b){return b[1
 
 // ===== DEV TERMINAL =====
 var CHANGELOG=[
+  {ver:'v1.5.0',date:'17 Mar 2026',changes:[
+    {tag:'feat',text:'Upgrades now take time — ordered parts go into a factory queue'},
+    {tag:'feat',text:'Power Unit parts take 3 races, Aero & Chassis 2 races, Pit Ops 1 race'},
+    {tag:'feat',text:'R&D screen shows a 🏭 In The Factory banner with countdown per part'},
+    {tag:'feat',text:'Parts show 🔨 BUILDING badge and are locked while being manufactured'},
+    {tag:'feat',text:'HQ shows green ✅ alert when an upgrade arrives on the car'},
+    {tag:'feat',text:'HQ also shows yellow factory banner listing all parts currently in production'}
+  ]},
   {ver:'v1.4.0',date:'17 Mar 2026',changes:[
     {tag:'feat',text:'R&D Centre rebuilt — 12 specific car parts replace 4 generic upgrades'},
     {tag:'feat',text:'Parts split into 4 tabs: ⚡ Power Unit, 💨 Aero, 🔧 Chassis, 🔩 Pit Ops'},
