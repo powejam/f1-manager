@@ -68,8 +68,30 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
 .decision-btns{display:flex;gap:6px;flex-wrap:wrap}.decision-btn{flex:1;min-width:80px;padding:8px 6px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Barlow',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;text-align:center}.decision-btn:hover{border-color:var(--red);color:var(--red)}.decision-btn .db-label{text-transform:uppercase;letter-spacing:1px;margin-bottom:1px}.decision-btn .db-desc{font-size:9px;color:var(--text-dim);font-weight:400}
 .result-row{display:flex;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px;gap:10px}.result-row:nth-child(odd){background:rgba(255,255,255,.02)}.result-row.player{background:rgba(225,6,0,.08);border-left:3px solid var(--red)}
 .result-pos{width:28px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:13px;text-align:center}.result-pos.gold{color:#ffd700}.result-pos.silver{color:#c0c0c0}.result-pos.bronze{color:#cd7f32}.result-name{flex:1;font-weight:500}.result-team{font-size:11px;color:var(--text-dim)}.result-pts{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--yellow);width:40px;text-align:right}.result-dnf{color:var(--red);font-weight:600;font-size:12px}
-.upgrade-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px}.upgrade-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.upgrade-name{font-weight:600;font-size:15px}.upgrade-level{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:700}.upgrade-bar{width:100%;height:8px;background:#222;border-radius:4px;overflow:hidden;margin-bottom:10px}.upgrade-bar-fill{height:100%;border-radius:4px;transition:width .5s}
-.upgrade-btn{width:100%;padding:10px;background:rgba(225,6,0,.1);border:1px solid var(--red);border-radius:8px;color:var(--red);font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:1px}.upgrade-btn:hover{background:var(--red);color:#fff}.upgrade-btn:disabled{opacity:.3;cursor:not-allowed;background:transparent}
+.upgrade-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;transition:border-color .2s}.upgrade-card.maxed{border-color:#333;opacity:.7}
+.upg-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.upg-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0}
+.upg-title{flex:1}.upg-name{font-weight:700;font-size:14px;margin-bottom:2px}.upg-desc{font-size:11px;color:var(--text-dim)}
+.upg-pips{display:flex;gap:4px;align-items:center}
+.pip{width:10px;height:10px;border-radius:2px;background:#2a2a2a;transition:background .3s;flex-shrink:0}
+.pip.on{background:currentColor}
+.upg-divider{height:1px;background:rgba(255,255,255,.06);margin:10px 0}
+.upg-next{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.upg-gains{display:flex;gap:6px;flex-wrap:wrap}
+.upg-gain{font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+.upg-gain.speed{background:rgba(225,6,0,.15);color:var(--red)}
+.upg-gain.aero{background:rgba(0,153,255,.15);color:var(--blue)}
+.upg-gain.reliability{background:rgba(0,210,106,.15);color:var(--green)}
+.upg-gain.pitstops{background:rgba(255,107,0,.15);color:var(--orange)}
+.upg-cost{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--yellow)}
+.upgrade-btn{width:100%;padding:10px;background:rgba(225,6,0,.08);border:1px solid var(--red);border-radius:8px;color:var(--red);font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:1px}.upgrade-btn:hover{background:var(--red);color:#fff}.upgrade-btn:disabled{opacity:.3;cursor:not-allowed;background:transparent}
+.dev-area-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+.dev-tab{flex-shrink:0;padding:7px 12px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.dev-tab.active{border-color:var(--red);color:var(--red);background:rgba(225,6,0,.08)}
+.car-summary{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}
+.car-stat-mini{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between}
+.csm-label{font-size:11px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
+.csm-val{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700}
 .morale-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px}.morale-driver{display:flex;align-items:center;gap:12px;margin-bottom:10px}.morale-name{font-weight:600;font-size:14px;flex:1}
 .morale-bar{width:100%;height:8px;background:#222;border-radius:4px;overflow:hidden;margin-bottom:6px}.morale-bar-fill{height:100%;border-radius:4px;transition:width .5s}.morale-text{font-size:11px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
 .morale-actions{display:flex;gap:6px}.morale-btn{flex:1;padding:8px;background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-family:'Barlow',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;text-align:center}.morale-btn:hover{border-color:var(--green);color:var(--green)}.morale-btn:disabled{opacity:.3;cursor:not-allowed}
@@ -214,6 +236,27 @@ var RACES=[
 {name:"Qatar GP",flag:"\u{1F1F6}\u{1F1E6}",loc:"Lusail",laps:57},{name:"Abu Dhabi GP",flag:"\u{1F1E6}\u{1F1EA}",loc:"Yas Marina",laps:58}
 ];
 var PTS=[25,18,15,12,10,8,6,4,2,1],MS=5,CAP=135,MAX_STAT=150;
+var UPGRADE_DEFS=[
+  // Power Unit
+  {id:'engine',   name:'Engine',          icon:'\u{1F3CE}\uFE0F', area:'power',  desc:'Raw combustion power',         stats:[{k:'speed',v:5}],                        costs:[8,11,14,18,22],    max:5},
+  {id:'ers',      name:'ERS System',      icon:'\u26A1',          area:'power',  desc:'Energy recovery & deployment', stats:[{k:'speed',v:3},{k:'reliability',v:2}],  costs:[7,10,14,18],       max:4},
+  {id:'fuel',     name:'Fuel System',     icon:'\u{1F6E2}\uFE0F', area:'power',  desc:'Fuel flow & management',       stats:[{k:'reliability',v:5}],                  costs:[5,7,10,13],        max:4},
+  // Aerodynamics
+  {id:'frontwing',name:'Front Wing',      icon:'\u{1F697}',       area:'aero',   desc:'Downforce & front-end balance',stats:[{k:'aero',v:5}],                         costs:[8,10,13,16,20],    max:5},
+  {id:'rearwing', name:'Rear Wing',       icon:'\u{1F4A8}',       area:'aero',   desc:'Rear stability & top speed',   stats:[{k:'aero',v:4},{k:'speed',v:1}],         costs:[8,10,13,16,20],    max:5},
+  {id:'floor',    name:'Floor & Diffuser',icon:'\u{1F9F2}',       area:'aero',   desc:'Ground effect - biggest aero', stats:[{k:'aero',v:7}],                         costs:[10,13,17,22],      max:4},
+  {id:'sidepods', name:'Sidepods',        icon:'\u{1F321}\uFE0F', area:'aero',   desc:'Cooling & aero efficiency',    stats:[{k:'aero',v:3},{k:'reliability',v:2}],   costs:[6,9,12,16],        max:4},
+  // Chassis
+  {id:'gearbox',  name:'Gearbox',         icon:'\u{1F527}',       area:'chassis',desc:'Gear shifts & durability',     stats:[{k:'reliability',v:4},{k:'pitstops',v:1}],costs:[7,10,13,17],      max:4},
+  {id:'suspension',name:'Suspension',     icon:'\u{1F6E1}\uFE0F', area:'chassis',desc:'Ride height & balance',        stats:[{k:'aero',v:3},{k:'reliability',v:3}],   costs:[7,10,13,17],       max:4},
+  {id:'brakes',   name:'Brake System',    icon:'\u{1F534}',       area:'chassis',desc:'Heat management & stopping',   stats:[{k:'reliability',v:4}],                  costs:[5,8,11,14],        max:4},
+  // Pit Operations
+  {id:'pitequip', name:'Pit Equipment',   icon:'\u{1F6DE}',       area:'pit',    desc:'Wheel guns & jack tech',       stats:[{k:'pitstops',v:6}],                     costs:[6,9,13,17],        max:4},
+  {id:'training', name:'Crew Training',   icon:'\u{1F465}',       area:'pit',    desc:'Stop practice & coordination', stats:[{k:'pitstops',v:4}],                     costs:[4,7,10],           max:3},
+  {id:'strategy', name:'Strategy Tools',  icon:'\u{1F4BB}',       area:'pit',    desc:'Pit timing & call accuracy',   stats:[{k:'pitstops',v:3},{k:'reliability',v:2}],costs:[5,8,12],          max:3}
+];
+var AREA_LABELS={power:'\u26A1 Power Unit',aero:'\u{1F4A8} Aero',chassis:'\u{1F527} Chassis',pit:'\u{1F6DE} Pit Ops'};
+var devTab='power';
 var game=null,activeSlot=null,setupSelected=[],slotsMode='new',setupMode='real',selectedTeamIdx=-1,rs=null,skipMode=false,moraleActiveTab='drivers';
 
 // Lookup driver by ID — checks F1 pool (D) and junior pool (JR)
@@ -223,7 +266,7 @@ function getD(id){
   return JR.find(function(j){return j.id===n})||null;
 }
 
-function fg(){return{teamName:"",budget:150,drivers:[],car:{speed:40,aero:40,reliability:40,pitstops:40},morale:{},moraleActs:{},currentRace:0,driverPoints:{},constructorPoints:{},raceHistory:[],strategy:{tyre:"medium",style:"balanced"},isRealTeam:false,costCap:CAP,capSpent:0,season:1,aiCars:{},aiLineups:{},academy:[],transferNews:[]}}
+function fg(){return{teamName:"",budget:150,drivers:[],car:{speed:40,aero:40,reliability:40,pitstops:40},morale:{},moraleActs:{},currentRace:0,driverPoints:{},constructorPoints:{},raceHistory:[],strategy:{tyre:"medium",style:"balanced"},isRealTeam:false,costCap:CAP,capSpent:0,season:1,aiCars:{},aiLineups:{},academy:[],transferNews:[],upgrades:{}}}
 
 function gS(){try{return JSON.parse(localStorage.getItem('f1m26c'))||[null,null,null,null,null]}catch(e){return[null,null,null,null,null]}}
 function sS(s){localStorage.setItem('f1m26c',JSON.stringify(s))}
@@ -236,6 +279,7 @@ function fix(){
   if(!game.costCap)game.costCap=CAP;
   if(!game.season)game.season=1;
   if(!game.aiCars)game.aiCars={};
+  if(!game.upgrades)game.upgrades={};
   if(!game.academy)game.academy=[];
   if(!game.transferNews)game.transferNews=[];
   if(!game.aiLineups||Object.keys(game.aiLineups).length===0){game.aiLineups={};initAiLineups();}
@@ -614,14 +658,71 @@ if(game.transferNews&&game.transferNews.length>0){
   th+='</div>';tns.innerHTML=th;
 }else{tns.innerHTML='<div style="text-align:center;padding:8px;font-size:13px;color:var(--text-dim)">\u{1F4C4} Transfer window opens after season</div>'}}
 
-function renderDev(){if(!game)return;fix();var capL=game.costCap-game.capSpent;var cpP=Math.min(100,Math.round(game.capSpent/game.costCap*100)),cpC=cpP>=90?'var(--red)':cpP>=70?'var(--yellow)':'var(--green)';
-document.getElementById('costCapDisplay').innerHTML='<div class="costcap-bar"><div class="costcap-label"><span>Cost Cap</span><span style="color:'+cpC+'">\u00a3'+game.capSpent+'M / \u00a3'+game.costCap+'M</span></div><div class="costcap-track"><div class="costcap-fill" style="width:'+cpP+'%;background:'+cpC+'"></div></div><div class="costcap-info"><span>\u00a3'+capL+'M left</span><span>'+(capL<=0?'\u{1F6A8} CAP':'')+'</span></div></div>';
+function showDevTab(area,btn){devTab=area;document.querySelectorAll('.dev-tab').forEach(function(b){b.classList.remove('active')});if(btn)btn.classList.add('active');renderUpgradeCards()}
+function renderDev(){if(!game)return;fix();
+var capL=game.costCap-game.capSpent;var cpP=Math.min(100,Math.round(game.capSpent/game.costCap*100)),cpC=cpP>=90?'var(--red)':cpP>=70?'var(--yellow)':'var(--green)';
+document.getElementById('costCapDisplay').innerHTML='<div class="costcap-bar"><div class="costcap-label"><span>Cost Cap</span><span style="color:'+cpC+'">\u00a3'+game.capSpent+'M / \u00a3'+game.costCap+'M</span></div><div class="costcap-track"><div class="costcap-fill" style="width:'+cpP+'%;background:'+cpC+'"></div></div><div class="costcap-info"><span>\u00a3'+capL+'M left</span><span>'+(capL<=0?'\u{1F6A8} CAP REACHED':'')+'</span></div></div>';
 document.getElementById('devBudget').textContent='\u00a3'+game.budget+'M';document.getElementById('devBudget').className='budget-amount'+(game.budget<=0?' over':'');
-var ups=[{k:'speed',l:'Engine Power',i:'\u{1F3CE}\uFE0F',c:'var(--red)',d:'Straight-line speed',cost:10},{k:'aero',l:'Aerodynamics',i:'\u{1F4A8}',c:'var(--blue)',d:'Cornering',cost:10},{k:'reliability',l:'Reliability',i:'\u{1F527}',c:'var(--green)',d:'Less failures',cost:8},{k:'pitstops',l:'Pit Crew',i:'\u{1F6DE}',c:'var(--orange)',d:'Faster stops',cost:6}];
-var h='';for(var i=0;i<ups.length;i++){var u=ups[i],v=game.car[u.k],mx=v>=MAX_STAT,ca=game.budget>=u.cost&&capL>=u.cost;
-h+='<div class="upgrade-card"><div class="upgrade-header"><div><div class="upgrade-name">'+u.i+' '+u.l+'</div><div style="font-size:12px;color:var(--text-dim);margin-top:2px">'+u.d+'</div></div><div class="upgrade-level" style="color:'+u.c+'">'+v+'</div></div><div class="upgrade-bar"><div class="upgrade-bar-fill" style="width:'+Math.min(100,v/MAX_STAT*100)+'%;background:'+u.c+'"></div></div><button class="upgrade-btn" onclick="upg(\''+u.k+'\','+u.cost+')"'+(mx||!ca?' disabled':'')+'>'+(mx?'MAXED':capL<u.cost?'CAP REACHED':'UPGRADE \u2014 \u00a3'+u.cost+'M')+'</button></div>'}
-document.getElementById('upgradeCards').innerHTML=h}
-function upg(s,c){if(game.budget<c||game.car[s]>=MAX_STAT||(game.costCap-game.capSpent)<c)return;game.budget-=c;game.capSpent+=c;game.car[s]=Math.min(MAX_STAT,game.car[s]+3+Math.floor(Math.random()*5));if(game.isRealTeam&&game.aiCars)game.aiCars[game.teamName]=JSON.parse(JSON.stringify(game.car));sv();renderDev()}
+// Car summary
+var SC={speed:'var(--red)',aero:'var(--blue)',reliability:'var(--green)',pitstops:'var(--orange)'};
+var sumH='<div class="car-summary">';
+[['speed','Speed'],['aero','Aero'],['reliability','Reliability'],['pitstops','Pit Speed']].forEach(function(s){sumH+='<div class="car-stat-mini"><span class="csm-label">'+s[1]+'</span><span class="csm-val" style="color:'+SC[s[0]]+'">'+game.car[s[0]]+'</span></div>'});
+sumH+='</div>';
+// Area tabs
+var areas=['power','aero','chassis','pit'];
+var tabH='<div class="dev-area-tabs">';
+areas.forEach(function(a){tabH+='<div class="dev-tab'+(devTab===a?' active':'')+'" onclick="showDevTab(\''+a+'\',this)">'+AREA_LABELS[a]+'</div>'});
+tabH+='</div>';
+document.getElementById('upgradeCards').innerHTML=sumH+tabH+'<div id="upgradeList"></div>';
+renderUpgradeCards()}
+function renderUpgradeCards(){
+if(!game)return;var capL=game.costCap-game.capSpent;
+var parts=UPGRADE_DEFS.filter(function(u){return u.area===devTab});var h='';
+var SC={speed:'speed',aero:'aero',reliability:'reliability',pitstops:'pitstops'};
+var SL={speed:'SPEED',aero:'AERO',reliability:'RELIABILITY',pitstops:'PIT SPEED'};
+var pipColors={power:'var(--red)',aero:'var(--blue)',chassis:'var(--green)',pit:'var(--orange)'};
+parts.forEach(function(u){
+  var lvl=game.upgrades[u.id]||0;var maxed=lvl>=u.max;var cost=maxed?0:u.costs[lvl];
+  var canBuy=!maxed&&game.budget>=cost&&capL>=cost;
+  // Pips
+  var pipColor=pipColors[u.area];var pipH='<div class="upg-pips" style="color:'+pipColor+'">';
+  for(var p=0;p<u.max;p++)pipH+='<div class="pip'+(p<lvl?' on':'')+'" style="'+(p<lvl?'background:'+pipColor:'')+'"></div>';
+  pipH+='</div>';
+  // Gain tags for next level
+  var gainH='<div class="upg-gains">';
+  u.stats.forEach(function(s){gainH+='<span class="upg-gain '+SC[s.k]+'">+'+s.v+' '+SL[s.k]+'</span>'});
+  gainH+='</div>';
+  h+='<div class="upgrade-card'+(maxed?' maxed':'')+'\">';
+  h+='<div class="upg-head"><div class="upg-icon">'+u.icon+'</div><div class="upg-title"><div class="upg-name">'+u.name+'</div><div class="upg-desc">'+u.desc+'</div></div>'+pipH+'</div>';
+  if(!maxed){
+    h+='<div class="upg-divider"></div>';
+    h+='<div class="upg-next">'+gainH+'<span class="upg-cost">\u00a3'+cost+'M</span></div>';
+    h+='<button class="upgrade-btn" onclick="upg(\''+u.id+'\')"'+(canBuy?'':' disabled')+'>'+(capL<cost&&game.budget>=cost?'CAP REACHED':game.budget<cost?'INSUFFICIENT FUNDS':'DEVELOP \u2014 \u00a3'+cost+'M')+'</button>';
+  }else{
+    h+='<div style="text-align:center;padding:6px;font-size:12px;color:var(--green);font-weight:700;letter-spacing:2px;font-family:\'Barlow Condensed\',sans-serif">\u2705 FULLY DEVELOPED</div>';
+  }
+  h+='</div>'});
+var el=document.getElementById('upgradeList');if(el)el.innerHTML=h}
+function upg(id){
+  if(!game)return;fix();
+  var u=UPGRADE_DEFS.find(function(x){return x.id===id});if(!u)return;
+  var lvl=game.upgrades[id]||0;if(lvl>=u.max)return;
+  var cost=u.costs[lvl];var capL=game.costCap-game.capSpent;
+  if(game.budget<cost||capL<cost)return;
+  game.budget-=cost;game.capSpent+=cost;
+  game.upgrades[id]=lvl+1;
+  u.stats.forEach(function(s){game.car[s.k]=Math.min(MAX_STAT,game.car[s.k]+s.v)});
+  if(game.isRealTeam&&game.aiCars)game.aiCars[game.teamName]=JSON.parse(JSON.stringify(game.car));
+  sv();renderUpgradeCards();
+  // Refresh cost cap display
+  var capL2=game.costCap-game.capSpent;var cpP=Math.min(100,Math.round(game.capSpent/game.costCap*100)),cpC=cpP>=90?'var(--red)':cpP>=70?'var(--yellow)':'var(--green)';
+  document.getElementById('costCapDisplay').innerHTML='<div class="costcap-bar"><div class="costcap-label"><span>Cost Cap</span><span style="color:'+cpC+'">\u00a3'+game.capSpent+'M / \u00a3'+game.costCap+'M</span></div><div class="costcap-track"><div class="costcap-fill" style="width:'+cpP+'%;background:'+cpC+'"></div></div><div class="costcap-info"><span>\u00a3'+capL2+'M left</span><span>'+(capL2<=0?'\u{1F6A8} CAP REACHED':'')+'</span></div></div>';
+  document.getElementById('devBudget').textContent='\u00a3'+game.budget+'M';
+  // Refresh car summary
+  var SC2={speed:'var(--red)',aero:'var(--blue)',reliability:'var(--green)',pitstops:'var(--orange)'};
+  var sumH='<div class="car-summary">';[['speed','Speed'],['aero','Aero'],['reliability','Reliability'],['pitstops','Pit Speed']].forEach(function(s){sumH+='<div class="car-stat-mini"><span class="csm-label">'+s[1]+'</span><span class="csm-val" style="color:'+SC2[s[0]]+'">'+game.car[s[0]]+'</span></div>'});sumH+='</div>';
+  var sumEl=document.querySelector('.car-summary');if(sumEl){var tmp=document.createElement('div');tmp.innerHTML=sumH;sumEl.replaceWith(tmp.firstChild)}
+}
 
 // DRIVER MANAGEMENT — tab switching
 function showMoraleTab(t,btn){moraleActiveTab=t;document.querySelectorAll('#morale .tab-btn').forEach(function(b){b.classList.remove('active')});if(btn)btn.classList.add('active');renderMorale()}
