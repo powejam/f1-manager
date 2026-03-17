@@ -7,16 +7,13 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a0a0a">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<!-- Fonts are self-contained — no external font requests (privacy) -->
-<style>
-  /* Orbitron-style: monospace with tight tracking for that digital F1 feel */
-  @font-face { font-family: 'Orbitron'; src: local('Orbitron'); }
-  /* Fallback stack used when Orbitron isn't cached from a prior visit */
-</style>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--red:#E10600;--red-dark:#b00500;--red-glow:rgba(225,6,0,0.3);--bg:#0a0a0a;--bg-card:#141414;--border:#2a2a2a;--text:#f0f0f0;--text-dim:#888;--text-mid:#bbb;--green:#00d26a;--yellow:#ffc107;--blue:#0099ff;--orange:#ff6b00}
-html,body{background:var(--bg);color:var(--text);font-family:'Barlow',system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+html,body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(225,6,0,.04) 0%,transparent 50%)}
 .app{max-width:480px;margin:0 auto;padding:16px;padding-bottom:100px}
 .screen{display:none;animation:fadeIn .3s ease}.screen.active{display:block}
@@ -65,7 +62,6 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
 .race-hud{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}.hud-box{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:8px;text-align:center}.hud-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim)}.hud-value{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700}
 .track-view{position:relative;width:100%;height:200px;margin-bottom:8px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
 .track-svg{width:100%;height:100%}
-.track-dot{transition:all .4s ease}
 .race-log{background:#0d0d0d;border:1px solid var(--border);border-radius:12px;padding:12px;max-height:120px;overflow-y:auto;margin-bottom:8px;font-family:'Barlow Condensed',sans-serif;font-size:13px;line-height:1.7}
 .log-entry{animation:slideUp .3s ease}.log-entry.highlight{color:var(--red);font-weight:600}.log-entry.green{color:var(--green)}.log-entry.yellow{color:var(--yellow)}.log-entry.dim{color:var(--text-dim)}
 .race-decision{background:linear-gradient(135deg,rgba(225,6,0,.08),var(--bg-card));border:2px solid var(--red);border-radius:12px;padding:14px;margin-bottom:8px;animation:slideUp .3s ease}.decision-title{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--red)}.decision-desc{font-size:12px;color:var(--text-mid);margin-bottom:10px}
@@ -84,38 +80,30 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
 .trophy{font-size:64px;text-align:center;margin:20px 0}.champ-text{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;text-align:center;margin-bottom:8px}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:200;padding:24px;animation:fadeIn .2s ease}.dialog{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:360px;width:100%;text-align:center}.dialog-title{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;margin-bottom:8px}.dialog-text{font-size:14px;color:var(--text-dim);margin-bottom:20px;line-height:1.5}.dialog-btns{display:flex;gap:10px}.dialog-btns .btn{flex:1}
 .page-title{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
-/* QUALIFYING */
-.quali-header{text-align:center;padding:16px 0;margin-bottom:12px}
-.quali-session{font-family:'Orbitron',sans-serif;font-size:24px;font-weight:800;color:var(--red);margin-bottom:4px}
-.quali-sub{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase}
-.quali-choice{margin-bottom:16px}
-.quali-choice-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
-.quali-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.quali-opt{padding:12px 8px;background:var(--bg-card);border:2px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif}
-.quali-opt:hover{border-color:#444}.quali-opt.selected{border-color:var(--red);background:rgba(225,6,0,.08)}
-.quali-opt-icon{font-size:20px;margin-bottom:4px}.quali-opt-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px}.quali-opt-desc{font-size:9px;color:var(--text-dim);margin-top:2px}
-.quali-grid{margin-bottom:16px}
-.quali-row{display:flex;align-items:center;padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;gap:8px;animation:slideUp .2s ease}
-.quali-row:nth-child(odd){background:rgba(255,255,255,.02)}.quali-row.player{background:rgba(225,6,0,.08);border-left:3px solid var(--red)}
-.quali-row.elim{opacity:.4}
-.quali-pos{width:24px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:12px;text-align:center}
-.quali-name{flex:1;font-weight:500}.quali-time{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--yellow);width:80px;text-align:right}
-.quali-gap{font-size:10px;color:var(--text-dim);width:55px;text-align:right;font-family:'Barlow Condensed',sans-serif}
-.quali-elim-tag{font-size:10px;color:var(--red);font-weight:600;width:30px;text-align:right}
-.quali-progress{display:flex;gap:6px;justify-content:center;margin-bottom:16px}
-.quali-pip{width:32px;height:4px;border-radius:2px;background:#333}.quali-pip.done{background:var(--green)}.quali-pip.active{background:var(--red);animation:pulse 1s infinite}
-/* CALENDAR */
-.cal-race{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;transition:all .2s}
-.cal-race.completed{opacity:.75}.cal-race.next{border-color:var(--red);background:rgba(225,6,0,.06)}
-.cal-round{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:#444;width:28px;text-align:center}
-.cal-race.completed .cal-round{color:var(--green)}.cal-race.next .cal-round{color:var(--red)}
-.cal-flag{font-size:24px;width:32px;text-align:center}
-.cal-info{flex:1}.cal-name{font-weight:600;font-size:14px}.cal-loc{font-size:11px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
-.cal-result{text-align:right;font-family:'Barlow Condensed',sans-serif;font-size:12px}
-.cal-result-pos{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700}
-.cal-result-pts{font-size:11px;color:var(--yellow)}
-.cal-status{font-size:18px;width:28px;text-align:center}
-/* DRS */
+.quali-header{text-align:center;padding:16px 0;margin-bottom:12px}.quali-session{font-family:'Orbitron',sans-serif;font-size:24px;font-weight:800;color:var(--red);margin-bottom:4px}.quali-sub{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase}
+.quali-choice{margin-bottom:16px}.quali-choice-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}.quali-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.quali-opt{padding:12px 8px;background:var(--bg-card);border:2px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif}.quali-opt:hover{border-color:#444}.quali-opt.selected{border-color:var(--red);background:rgba(225,6,0,.08)}.quali-opt-icon{font-size:20px;margin-bottom:4px}.quali-opt-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px}.quali-opt-desc{font-size:9px;color:var(--text-dim);margin-top:2px}
+.quali-grid{margin-bottom:16px}.quali-row{display:flex;align-items:center;padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;gap:8px;animation:slideUp .2s ease}.quali-row:nth-child(odd){background:rgba(255,255,255,.02)}.quali-row.player{background:rgba(225,6,0,.08);border-left:3px solid var(--red)}.quali-row.elim{opacity:.4}.quali-pos{width:24px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:12px;text-align:center}.quali-name{flex:1;font-weight:500}.quali-time{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--yellow);width:80px;text-align:right}.quali-gap{font-size:10px;color:var(--text-dim);width:55px;text-align:right;font-family:'Barlow Condensed',sans-serif}.quali-elim-tag{font-size:10px;color:var(--red);font-weight:600;width:30px;text-align:right}
+.quali-progress{display:flex;gap:6px;justify-content:center;margin-bottom:16px}.quali-pip{width:32px;height:4px;border-radius:2px;background:#333}.quali-pip.done{background:var(--green)}.quali-pip.active{background:var(--red);animation:pulse 1s infinite}
+.cal-race{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;transition:all .2s}.cal-race.completed{opacity:.75}.cal-race.next{border-color:var(--red);background:rgba(225,6,0,.06)}.cal-round{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:#444;width:28px;text-align:center}.cal-race.completed .cal-round{color:var(--green)}.cal-race.next .cal-round{color:var(--red)}.cal-flag{font-size:24px;width:32px;text-align:center}.cal-info{flex:1}.cal-name{font-weight:600;font-size:14px}.cal-loc{font-size:11px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}.cal-result{text-align:right;font-family:'Barlow Condensed',sans-serif;font-size:12px}.cal-result-pos{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700}.cal-result-pts{font-size:11px;color:var(--yellow)}.cal-status{font-size:18px;width:28px;text-align:center}
+/* ACADEMY */
+.acad-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px}
+.acad-hdr{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.acad-badge{font-size:9px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:4px;text-transform:uppercase;flex-shrink:0}
+.acad-badge.f2{background:rgba(255,193,7,.15);color:var(--yellow);border:1px solid rgba(255,193,7,.3)}
+.acad-badge.f3{background:rgba(0,153,255,.15);color:var(--blue);border:1px solid rgba(0,153,255,.3)}
+.acad-prog{width:100%;height:8px;background:#222;border-radius:4px;overflow:hidden;margin-bottom:8px}
+.acad-prog-fill{height:100%;border-radius:4px;background:var(--yellow);transition:width .5s}
+.acad-prog-fill.ready{background:var(--green)}
+.junior-grid{display:grid;grid-template-columns:1fr;gap:8px;max-height:380px;overflow-y:auto}
+.junior-card{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px}
+/* TRANSFERS */
+.xfer-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
+.xfer-item{padding:6px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--text-mid);display:flex;align-items:center;gap:8px}
+.xfer-item:last-child{border-bottom:none}
+.xfer-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;flex-shrink:0}
+.xfer-badge.sign{background:rgba(0,210,106,.15);color:var(--green);border:1px solid rgba(0,210,106,.3)}
+.xfer-badge.release{background:rgba(225,6,0,.15);color:var(--red);border:1px solid rgba(225,6,0,.3)}
+.xfer-badge.promote{background:rgba(255,193,7,.15);color:var(--yellow);border:1px solid rgba(255,193,7,.3)}
 .drs-zone{opacity:.6}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
@@ -124,16 +112,16 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
 </head>
 <body>
 <div class="app" id="app">
-  <div class="screen active" id="welcome"><div class="lights-out"><div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div></div><div class="welcome-title"><span class="f1">F1</span><span class="manager">MANAGER</span></div><div class="welcome-season">&mdash; CAREER MODE &mdash;</div><div class="welcome-tagline">Build your team across multiple seasons. Develop your car. Manage your drivers. Win the championship.</div><div class="welcome-btns"><button class="btn btn-primary" onclick="goToSlots('new')">NEW CAREER</button><button class="btn btn-secondary" id="savedGamesBtn" onclick="goToSlots('load')" style="display:none">CONTINUE CAREER</button></div></div>
+  <div class="screen active" id="welcome"><div class="lights-out"><div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div></div><div class="welcome-title"><span class="f1">F1</span><span class="manager">MANAGER</span></div><div class="welcome-season">&mdash; CAREER MODE &mdash;</div><div class="welcome-tagline">Build your team across multiple seasons. Develop your car. Scout junior talent. Win the championship.</div><div class="welcome-btns"><button class="btn btn-primary" onclick="goToSlots('new')">NEW CAREER</button><button class="btn btn-secondary" id="savedGamesBtn" onclick="goToSlots('load')" style="display:none">CONTINUE CAREER</button></div></div>
   <div class="screen" id="slots"><button class="back-link" onclick="showScreen('welcome')">&#8592; Back</button><div class="page-title" id="slotsTitle"></div><p style="font-size:13px;color:var(--text-dim);margin-bottom:16px" id="slotsHint"></p><div id="slotsList"></div></div>
   <div class="screen" id="setupMode"><button class="back-link" onclick="showScreen('slots')">&#8592; Back</button><div class="page-title" id="setupTitle">Choose Your Path</div><div class="mode-choice" id="modeChoiceDiv"><div class="mode-btn selected" id="modeReal" onclick="pickMode('real')"><div class="mode-btn-icon">&#127937;</div><div class="mode-btn-label">Real Team</div><div class="mode-btn-desc">Manage a 2026 team</div></div><div class="mode-btn" id="modeCustom" onclick="pickMode('custom')"><div class="mode-btn-icon">&#128296;</div><div class="mode-btn-label">Custom Team</div><div class="mode-btn-desc">Create your own</div></div></div><div id="realTeamSetup"><div class="setup-label">Select Your Team</div><div class="team-grid" id="teamGrid"></div><button class="btn btn-primary" id="startRealBtn" onclick="startRealTeam()" disabled>TAKE OVER TEAM</button></div><div id="customTeamSetup" style="display:none"><div class="setup-step"><div class="setup-label">Team Name</div><input class="input-field" id="teamNameInput" placeholder="e.g. Apex Racing" maxlength="24" oninput="updateCustomSetup()"></div><div class="budget-display"><div class="budget-label">Remaining Budget</div><div class="budget-amount" id="setupBudget">&pound;150M</div></div><div class="selected-drivers"><div class="selected-slot" id="slot_d0">Driver 1</div><div class="selected-slot" id="slot_d1">Driver 2</div></div><div class="setup-step"><div class="setup-label">Select 2 Drivers</div><div class="driver-grid" id="driverGrid"></div></div><button class="btn btn-primary" id="startCustomBtn" onclick="startCustomTeam()" disabled>START SEASON</button></div></div>
   <div class="screen" id="hq"><div class="hq-header"><div class="hq-team-name" id="hqTeamName"></div><div class="hq-subtitle" id="hqSub">Team HQ</div></div><div class="next-race-card" id="nextRaceCard"></div><div class="card"><div class="card-header">Finances</div><div id="hqBudget"></div></div><div class="card"><div class="card-header">Your Drivers</div><div id="hqDrivers"></div></div><div class="card"><div class="card-header">Car Performance</div><div id="hqCarStats"></div></div><div class="card"><div class="card-header">Top 3</div><div id="hqStandings"></div></div><div style="margin-top:8px"><button class="btn btn-secondary" onclick="saveAndQuit()">&#128190; SAVE &amp; QUIT</button></div></div>
   <div class="screen" id="race"><div class="page-title" id="raceTitle"></div><div id="preRace"><div class="strategy-section"><div class="card-header">Tyre Strategy</div><div class="strategy-options" id="tyreOptions"></div></div><div class="strategy-section"><div class="card-header">Driving Style</div><div class="strategy-options" id="styleOptions"></div></div><div style="margin-top:20px;display:flex;flex-direction:column;gap:10px"><button class="btn btn-primary" onclick="startQuali(false)">START QUALIFYING</button><button class="btn-ghost btn" onclick="startQuali(true)">&#9193; SKIP QUALIFYING</button></div></div><div id="qualifyingPhase" style="display:none"><div class="quali-header"><div class="quali-session" id="qualiSessionLabel">Q1</div><div class="quali-sub" id="qualiSubLabel">All 22 drivers &mdash; bottom 5 eliminated</div></div><div class="quali-progress"><div class="quali-pip active" id="qPip1"></div><div class="quali-pip" id="qPip2"></div><div class="quali-pip" id="qPip3"></div></div><div id="qualiEngineChoice"></div><div class="quali-grid" id="qualiGrid"></div><div id="qualiBtns"></div></div><div id="preStartRace" style="display:none"><div class="card-header" style="margin-bottom:8px">Starting Grid</div><div class="card" style="padding:0;overflow:hidden" id="startingGridDisplay"></div><div style="margin-top:16px;display:flex;flex-direction:column;gap:10px"><button class="btn btn-primary" onclick="startRaceSim(false)">LIGHTS OUT AND AWAY WE GO</button><button class="btn-ghost btn" onclick="startRaceSim(true)">&#9193; SIMULATE &amp; SKIP RACE</button></div></div><div id="duringRace" style="display:none;position:relative"><button class="skip-btn" onclick="skipRace()">SKIP &#9193;</button><div class="race-hud" id="raceHud"></div><div class="track-view" id="trackView"></div><div class="race-log" id="raceLog"></div><div id="raceDecisions"></div></div><div id="postRace" style="display:none"><div class="card-header" style="margin-bottom:8px">Race Results</div><div class="card" style="padding:0;overflow:hidden" id="raceResults"></div><div id="moraleChanges" style="margin-top:12px"></div><div style="margin-top:16px"><button class="btn btn-primary" onclick="afterRace()">CONTINUE</button></div></div></div>
   <div class="screen" id="develop"><div class="page-title">R&amp;D Centre</div><div id="costCapDisplay"></div><div class="budget-display"><div class="budget-label">Team Budget</div><div class="budget-amount" id="devBudget">&pound;0M</div></div><div id="upgradeCards"></div></div>
-  <div class="screen" id="morale"><div class="page-title">Driver Management</div><div class="budget-display"><div class="budget-label">Team Budget</div><div class="budget-amount" id="moraleBudget">&pound;0M</div></div><div id="moraleCards"></div></div>
+  <div class="screen" id="morale"><div class="page-title">Driver Management</div><div class="tabs"><button class="tab-btn active" id="mTab0" onclick="showMoraleTab('drivers',this)">Drivers</button><button class="tab-btn" id="mTab1" onclick="showMoraleTab('academy',this)">&#127942; Academy</button></div><div id="moraleContent"></div></div>
   <div class="screen" id="calendar"><div class="page-title" id="calTitle">Race Calendar</div><div id="calendarList"></div></div>
   <div class="screen" id="standings"><div class="page-title">Championship</div><div class="tabs"><button class="tab-btn active" onclick="showStandingsTab('drivers',this)">Drivers</button><button class="tab-btn" onclick="showStandingsTab('constructors',this)">Constructors</button></div><div id="standingsContent"></div></div>
-  <div class="screen" id="seasonEnd"><div class="trophy">&#127942;</div><div class="champ-text" id="seasonEndTitle"></div><div style="text-align:center;color:var(--text-dim);margin-bottom:24px" id="seasonEndSub"></div><div class="card" style="padding:0;overflow:hidden" id="finalStandings"></div><div style="margin-top:20px;display:flex;flex-direction:column;gap:10px"><button class="btn btn-primary" onclick="nextSeason()">NEXT SEASON</button><button class="btn btn-secondary" onclick="moveTeam()">MOVE TO ANOTHER TEAM</button><button class="btn-ghost btn" onclick="backToMenu()">MAIN MENU</button></div></div>
+  <div class="screen" id="seasonEnd"><div class="trophy">&#127942;</div><div class="champ-text" id="seasonEndTitle"></div><div style="text-align:center;color:var(--text-dim);margin-bottom:16px" id="seasonEndSub"></div><div class="card" style="padding:0;overflow:hidden" id="finalStandings"></div><div id="transferNewsSect" style="margin-top:8px"></div><div style="margin-top:16px;display:flex;flex-direction:column;gap:10px"><button class="btn btn-primary" onclick="nextSeason()">NEXT SEASON</button><button class="btn btn-secondary" onclick="moveTeam()">MOVE TO ANOTHER TEAM</button><button class="btn-ghost btn" onclick="backToMenu()">MAIN MENU</button></div></div>
 </div>
 <div id="dialogOverlay"></div>
 <nav class="nav-bar" id="navBar" style="display:none">
@@ -146,12 +134,7 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
 </nav>
 <script>
 "use strict";
-// F1 Manager 2026 - Career Mode
-// Due to the enormous scope, this build script creates the complete game
-
-// Security: sanitise any user-supplied string before inserting into innerHTML
-function esc(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML}
-
+// F1 Manager 2026 — Career Mode
 
 var D=[
 {id:0,name:"Max Verstappen",flag:"\u{1F1F3}\u{1F1F1}",team:"Red Bull",skill:97,cost:50},
@@ -177,6 +160,31 @@ var D=[
 {id:20,name:"Sergio Perez",flag:"\u{1F1F2}\u{1F1FD}",team:"Cadillac",skill:79,cost:16},
 {id:21,name:"Valtteri Bottas",flag:"\u{1F1EB}\u{1F1EE}",team:"Cadillac",skill:78,cost:14}
 ];
+
+// JUNIOR DRIVERS (F2 and F3) — can be signed to academy and developed into F1 stars
+var JR=[
+// F2
+{id:100,name:"Jak Crawford",flag:"\u{1F1FA}\u{1F1F8}",team:"DAMS F2",skill:77,potential:90,cost:4,level:'f2'},
+{id:101,name:"Paul Aron",flag:"\u{1F1EA}\u{1F1EA}",team:"Hitech F2",skill:76,potential:88,cost:4,level:'f2'},
+{id:102,name:"Victor Martins",flag:"\u{1F1EB}\u{1F1F7}",team:"ART F2",skill:75,potential:87,cost:3,level:'f2'},
+{id:103,name:"Zane Maloney",flag:"\u{1F1E7}\u{1F1E7}",team:"Rodin F2",skill:74,potential:86,cost:3,level:'f2'},
+{id:104,name:"Frederik Vesti",flag:"\u{1F1E9}\u{1F1F0}",team:"Prema F2",skill:74,potential:86,cost:3,level:'f2'},
+{id:105,name:"Dino Beganovic",flag:"\u{1F1F8}\u{1F1EA}",team:"Prema F2",skill:72,potential:85,cost:3,level:'f2'},
+{id:106,name:"Kush Maini",flag:"\u{1F1EE}\u{1F1F3}",team:"Invicta F2",skill:71,potential:83,cost:2,level:'f2'},
+{id:107,name:"Ayumu Iwasa",flag:"\u{1F1EF}\u{1F1F5}",team:"DAMS F2",skill:72,potential:84,cost:2,level:'f2'},
+{id:108,name:"Calan Williams",flag:"\u{1F1E6}\u{1F1FA}",team:"Trident F2",skill:70,potential:82,cost:2,level:'f2'},
+{id:109,name:"Isack Azman",flag:"\u{1F1F2}\u{1F1FE}",team:"ART F2",skill:71,potential:83,cost:2,level:'f2'},
+// F3
+{id:200,name:"Nikola Tsolov",flag:"\u{1F1E7}\u{1F1EC}",team:"ART F3",skill:67,potential:85,cost:2,level:'f3'},
+{id:201,name:"Sebastian Montoya",flag:"\u{1F1E8}\u{1F1F4}",team:"Prema F3",skill:65,potential:84,cost:2,level:'f3'},
+{id:202,name:"Aiden Malone",flag:"\u{1F1EE}\u{1F1EA}",team:"Hitech F3",skill:64,potential:82,cost:1,level:'f3'},
+{id:203,name:"Kai Jensen",flag:"\u{1F1E9}\u{1F1F0}",team:"Rodin F3",skill:63,potential:81,cost:1,level:'f3'},
+{id:204,name:"Marcus Chen",flag:"\u{1F1F8}\u{1F1EC}",team:"Trident F3",skill:65,potential:83,cost:2,level:'f3'},
+{id:205,name:"Ryo Tanaka",flag:"\u{1F1EF}\u{1F1F5}",team:"Campos F3",skill:63,potential:81,cost:1,level:'f3'},
+{id:206,name:"Lena Fischer",flag:"\u{1F1E9}\u{1F1EA}",team:"ART F3",skill:62,potential:80,cost:1,level:'f3'},
+{id:207,name:"Omar Hassan",flag:"\u{1F1EA}\u{1F1EC}",team:"Prema F3",skill:64,potential:82,cost:1,level:'f3'}
+];
+
 var TEAMS=[
 {name:"McLaren",color:"#FF8000",drivers:[1,4],car:{speed:86,aero:88,reliability:84,pitstops:86},budget:35},
 {name:"Red Bull",color:"#3671C6",drivers:[0,7],car:{speed:84,aero:85,reliability:80,pitstops:82},budget:38},
@@ -206,24 +214,49 @@ var RACES=[
 {name:"Qatar GP",flag:"\u{1F1F6}\u{1F1E6}",loc:"Lusail",laps:57},{name:"Abu Dhabi GP",flag:"\u{1F1E6}\u{1F1EA}",loc:"Yas Marina",laps:58}
 ];
 var PTS=[25,18,15,12,10,8,6,4,2,1],MS=5,CAP=135,MAX_STAT=150;
-var game=null,activeSlot=null,setupSelected=[],slotsMode='new',setupMode='real',selectedTeamIdx=-1,rs=null,skipMode=false;
+var game=null,activeSlot=null,setupSelected=[],slotsMode='new',setupMode='real',selectedTeamIdx=-1,rs=null,skipMode=false,moraleActiveTab='drivers';
 
-function fg(){return{teamName:"",budget:150,drivers:[],car:{speed:40,aero:40,reliability:40,pitstops:40},morale:{},moraleActs:{},currentRace:0,driverPoints:{},constructorPoints:{},raceHistory:[],strategy:{tyre:"medium",style:"balanced"},isRealTeam:false,costCap:CAP,capSpent:0,season:1,aiCars:{}}}
+// Lookup driver by ID — checks F1 pool (D) and junior pool (JR)
+function getD(id){
+  var n=parseInt(id);
+  if(n<100)return D[n]||null;
+  return JR.find(function(j){return j.id===n})||null;
+}
 
-// SAVE
+function fg(){return{teamName:"",budget:150,drivers:[],car:{speed:40,aero:40,reliability:40,pitstops:40},morale:{},moraleActs:{},currentRace:0,driverPoints:{},constructorPoints:{},raceHistory:[],strategy:{tyre:"medium",style:"balanced"},isRealTeam:false,costCap:CAP,capSpent:0,season:1,aiCars:{},aiLineups:{},academy:[],transferNews:[]}}
+
 function gS(){try{return JSON.parse(localStorage.getItem('f1m26c'))||[null,null,null,null,null]}catch(e){return[null,null,null,null,null]}}
 function sS(s){localStorage.setItem('f1m26c',JSON.stringify(s))}
 function sv(){if(activeSlot===null||!game)return;var s=gS();s[activeSlot]=JSON.parse(JSON.stringify(game));sS(s)}
 function hS(){return gS().some(function(s){return s!==null})}
 function loadSlot(i){var s=gS();if(!s[i])return;game=JSON.parse(JSON.stringify(s[i]));fix();activeSlot=i;document.getElementById('navBar').style.display='flex';showScreen('hq')}
-function fix(){if(!game.moraleActs)game.moraleActs={};if(!game.capSpent)game.capSpent=0;if(!game.costCap)game.costCap=CAP;if(!game.season)game.season=1;if(!game.aiCars)game.aiCars={}}
+function fix(){
+  if(!game.moraleActs)game.moraleActs={};
+  if(!game.capSpent)game.capSpent=0;
+  if(!game.costCap)game.costCap=CAP;
+  if(!game.season)game.season=1;
+  if(!game.aiCars)game.aiCars={};
+  if(!game.academy)game.academy=[];
+  if(!game.transferNews)game.transferNews=[];
+  if(!game.aiLineups||Object.keys(game.aiLineups).length===0){game.aiLineups={};initAiLineups();}
+}
 function deleteSlot(i){dlg('Delete?','Delete this career?','Delete','Cancel',function(){var s=gS();s[i]=null;sS(s);renderSlots()})}
 function dlg(t,tx,cl,ca,fn){document.getElementById('dialogOverlay').innerHTML='<div class="overlay" onclick="cDlg(event)"><div class="dialog" onclick="event.stopPropagation()"><div class="dialog-title">'+t+'</div><div class="dialog-text">'+tx+'</div><div class="dialog-btns"><button class="btn btn-secondary" style="font-size:13px;padding:10px" onclick="cDlg()">'+ca+'</button><button class="btn btn-primary" style="font-size:13px;padding:10px" id="dC">'+cl+'</button></div></div></div>';document.getElementById('dC').onclick=function(){cDlg();fn()}}
 function cDlg(e){if(e&&e.target!==e.currentTarget)return;document.getElementById('dialogOverlay').innerHTML=''}
 
-function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});document.getElementById(id).classList.add('active');
-if(id==='welcome'){document.getElementById('navBar').style.display='none';chkSaved()}
-if(id==='slots')renderSlots();if(id==='setupMode')renderSetupMode();if(id==='hq')renderHQ();if(id==='race')renderRace();if(id==='develop')renderDev();if(id==='morale')renderMorale();if(id==='standings')renderStand('drivers');if(id==='calendar')renderCalendar()}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  document.getElementById(id).classList.add('active');
+  if(id==='welcome'){document.getElementById('navBar').style.display='none';chkSaved()}
+  if(id==='slots')renderSlots();
+  if(id==='setupMode')renderSetupMode();
+  if(id==='hq')renderHQ();
+  if(id==='race')renderRace();
+  if(id==='develop')renderDev();
+  if(id==='morale'){moraleActiveTab='drivers';document.getElementById('mTab0').classList.add('active');document.getElementById('mTab1').classList.remove('active');renderMorale();}
+  if(id==='standings')renderStand('drivers');
+  if(id==='calendar')renderCalendar();
+}
 function navigate(id,btn){document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active')});if(btn)btn.classList.add('active');showScreen(id)}
 function chkSaved(){document.getElementById('savedGamesBtn').style.display=hS()?'block':'none'}
 function goToSlots(m){slotsMode=m;showScreen('slots')}
@@ -231,8 +264,8 @@ function ip(id){return game&&game.drivers.indexOf(id)>-1}
 function ptl(){return game?game.teamName:''}
 
 function renderSlots(){var slots=gS(),isNew=slotsMode==='new';document.getElementById('slotsTitle').textContent=isNew?'Choose a Slot':'Saved Careers';document.getElementById('slotsHint').textContent=isNew?'Pick a slot.':'Load or delete.';
-var h='';for(var i=0;i<MS;i++){var s=slots[i];if(s){var rt=s.currentRace>=RACES.length?'Season Done':'Rd '+(s.currentRace+1)+'/24';var d1=D[s.drivers[0]],d2=D[s.drivers[1]];
-h+='<div class="save-slot filled"><div class="save-slot-number">'+(i+1)+'</div><div class="save-slot-info"><div class="save-slot-team">'+esc(s.teamName)+' (S'+(s.season||1)+')</div><div class="save-slot-details">'+d1.flag+' '+d1.name.split(' ').pop()+' & '+d2.flag+' '+d2.name.split(' ').pop()+'</div><div class="save-slot-details">'+rt+' \u2022 \u00a3'+s.budget+'M</div></div><div class="save-slot-actions">';
+var h='';for(var i=0;i<MS;i++){var s=slots[i];if(s){var rt=s.currentRace>=RACES.length?'Season Done':'Rd '+(s.currentRace+1)+'/24';var d1=getD(s.drivers[0]),d2=getD(s.drivers[1]);
+h+='<div class="save-slot filled"><div class="save-slot-number">'+(i+1)+'</div><div class="save-slot-info"><div class="save-slot-team">'+s.teamName+' (S'+(s.season||1)+')</div><div class="save-slot-details">'+(d1?d1.flag+' '+d1.name.split(' ').pop():'?')+' & '+(d2?d2.flag+' '+d2.name.split(' ').pop():'?')+'</div><div class="save-slot-details">'+rt+' \u2022 \u00a3'+s.budget+'M</div></div><div class="save-slot-actions">';
 if(isNew)h+='<button class="slot-btn delete" onclick="event.stopPropagation();overwriteSlot('+i+')">Replace</button>';
 else h+='<button class="slot-btn load" onclick="event.stopPropagation();loadSlot('+i+')">Load</button><button class="slot-btn delete" onclick="event.stopPropagation();deleteSlot('+i+')">Delete</button>';
 h+='</div></div>'}else{if(isNew)h+='<div class="save-slot clickable" onclick="startNewInSlot('+i+')"><div class="save-slot-number">'+(i+1)+'</div><div class="save-slot-info"><div class="save-slot-empty">Empty \u2014 tap to start</div></div></div>';
@@ -240,33 +273,136 @@ else h+='<div class="save-slot" style="opacity:.4"><div class="save-slot-number"
 function startNewInSlot(i){activeSlot=i;game=fg();setupSelected=[];selectedTeamIdx=-1;setupMode='real';showScreen('setupMode')}
 function overwriteSlot(i){dlg('Replace?','Overwrite?','Replace','Cancel',function(){var s=gS();s[i]=null;sS(s);startNewInSlot(i)})}
 function pickMode(m){setupMode=m;document.getElementById('modeReal').className='mode-btn'+(m==='real'?' selected':'');document.getElementById('modeCustom').className='mode-btn'+(m==='custom'?' selected':'');document.getElementById('realTeamSetup').style.display=m==='real'?'block':'none';document.getElementById('customTeamSetup').style.display=m==='custom'?'block':'none'}
-function renderSetupMode(){document.getElementById('setupTitle').textContent=game&&game.season>1?'Move Team \u2014 Season '+(game.season):'Choose Your Path';document.getElementById('modeChoiceDiv').style.display=game&&game.season>1?'none':'flex';if(game&&game.season>1){document.getElementById('realTeamSetup').style.display='block';document.getElementById('customTeamSetup').style.display='none'}else{pickMode(setupMode)}buildTeamGrid();buildDriverGrid()}
-function buildTeamGrid(){var h='';for(var i=0;i<TEAMS.length;i++){var t=TEAMS[i],d1=D[t.drivers[0]],d2=D[t.drivers[1]];
+function renderSetupMode(){document.getElementById('setupTitle').textContent=game&&game.season>1?'Move Team \u2014 Season '+game.season:'Choose Your Path';document.getElementById('modeChoiceDiv').style.display=game&&game.season>1?'none':'flex';if(game&&game.season>1){document.getElementById('realTeamSetup').style.display='block';document.getElementById('customTeamSetup').style.display='none'}else{pickMode(setupMode)}buildTeamGrid();buildDriverGrid()}
+function buildTeamGrid(){var h='';for(var i=0;i<TEAMS.length;i++){var t=TEAMS[i];
+var lin=game&&game.aiLineups&&game.aiLineups[t.name]?game.aiLineups[t.name]:t.drivers;
+var d1=getD(lin[0])||getD(t.drivers[0]),d2=getD(lin[1])||getD(t.drivers[1]);
 var carObj=game&&game.aiCars&&game.aiCars[t.name]?game.aiCars[t.name]:t.car;
 var ca=Math.round((carObj.speed+carObj.aero+carObj.reliability+carObj.pitstops)/4);
 var budg=game&&game.season>1?Math.max(20,t.budget+Math.floor(Math.random()*10)):t.budget;
-h+='<div class="team-card'+(selectedTeamIdx===i?' selected':'')+'" onclick="selectTeam('+i+')"><div class="team-color" style="background:'+t.color+'"></div><div class="team-info"><div class="team-name-label">'+t.name+'</div><div class="team-drivers-label">'+d1.flag+' '+d1.name.split(' ').pop()+' & '+d2.flag+' '+d2.name.split(' ').pop()+'</div></div><div class="team-stats-label"><div class="team-car-label">'+ca+'</div><div class="team-budget-label">\u00a3'+budg+'M</div></div></div>'}
+h+='<div class="team-card'+(selectedTeamIdx===i?' selected':'')+'\" onclick="selectTeam('+i+')"><div class="team-color" style="background:'+t.color+'"></div><div class="team-info"><div class="team-name-label">'+t.name+'</div><div class="team-drivers-label">'+(d1?d1.flag+' '+d1.name.split(' ').pop():'?')+' & '+(d2?d2.flag+' '+d2.name.split(' ').pop():'?')+'</div></div><div class="team-stats-label"><div class="team-car-label">'+ca+'</div><div class="team-budget-label">\u00a3'+budg+'M</div></div></div>'}
 document.getElementById('teamGrid').innerHTML=h;document.getElementById('startRealBtn').disabled=selectedTeamIdx<0}
 function selectTeam(i){selectedTeamIdx=i;buildTeamGrid()}
-function startRealTeam(){if(selectedTeamIdx<0)return;var t=TEAMS[selectedTeamIdx];game.teamName=t.name;game.isRealTeam=true;game.drivers=t.drivers.slice();
+function startRealTeam(){if(selectedTeamIdx<0)return;var t=TEAMS[selectedTeamIdx];game.teamName=t.name;game.isRealTeam=true;
+var lin=game.aiLineups&&game.aiLineups[t.name]?game.aiLineups[t.name]:t.drivers.slice();
+game.drivers=lin.slice();
 var carSrc=game.aiCars&&game.aiCars[t.name]?game.aiCars[t.name]:t.car;
-game.car=JSON.parse(JSON.stringify(carSrc));game.budget=game.season>1?Math.max(20,t.budget+Math.floor(Math.random()*10)):t.budget;game.costCap=CAP;game.capSpent=0;game.morale={};game.moraleActs={};game.morale[t.drivers[0]]=65;game.morale[t.drivers[1]]=65;initPts();sv();document.getElementById('navBar').style.display='flex';showScreen('hq')}
+game.car=JSON.parse(JSON.stringify(carSrc));game.budget=game.season>1?Math.max(20,t.budget+Math.floor(Math.random()*10)):t.budget;game.costCap=CAP;game.capSpent=0;game.morale={};game.moraleActs={};
+game.morale[lin[0]]=65;game.morale[lin[1]]=65;initPts();sv();document.getElementById('navBar').style.display='flex';showScreen('hq')}
 function buildDriverGrid(){var g=document.getElementById('driverGrid'),h='';for(var i=0;i<D.length;i++){var d=D[i],sel=setupSelected.indexOf(d.id)>-1?' selected':'';h+='<div class="driver-card'+sel+'" onclick="toggleDriver('+d.id+')"><div class="driver-flag">'+d.flag+'</div><div class="driver-info"><div class="driver-name">'+d.name+'</div><div class="driver-team">'+d.team+'</div></div><div class="driver-stats"><div class="driver-rating">'+d.skill+'</div><div class="driver-cost">\u00a3'+d.cost+'M</div></div></div>'}g.innerHTML=h;updateCustomSetup()}
 function toggleDriver(id){var i=setupSelected.indexOf(id);if(i>-1)setupSelected.splice(i,1);else if(setupSelected.length<2)setupSelected.push(id);buildDriverGrid()}
 function updateCustomSetup(){var tc=0;for(var i=0;i<setupSelected.length;i++)tc+=D[setupSelected[i]].cost;var rem=150-tc;var b=document.getElementById('setupBudget');b.textContent='\u00a3'+rem+'M';b.className='budget-amount'+(rem<0?' over':'');for(var j=0;j<2;j++){var sl=document.getElementById('slot_d'+j);if(setupSelected[j]!==undefined){var d=D[setupSelected[j]];sl.textContent=d.flag+' '+d.name;sl.className='selected-slot filled'}else{sl.textContent='Driver '+(j+1);sl.className='selected-slot'}}var n=(document.getElementById('teamNameInput').value||'').trim();document.getElementById('startCustomBtn').disabled=!(n.length>0&&setupSelected.length===2&&rem>=0)}
 function startCustomTeam(){var n=document.getElementById('teamNameInput').value.trim();game.teamName=n;game.isRealTeam=false;game.drivers=setupSelected.slice();var tc=0;for(var i=0;i<setupSelected.length;i++)tc+=D[setupSelected[i]].cost;game.budget=150-tc;game.car={speed:40,aero:40,reliability:40,pitstops:40};game.costCap=CAP;game.capSpent=0;game.morale={};game.moraleActs={};game.morale[game.drivers[0]]=65;game.morale[game.drivers[1]]=65;initPts();sv();document.getElementById('navBar').style.display='flex';showScreen('hq')}
-function initPts(){game.currentRace=0;game.driverPoints={};game.constructorPoints={};game.raceHistory=[];for(var j=0;j<D.length;j++)game.driverPoints[D[j].id]=0;var ts={};for(var k=0;k<D.length;k++)ts[D[k].team]=true;Object.keys(ts).forEach(function(t){game.constructorPoints[t]=0});if(!game.isRealTeam)game.constructorPoints[game.teamName]=0;initAiCars()}
+function initPts(){game.currentRace=0;game.driverPoints={};game.constructorPoints={};game.raceHistory=[];
+for(var j=0;j<D.length;j++)game.driverPoints[D[j].id]=0;
+// Also init points for any promoted juniors
+for(var k=0;k<JR.length;k++)game.driverPoints[JR[k].id]=0;
+var ts={};for(var m=0;m<D.length;m++)ts[D[m].team]=true;
+Object.keys(ts).forEach(function(t){game.constructorPoints[t]=0});
+if(!game.isRealTeam)game.constructorPoints[game.teamName]=0;
+initAiLineups();initAiCars()}
+
+// Initialise AI lineups from current TEAMS data (or existing aiLineups)
+function initAiLineups(){
+  if(!game.aiLineups)game.aiLineups={};
+  TEAMS.forEach(function(t){
+    if(!game.aiLineups[t.name]){game.aiLineups[t.name]=t.drivers.slice()}
+  });
+  // Sync player real team lineup
+  if(game.isRealTeam&&game.teamName&&game.drivers.length){game.aiLineups[game.teamName]=game.drivers.slice()}
+}
+
 function initAiCars(){if(!game.aiCars)game.aiCars={};TEAMS.forEach(function(t){if(!game.aiCars[t.name])game.aiCars[t.name]=JSON.parse(JSON.stringify(t.car))})}
 function saveAndQuit(){sv();activeSlot=null;game=null;document.getElementById('navBar').style.display='none';showScreen('welcome')}
 function backToMenu(){sv();activeSlot=null;game=null;document.getElementById('navBar').style.display='none';showScreen('welcome')}
 
-// AI DEVELOPMENT - runs after each race
+// AI car development — runs after each race
 function aiDevelop(){TEAMS.forEach(function(t){if(t.name===game.teamName&&game.isRealTeam)return;if(!game.aiCars[t.name])game.aiCars[t.name]=JSON.parse(JSON.stringify(t.car));var c=game.aiCars[t.name];var stats=['speed','aero','reliability','pitstops'];var pick=stats[Math.floor(Math.random()*stats.length)];var gain=Math.floor(Math.random()*3);c[pick]=Math.min(MAX_STAT,c[pick]+gain)})}
 
-// NEXT SEASON / MOVE TEAM
-function nextSeason(){game.season=(game.season||1)+1;game.currentRace=0;game.capSpent=0;game.costCap=CAP;game.driverPoints={};game.constructorPoints={};game.raceHistory=[];for(var j=0;j<D.length;j++)game.driverPoints[D[j].id]=0;var ts={};for(var k=0;k<D.length;k++)ts[D[k].team]=true;Object.keys(ts).forEach(function(t){game.constructorPoints[t]=0});if(!game.isRealTeam)game.constructorPoints[game.teamName]=0;
-game.budget+=30+Math.floor(Math.random()*20);game.morale[game.drivers[0]]=Math.max(50,game.morale[game.drivers[0]]-5);game.morale[game.drivers[1]]=Math.max(50,game.morale[game.drivers[1]]-5);
-game.moraleActs={};sv();document.getElementById('navBar').style.display='flex';showScreen('hq')}
+// AI DRIVER TRANSFERS — runs at end of each season
+function aiTransfers(){
+  if(!game.aiLineups)initAiLineups();
+  var log=[];
+
+  // Develop ALL junior drivers each off-season
+  JR.forEach(function(j){
+    if(j.skill<j.potential){
+      j.skill=Math.min(j.potential,j.skill+1+Math.floor(Math.random()*2));
+    }
+  });
+
+  // Build set of currently signed F1 drivers
+  var signed=new Set();
+  Object.keys(game.aiLineups).forEach(function(tn){
+    (game.aiLineups[tn]||[]).forEach(function(id){signed.add(id)});
+  });
+  game.drivers.forEach(function(id){signed.add(id)});
+
+  // Free agents: F1 drivers not currently signed
+  var freeIds=D.filter(function(d){return!signed.has(d.id)}).map(function(d){return d.id});
+
+  // F2 drivers ready for F1 (skill >= 79)
+  var f2Ready=JR.filter(function(j){return j.level==='f2'&&j.skill>=79&&!signed.has(j.id)});
+
+  TEAMS.forEach(function(t){
+    if(t.name===game.teamName&&game.isRealTeam)return;
+    if(!game.aiLineups[t.name])game.aiLineups[t.name]=t.drivers.slice();
+    var lineup=game.aiLineups[t.name];
+    if(Math.random()<0.30){
+      // Pick weaker driver to release
+      var d0=getD(lineup[0]),d1=getD(lineup[1]);
+      if(!d0||!d1)return;
+      var relIdx=d0.skill<=d1.skill?0:1;
+      var relId=lineup[relIdx];
+      var relD=getD(relId);
+
+      // Find best available replacement (free agent or F2 grad)
+      var bestId=null,bestSkill=-1;
+      freeIds.forEach(function(id){var d=getD(id);if(d&&d.skill>bestSkill){bestSkill=d.skill;bestId=id}});
+      f2Ready.forEach(function(j){if(j.skill>bestSkill){bestSkill=j.skill;bestId=j.id}});
+
+      var relSkill=relD?relD.skill:70;
+      if(bestId!==null&&bestSkill>relSkill-5){
+        // Remove new driver from available pools
+        freeIds=freeIds.filter(function(id){return id!==bestId});
+        f2Ready=f2Ready.filter(function(j){return j.id!==bestId});
+        // Return released driver to free agents (unless they're a junior)
+        if(relId<100)freeIds.push(relId);
+        signed.delete(relId);signed.add(bestId);
+        lineup[relIdx]=bestId;
+        // If promoted junior, add to D pool
+        var newD=getD(bestId);
+        if(newD&&newD.level){
+          if(!D.find(function(d){return d.id===bestId})){
+            D.push({id:newD.id,name:newD.name,flag:newD.flag,team:t.name,skill:newD.skill,cost:newD.cost||3});
+          } else {
+            D.find(function(d){return d.id===bestId}).team=t.name;
+          }
+          game.driverPoints[bestId]=game.driverPoints[bestId]||0;
+          log.push({type:'promote',from:newD.level.toUpperCase(),name:newD.name,team:t.name});
+        }
+        if(relD)log.push({type:'release',name:relD.name,team:t.name});
+        if(newD&&!newD.level)log.push({type:'sign',name:newD.name,team:t.name});
+      }
+    }
+  });
+
+  game.transferNews=log;
+}
+
+function nextSeason(){
+  aiTransfers(); // AI teams shuffle drivers first
+  game.season=(game.season||1)+1;game.currentRace=0;game.capSpent=0;game.costCap=CAP;
+  game.driverPoints={};game.constructorPoints={};game.raceHistory=[];
+  for(var j=0;j<D.length;j++)game.driverPoints[D[j].id]=0;
+  for(var k=0;k<JR.length;k++)game.driverPoints[JR[k].id]=0;
+  var ts={};for(var m=0;m<D.length;m++)ts[D[m].team]=true;
+  Object.keys(ts).forEach(function(t){game.constructorPoints[t]=0});
+  if(!game.isRealTeam)game.constructorPoints[game.teamName]=0;
+  game.budget+=30+Math.floor(Math.random()*20);
+  game.morale[game.drivers[0]]=Math.max(50,game.morale[game.drivers[0]]-5);
+  game.morale[game.drivers[1]]=Math.max(50,game.morale[game.drivers[1]]-5);
+  game.moraleActs={};sv();document.getElementById('navBar').style.display='flex';showScreen('hq')}
 function moveTeam(){sv();selectedTeamIdx=-1;showScreen('setupMode')}
 
 function renderHQ(){if(!game)return;fix();document.getElementById('hqTeamName').textContent=game.teamName;document.getElementById('hqSub').textContent='Season '+(game.season||1)+' \u2022 Team HQ';
@@ -274,243 +410,161 @@ var nrc=document.getElementById('nextRaceCard');if(game.currentRace>=RACES.lengt
 else{var r=RACES[game.currentRace];nrc.innerHTML='<div class="race-round">Round '+(game.currentRace+1)+' of 24</div><div class="race-flag">'+r.flag+'</div><div class="race-name">'+r.name+'</div><div style="font-size:13px;color:var(--text-dim)">'+r.loc+' \u2022 '+r.laps+' laps</div>'}
 var cpP=Math.min(100,Math.round(game.capSpent/game.costCap*100)),cpC=cpP>=90?'var(--red)':cpP>=70?'var(--yellow)':'var(--green)';
 document.getElementById('hqBudget').innerHTML='<div class="stat-row"><span class="stat-label">Budget</span><span class="stat-value" style="color:var(--green)">\u00a3'+game.budget+'M</span></div><div class="stat-row"><span class="stat-label">Cost Cap</span><span class="stat-value" style="color:'+cpC+'">\u00a3'+game.capSpent+'M / \u00a3'+game.costCap+'M</span></div>';
-var dH='';for(var i=0;i<game.drivers.length;i++){var d=D[game.drivers[i]],m=game.morale[d.id]||50;var mc=m>=70?'var(--green)':m>=45?'var(--yellow)':'var(--red)';dH+='<div class="stat-row"><span>'+d.flag+' '+d.name+'</span><span style="font-size:12px;color:'+mc+'">'+(game.driverPoints[d.id]||0)+' pts \u2022 '+m+' morale</span></div>'}document.getElementById('hqDrivers').innerHTML=dH;
+var dH='';for(var i=0;i<game.drivers.length;i++){var d=getD(game.drivers[i]),m=game.morale[game.drivers[i]]||50;var mc=m>=70?'var(--green)':m>=45?'var(--yellow)':'var(--red)';if(d)dH+='<div class="stat-row"><span>'+d.flag+' '+d.name+'</span><span style="font-size:12px;color:'+mc+'">'+(game.driverPoints[d.id]||0)+' pts \u2022 '+m+' morale</span></div>'}document.getElementById('hqDrivers').innerHTML=dH;
 var stats=[{l:"Speed",v:game.car.speed,c:"var(--red)"},{l:"Aero",v:game.car.aero,c:"var(--blue)"},{l:"Reliability",v:game.car.reliability,c:"var(--green)"},{l:"Pit Crew",v:game.car.pitstops,c:"var(--orange)"}];var sH='';for(var s=0;s<stats.length;s++)sH+='<div class="stat-row"><span class="stat-label">'+stats[s].l+'</span><div class="stat-bar-wrap"><div class="stat-bar"><div class="stat-bar-fill" style="width:'+Math.min(100,stats[s].v/MAX_STAT*100)+'%;background:'+stats[s].c+'"></div></div><span class="stat-value" style="color:'+stats[s].c+'">'+stats[s].v+'</span></div></div>';document.getElementById('hqCarStats').innerHTML=sH;
-var sorted=Object.entries(game.driverPoints).sort(function(a,b){return b[1]-a[1]}).slice(0,3);var hS=document.getElementById('hqStandings');
-if(sorted.length&&sorted[0][1]>0){var medals=['\u{1F947}','\u{1F948}','\u{1F949}'],mH='<div class="mini-standings">';for(var mi=0;mi<sorted.length;mi++){var dd=D[sorted[mi][0]];mH+='<div class="mini-stand"><div class="mini-stand-pos">'+medals[mi]+'</div><div class="mini-stand-name">'+(dd?dd.name.split(' ').pop():'-')+'</div><div class="mini-stand-pts">'+sorted[mi][1]+'</div></div>'}hS.innerHTML=mH+'</div>'}else hS.innerHTML='<div style="text-align:center;color:var(--text-dim);padding:8px;font-size:13px">No races yet</div>'}
+var sorted=Object.entries(game.driverPoints).sort(function(a,b){return b[1]-a[1]}).slice(0,3);var hSt=document.getElementById('hqStandings');
+if(sorted.length&&sorted[0][1]>0){var medals=['\u{1F947}','\u{1F948}','\u{1F949}'],mH='<div class="mini-standings">';for(var mi=0;mi<sorted.length;mi++){var dd=getD(sorted[mi][0]);mH+='<div class="mini-stand"><div class="mini-stand-pos">'+medals[mi]+'</div><div class="mini-stand-name">'+(dd?dd.name.split(' ').pop():'-')+'</div><div class="mini-stand-pts">'+sorted[mi][1]+'</div></div>'}hSt.innerHTML=mH+'</div>'}else hSt.innerHTML='<div style="text-align:center;color:var(--text-dim);padding:8px;font-size:13px">No races yet</div>'}
 
-// TRACK SVG
-// REAL TRACK OUTLINES - simplified bird's eye SVG paths for all 24 circuits
-var TRACKS={
-// Albert Park - Melbourne lake circuit
-"Australian GP":"M200,25 L260,28 L310,40 L340,65 L355,95 L350,120 L330,140 L290,150 L250,148 L220,155 L180,150 L140,135 L110,145 L80,140 L60,120 L55,95 L65,65 L90,45 L120,35 L155,28Z",
-// Shanghai - distinctive hairpins and long back straight
-"Chinese GP":"M70,85 L70,50 L90,35 L130,28 L200,25 L280,25 L340,30 L370,50 L380,75 L370,95 L340,100 L310,95 L280,105 L310,120 L340,130 L370,140 L360,155 L320,160 L250,155 L180,150 L120,145 L80,130 L65,110Z",
-// Suzuka - figure of 8
-"Japanese GP":"M100,80 L120,55 L155,35 L200,25 L250,30 L290,45 L310,35 L340,30 L370,40 L380,65 L370,90 L340,100 L310,95 L280,105 L260,120 L220,110 L190,120 L160,140 L120,155 L85,150 L65,130 L60,105Z",
-// Bahrain - Sakhir desert circuit
-"Bahrain GP":"M150,30 L200,25 L260,28 L300,40 L330,30 L360,40 L370,65 L360,90 L370,110 L360,135 L330,150 L280,155 L240,145 L200,150 L160,145 L120,135 L90,115 L80,90 L90,65 L110,45Z",
-// Jeddah - long narrow street circuit
-"Saudi Arabian GP":"M60,80 L65,50 L80,30 L120,25 L170,28 L220,25 L270,28 L320,25 L360,30 L385,50 L390,75 L380,95 L360,105 L330,100 L300,108 L270,100 L240,110 L200,115 L160,120 L120,130 L90,145 L70,135 L60,110Z",
-// Miami - compact street circuit
-"Miami GP":"M100,40 L180,30 L270,28 L340,35 L370,55 L375,85 L360,110 L320,130 L270,145 L220,150 L160,148 L120,155 L85,140 L70,115 L65,85 L75,60Z",
-// Imola - old school flowing layout
-"Emilia Romagna GP":"M80,90 L90,60 L120,40 L165,30 L220,28 L280,35 L330,50 L360,75 L370,100 L355,125 L320,140 L270,150 L220,148 L170,140 L130,150 L100,145 L75,125Z",
-// Monaco - tight street circuit
-"Monaco GP":"M120,50 L180,30 L240,28 L300,35 L340,55 L350,80 L335,105 L300,120 L260,130 L230,145 L190,150 L150,140 L130,150 L100,140 L85,115 L90,85 L105,65Z",
-// Barcelona - Catalunya
-"Spanish GP":"M100,70 L110,45 L140,30 L190,25 L250,28 L310,25 L350,35 L375,55 L380,80 L370,105 L345,125 L310,140 L260,150 L200,148 L150,140 L110,130 L80,110 L75,90Z",
-// Montreal - island circuit
-"Canadian GP":"M60,80 L70,45 L100,28 L160,25 L230,30 L300,25 L350,30 L385,50 L390,80 L380,105 L350,110 L310,100 L270,110 L230,120 L190,135 L150,145 L110,150 L80,140 L65,115Z",
-// Red Bull Ring - short simple circuit
-"Austrian GP":"M120,55 L180,30 L260,25 L330,35 L365,60 L370,90 L350,120 L300,145 L230,155 L160,150 L110,130 L85,100 L90,75Z",
-// Silverstone - fast flowing
-"British GP":"M130,65 L160,40 L200,28 L250,25 L300,30 L340,28 L370,40 L385,65 L375,90 L350,105 L320,95 L290,110 L260,130 L220,145 L170,155 L120,150 L90,130 L75,105 L80,80 L100,70Z",
-// Spa - famous long circuit
-"Belgian GP":"M80,100 L85,65 L100,40 L140,25 L200,28 L260,25 L310,30 L350,45 L380,65 L390,90 L380,110 L350,120 L320,110 L290,120 L260,140 L220,155 L170,155 L130,145 L100,135 L75,120Z",
-// Hungaroring - tight and twisty
-"Hungarian GP":"M120,55 L170,30 L240,25 L310,30 L350,50 L370,75 L365,105 L340,130 L300,145 L250,155 L190,150 L140,140 L100,120 L80,95 L85,70Z",
-// Zandvoort - compact banked
-"Dutch GP":"M110,60 L160,35 L230,25 L300,30 L350,45 L375,70 L370,100 L345,125 L300,145 L240,155 L170,150 L120,135 L85,110 L80,80Z",
-// Monza - temple of speed
-"Italian GP":"M100,80 L110,50 L140,30 L200,25 L270,25 L330,30 L365,50 L380,75 L375,100 L355,120 L310,135 L260,142 L240,155 L200,150 L160,142 L130,150 L100,140 L80,115Z",
-// Baku - street circuit long straight
-"Azerbaijan GP":"M60,85 L65,50 L80,30 L130,25 L200,28 L280,25 L350,28 L390,45 L395,75 L385,100 L360,110 L320,105 L280,115 L230,125 L180,135 L130,145 L90,150 L70,135 L60,110Z",
-// Singapore - Marina Bay street circuit
-"Singapore GP":"M100,50 L160,30 L230,25 L300,30 L350,45 L370,70 L375,100 L360,125 L330,140 L280,150 L220,155 L160,150 L120,155 L90,140 L75,115 L80,85 L90,65Z",
-// COTA Austin - distinctive S curves
-"United States GP":"M90,75 L100,45 L130,28 L180,25 L230,30 L270,25 L320,28 L360,40 L385,60 L390,85 L380,110 L350,130 L310,145 L260,155 L200,150 L150,145 L110,135 L80,115 L75,95Z",
-// Mexico City - Autodromo Hermanos Rodriguez
-"Mexico City GP":"M110,60 L170,32 L240,25 L310,28 L355,45 L375,70 L380,100 L365,125 L330,142 L280,152 L220,155 L160,148 L110,130 L85,105 L80,80Z",
-// Interlagos - short anti-clockwise
-"S\u00e3o Paulo GP":"M140,65 L190,35 L260,25 L330,30 L365,55 L375,85 L360,115 L320,135 L270,150 L210,155 L150,145 L110,125 L85,100 L90,75 L110,65Z",
-// Las Vegas Strip - long straight
-"Las Vegas GP":"M70,80 L75,45 L100,28 L170,25 L260,25 L340,28 L385,45 L395,70 L390,100 L370,120 L330,135 L270,145 L200,150 L130,148 L85,135 L65,110Z",
-// Lusail - flowing modern circuit
-"Qatar GP":"M100,65 L130,38 L185,25 L250,28 L320,25 L360,40 L380,65 L385,90 L370,115 L340,135 L290,148 L230,155 L170,150 L120,138 L85,115 L80,90Z",
-// Yas Marina - distinctive shape
-"Abu Dhabi GP":"M110,65 L150,35 L210,25 L280,28 L340,35 L370,55 L385,80 L380,105 L360,125 L320,140 L270,150 L220,155 L165,150 L120,140 L90,120 L80,95Z"
-};
-// DRS ZONES - [start%, end%] along the track path
-var DRS={
-"Australian GP":[[0.0,0.08],[0.45,0.55]],
-"Chinese GP":[[0.0,0.1],[0.5,0.62]],
-"Japanese GP":[[0.0,0.09],[0.6,0.7]],
-"Bahrain GP":[[0.0,0.1],[0.35,0.45],[0.7,0.8]],
-"Saudi Arabian GP":[[0.0,0.12],[0.4,0.52],[0.7,0.8]],
-"Miami GP":[[0.0,0.1],[0.5,0.6]],
-"Emilia Romagna GP":[[0.0,0.1],[0.55,0.65]],
-"Monaco GP":[[0.0,0.08]],
-"Spanish GP":[[0.0,0.1],[0.55,0.65]],
-"Canadian GP":[[0.0,0.1],[0.5,0.6]],
-"Austrian GP":[[0.0,0.1],[0.5,0.6]],
-"British GP":[[0.0,0.1],[0.45,0.55]],
-"Belgian GP":[[0.0,0.12],[0.55,0.65]],
-"Hungarian GP":[[0.0,0.1]],
-"Dutch GP":[[0.0,0.1]],
-"Italian GP":[[0.0,0.12],[0.4,0.52]],
-"Azerbaijan GP":[[0.0,0.14],[0.45,0.58]],
-"Singapore GP":[[0.0,0.1],[0.55,0.65]],
-"United States GP":[[0.0,0.1],[0.55,0.65]],
-"Mexico City GP":[[0.0,0.1],[0.5,0.6]],
-"S\u00e3o Paulo GP":[[0.0,0.1],[0.55,0.65]],
-"Las Vegas GP":[[0.0,0.14],[0.5,0.62]],
-"Qatar GP":[[0.0,0.1],[0.5,0.6]],
-"Abu Dhabi GP":[[0.0,0.1],[0.5,0.6]]
-};
+var TRACKS={"Australian GP":"M200,25 L260,28 L310,40 L340,65 L355,95 L350,120 L330,140 L290,150 L250,148 L220,155 L180,150 L140,135 L110,145 L80,140 L60,120 L55,95 L65,65 L90,45 L120,35 L155,28Z","Chinese GP":"M70,85 L70,50 L90,35 L130,28 L200,25 L280,25 L340,30 L370,50 L380,75 L370,95 L340,100 L310,95 L280,105 L310,120 L340,130 L370,140 L360,155 L320,160 L250,155 L180,150 L120,145 L80,130 L65,110Z","Japanese GP":"M100,80 L120,55 L155,35 L200,25 L250,30 L290,45 L310,35 L340,30 L370,40 L380,65 L370,90 L340,100 L310,95 L280,105 L260,120 L220,110 L190,120 L160,140 L120,155 L85,150 L65,130 L60,105Z","Bahrain GP":"M150,30 L200,25 L260,28 L300,40 L330,30 L360,40 L370,65 L360,90 L370,110 L360,135 L330,150 L280,155 L240,145 L200,150 L160,145 L120,135 L90,115 L80,90 L90,65 L110,45Z","Saudi Arabian GP":"M60,80 L65,50 L80,30 L120,25 L170,28 L220,25 L270,28 L320,25 L360,30 L385,50 L390,75 L380,95 L360,105 L330,100 L300,108 L270,100 L240,110 L200,115 L160,120 L120,130 L90,145 L70,135 L60,110Z","Miami GP":"M100,40 L180,30 L270,28 L340,35 L370,55 L375,85 L360,110 L320,130 L270,145 L220,150 L160,148 L120,155 L85,140 L70,115 L65,85 L75,60Z","Emilia Romagna GP":"M80,90 L90,60 L120,40 L165,30 L220,28 L280,35 L330,50 L360,75 L370,100 L355,125 L320,140 L270,150 L220,148 L170,140 L130,150 L100,145 L75,125Z","Monaco GP":"M120,50 L180,30 L240,28 L300,35 L340,55 L350,80 L335,105 L300,120 L260,130 L230,145 L190,150 L150,140 L130,150 L100,140 L85,115 L90,85 L105,65Z","Spanish GP":"M100,70 L110,45 L140,30 L190,25 L250,28 L310,25 L350,35 L375,55 L380,80 L370,105 L345,125 L310,140 L260,150 L200,148 L150,140 L110,130 L80,110 L75,90Z","Canadian GP":"M60,80 L70,45 L100,28 L160,25 L230,30 L300,25 L350,30 L385,50 L390,80 L380,105 L350,110 L310,100 L270,110 L230,120 L190,135 L150,145 L110,150 L80,140 L65,115Z","Austrian GP":"M120,55 L180,30 L260,25 L330,35 L365,60 L370,90 L350,120 L300,145 L230,155 L160,150 L110,130 L85,100 L90,75Z","British GP":"M130,65 L160,40 L200,28 L250,25 L300,30 L340,28 L370,40 L385,65 L375,90 L350,105 L320,95 L290,110 L260,130 L220,145 L170,155 L120,150 L90,130 L75,105 L80,80 L100,70Z","Belgian GP":"M80,100 L85,65 L100,40 L140,25 L200,28 L260,25 L310,30 L350,45 L380,65 L390,90 L380,110 L350,120 L320,110 L290,120 L260,140 L220,155 L170,155 L130,145 L100,135 L75,120Z","Hungarian GP":"M120,55 L170,30 L240,25 L310,30 L350,50 L370,75 L365,105 L340,130 L300,145 L250,155 L190,150 L140,140 L100,120 L80,95 L85,70Z","Dutch GP":"M110,60 L160,35 L230,25 L300,30 L350,45 L375,70 L370,100 L345,125 L300,145 L240,155 L170,150 L120,135 L85,110 L80,80Z","Italian GP":"M100,80 L110,50 L140,30 L200,25 L270,25 L330,30 L365,50 L380,75 L375,100 L355,120 L310,135 L260,142 L240,155 L200,150 L160,142 L130,150 L100,140 L80,115Z","Azerbaijan GP":"M60,85 L65,50 L80,30 L130,25 L200,28 L280,25 L350,28 L390,45 L395,75 L385,100 L360,110 L320,105 L280,115 L230,125 L180,135 L130,145 L90,150 L70,135 L60,110Z","Singapore GP":"M100,50 L160,30 L230,25 L300,30 L350,45 L370,70 L375,100 L360,125 L330,140 L280,150 L220,155 L160,150 L120,155 L90,140 L75,115 L80,85 L90,65Z","United States GP":"M90,75 L100,45 L130,28 L180,25 L230,30 L270,25 L320,28 L360,40 L385,60 L390,85 L380,110 L350,130 L310,145 L260,155 L200,150 L150,145 L110,135 L80,115 L75,95Z","Mexico City GP":"M110,60 L170,32 L240,25 L310,28 L355,45 L375,70 L380,100 L365,125 L330,142 L280,152 L220,155 L160,148 L110,130 L85,105 L80,80Z","S\u00e3o Paulo GP":"M140,65 L190,35 L260,25 L330,30 L365,55 L375,85 L360,115 L320,135 L270,150 L210,155 L150,145 L110,125 L85,100 L90,75 L110,65Z","Las Vegas GP":"M70,80 L75,45 L100,28 L170,25 L260,25 L340,28 L385,45 L395,70 L390,100 L370,120 L330,135 L270,145 L200,150 L130,148 L85,135 L65,110Z","Qatar GP":"M100,65 L130,38 L185,25 L250,28 L320,25 L360,40 L380,65 L385,90 L370,115 L340,135 L290,148 L230,155 L170,150 L120,138 L85,115 L80,90Z","Abu Dhabi GP":"M110,65 L150,35 L210,25 L280,28 L340,35 L370,55 L385,80 L380,105 L360,125 L320,140 L270,150 L220,155 L165,150 L120,140 L90,120 L80,95Z"};
+var DRS={"Australian GP":[[0.0,0.08],[0.45,0.55]],"Chinese GP":[[0.0,0.1],[0.5,0.62]],"Japanese GP":[[0.0,0.09],[0.6,0.7]],"Bahrain GP":[[0.0,0.1],[0.35,0.45],[0.7,0.8]],"Saudi Arabian GP":[[0.0,0.12],[0.4,0.52],[0.7,0.8]],"Miami GP":[[0.0,0.1],[0.5,0.6]],"Emilia Romagna GP":[[0.0,0.1],[0.55,0.65]],"Monaco GP":[[0.0,0.08]],"Spanish GP":[[0.0,0.1],[0.55,0.65]],"Canadian GP":[[0.0,0.1],[0.5,0.6]],"Austrian GP":[[0.0,0.1],[0.5,0.6]],"British GP":[[0.0,0.1],[0.45,0.55]],"Belgian GP":[[0.0,0.12],[0.55,0.65]],"Hungarian GP":[[0.0,0.1]],"Dutch GP":[[0.0,0.1]],"Italian GP":[[0.0,0.12],[0.4,0.52]],"Azerbaijan GP":[[0.0,0.14],[0.45,0.58]],"Singapore GP":[[0.0,0.1],[0.55,0.65]],"United States GP":[[0.0,0.1],[0.55,0.65]],"Mexico City GP":[[0.0,0.1],[0.5,0.6]],"S\u00e3o Paulo GP":[[0.0,0.1],[0.55,0.65]],"Las Vegas GP":[[0.0,0.14],[0.5,0.62]],"Qatar GP":[[0.0,0.1],[0.5,0.6]],"Abu Dhabi GP":[[0.0,0.1],[0.5,0.6]]};
 
 function drawTrack(grid){var tv=document.getElementById('trackView');if(!tv)return;
 var race=RACES[game.currentRace];var pathD=TRACKS[race.name]||TRACKS["Australian GP"];
-// Parse the path to extract points for placing driver dots
 var pts=[];var re=/(\d+\.?\d*),(\d+\.?\d*)/g;var m;while((m=re.exec(pathD))!==null)pts.push({x:parseFloat(m[1]),y:parseFloat(m[2])});
 var svg='<svg class="track-svg" viewBox="0 0 440 180">';
-// Track surface
 svg+='<path d="'+pathD+'" fill="none" stroke="#333" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>';
 svg+='<path d="'+pathD+'" fill="none" stroke="#1a1a1a" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/>';
-// Start/finish line
 if(pts.length>0){var sf=pts[0];svg+='<line x1="'+(sf.x-6)+'" y1="'+sf.y+'" x2="'+(sf.x+6)+'" y2="'+sf.y+'" stroke="#fff" stroke-width="2"/>';}
-// Track name
 svg+='<text x="220" y="14" text-anchor="middle" fill="#333" font-size="10" font-family="Barlow Condensed,sans-serif" font-weight="600" letter-spacing="2" text-transform="uppercase">'+race.loc+'</text>';
-// DRS zones - green highlighted sections
 var drsZones=DRS[race.name]||[];
 if(pts.length>1&&drsZones.length>0){var totalL=0;var sgs=[];for(var si=0;si<pts.length;si++){var nxi=pts[(si+1)%pts.length];var dxi=nxi.x-pts[si].x,dyi=nxi.y-pts[si].y;var li=Math.sqrt(dxi*dxi+dyi*dyi);sgs.push({sx:pts[si].x,sy:pts[si].y,dx:dxi,dy:dyi,len:li});totalL+=li}
 function getPtAtFrac(f){var dd=f*totalL;var acc=0;for(var k=0;k<sgs.length;k++){if(acc+sgs[k].len>=dd){var fr=(dd-acc)/sgs[k].len;return{x:sgs[k].sx+sgs[k].dx*fr,y:sgs[k].sy+sgs[k].dy*fr}}acc+=sgs[k].len}return pts[0]}
 for(var dz=0;dz<drsZones.length;dz++){var zone=drsZones[dz];var zPts=[];var steps=12;for(var zs=0;zs<=steps;zs++){var frac=zone[0]+(zone[1]-zone[0])*(zs/steps);zPts.push(getPtAtFrac(frac))}
 var zPath='M'+zPts.map(function(p){return p.x.toFixed(1)+','+p.y.toFixed(1)}).join('L');
 svg+='<path d="'+zPath+'" fill="none" stroke="#00d26a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" class="drs-zone"/>';
-// DRS label
 var mid=getPtAtFrac((zone[0]+zone[1])/2);svg+='<text x="'+mid.x.toFixed(1)+'" y="'+(mid.y-10).toFixed(1)+'" text-anchor="middle" fill="#00d26a" font-size="7" font-family="Barlow Condensed,sans-serif" font-weight="600" letter-spacing="1">DRS</text>'}}
-// Place driver dots along the track path
 if(grid&&pts.length>1){var active=grid.filter(function(g){return!g.dnf}).sort(function(a,b){return a.pos-b.pos});
 var totalLen=0;var segs=[];for(var s=0;s<pts.length;s++){var nx=pts[(s+1)%pts.length];var dx=nx.x-pts[s].x,dy=nx.y-pts[s].y;var len=Math.sqrt(dx*dx+dy*dy);segs.push({sx:pts[s].x,sy:pts[s].y,dx:dx,dy:dy,len:len});totalLen+=len}
-for(var i=0;i<Math.min(22,active.length);i++){var g=active[i];
-// Spread drivers around the track based on position
-var dist=((i/active.length)+0.02)*totalLen;var accum=0;var px=pts[0].x,py=pts[0].y;
-for(var j=0;j<segs.length;j++){if(accum+segs[j].len>=dist){var frac=(dist-accum)/segs[j].len;px=segs[j].sx+segs[j].dx*frac;py=segs[j].sy+segs[j].dy*frac;break}accum+=segs[j].len}
+for(var i=0;i<Math.min(22,active.length);i++){var g=active[i];var dist=((i/active.length)+0.02)*totalLen;var accum=0;var px=pts[0].x,py=pts[0].y;
+for(var j=0;j<segs.length;j++){if(accum+segs[j].len>=dist){var fr=(dist-accum)/segs[j].len;px=segs[j].sx+segs[j].dx*fr;py=segs[j].sy+segs[j].dy*fr;break}accum+=segs[j].len}
 var col=g.isPlayer?'#E10600':g.pos<=3?'#ffd700':'#555';var sz=g.isPlayer?6:3;
 svg+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="'+sz+'" fill="'+col+'"/>';
 if(g.isPlayer)svg+='<text x="'+px.toFixed(1)+'" y="'+(py-9).toFixed(1)+'" text-anchor="middle" fill="#fff" font-size="9" font-family="Orbitron,sans-serif" font-weight="700">P'+g.pos+'</text>'}}
 svg+='</svg>';tv.innerHTML=svg}
 
-// RACE
 function renderRace(){if(!game||game.currentRace>=RACES.length){showSeasonEnd();return}var r=RACES[game.currentRace];document.getElementById('raceTitle').textContent=r.flag+' '+r.name;document.getElementById('preRace').style.display='block';document.getElementById('qualifyingPhase').style.display='none';document.getElementById('preStartRace').style.display='none';document.getElementById('duringRace').style.display='none';document.getElementById('postRace').style.display='none';
-var tyres=[{k:'soft',i:'\u{1F534}',l:'Soft',d:'+Speed wears fast'},{k:'medium',i:'\u{1F7E1}',l:'Medium',d:'Balanced'},{k:'hard',i:'\u26AA',l:'Hard',d:'Slow lasts long'}];var tH='';for(var i=0;i<tyres.length;i++){var t=tyres[i];tH+='<div class="strat-btn'+(game.strategy.tyre===t.k?' selected':'')+'" onclick="setStrat(\'tyre\',\''+t.k+'\')"><div class="strat-btn-icon">'+t.i+'</div><div class="strat-btn-label">'+t.l+'</div><div class="strat-btn-desc">'+t.d+'</div></div>'}document.getElementById('tyreOptions').innerHTML=tH;
-var styles=[{k:'conservative',i:'\u{1F6E1}\uFE0F',l:'Safe',d:'Low risk'},{k:'balanced',i:'\u2696\uFE0F',l:'Balanced',d:'Normal'},{k:'aggressive',i:'\u26A1',l:'Attack',d:'High risk'}];var sH='';for(var j=0;j<styles.length;j++){var st=styles[j];sH+='<div class="strat-btn'+(game.strategy.style===st.k?' selected':'')+'" onclick="setStrat(\'style\',\''+st.k+'\')"><div class="strat-btn-icon">'+st.i+'</div><div class="strat-btn-label">'+st.l+'</div><div class="strat-btn-desc">'+st.d+'</div></div>'}document.getElementById('styleOptions').innerHTML=sH}
+var tyres=[{k:'soft',i:'\u{1F534}',l:'Soft',d:'+Speed wears fast'},{k:'medium',i:'\u{1F7E1}',l:'Medium',d:'Balanced'},{k:'hard',i:'\u26AA',l:'Hard',d:'Slow lasts long'}];var tH='';for(var i=0;i<tyres.length;i++){var t=tyres[i];tH+='<div class="strat-btn'+(game.strategy.tyre===t.k?' selected':'')+'\" onclick="setStrat(\'tyre\',\''+t.k+'\')"><div class="strat-btn-icon">'+t.i+'</div><div class="strat-btn-label">'+t.l+'</div><div class="strat-btn-desc">'+t.d+'</div></div>'}document.getElementById('tyreOptions').innerHTML=tH;
+var styles=[{k:'conservative',i:'\u{1F6E1}\uFE0F',l:'Safe',d:'Low risk'},{k:'balanced',i:'\u2696\uFE0F',l:'Balanced',d:'Normal'},{k:'aggressive',i:'\u26A1',l:'Attack',d:'High risk'}];var sH='';for(var j=0;j<styles.length;j++){var st=styles[j];sH+='<div class="strat-btn'+(game.strategy.style===st.k?' selected':'')+'\" onclick="setStrat(\'style\',\''+st.k+'\')"><div class="strat-btn-icon">'+st.i+'</div><div class="strat-btn-label">'+st.l+'</div><div class="strat-btn-desc">'+st.d+'</div></div>'}document.getElementById('styleOptions').innerHTML=sH}
 function setStrat(t,v){game.strategy[t]=v;renderRace()}
 function addLog(t,c){var l=document.getElementById('raceLog');var d=document.createElement('div');d.className='log-entry '+(c||'');d.textContent=t;l.appendChild(d);l.scrollTop=l.scrollHeight}
 function updateHud(){if(!rs)return;var p1=null,p2=null;rs.grid.forEach(function(g){if(g.id===game.drivers[0])p1=g;if(g.id===game.drivers[1])p2=g});
-document.getElementById('raceHud').innerHTML='<div class="hud-box"><div class="hud-label">Lap</div><div class="hud-value">'+rs.lap+'/'+rs.tl+'</div></div><div class="hud-box"><div class="hud-label">'+D[game.drivers[0]].name.split(' ').pop()+'</div><div class="hud-value" style="color:'+(p1.dnf?'var(--red)':'var(--green)')+'">P'+(p1.dnf?'OUT':p1.pos)+'</div></div><div class="hud-box"><div class="hud-label">'+D[game.drivers[1]].name.split(' ').pop()+'</div><div class="hud-value" style="color:'+(p2.dnf?'var(--red)':'var(--green)')+'">P'+(p2.dnf?'OUT':p2.pos)+'</div></div><div class="hud-box"><div class="hud-label">Tyres</div><div class="hud-value">'+(rs.pPit?'Fresh':rs.tS.charAt(0).toUpperCase()+rs.tS.slice(1))+'</div></div>';drawTrack(rs.grid)}
+var d1n=getD(game.drivers[0]),d2n=getD(game.drivers[1]);
+document.getElementById('raceHud').innerHTML='<div class="hud-box"><div class="hud-label">Lap</div><div class="hud-value">'+rs.lap+'/'+rs.tl+'</div></div><div class="hud-box"><div class="hud-label">'+(d1n?d1n.name.split(' ').pop():'D1')+'</div><div class="hud-value" style="color:'+(p1&&p1.dnf?'var(--red)':'var(--green)')+'">'+(p1?'P'+(p1.dnf?'OUT':p1.pos):'?')+'</div></div><div class="hud-box"><div class="hud-label">'+(d2n?d2n.name.split(' ').pop():'D2')+'</div><div class="hud-value" style="color:'+(p2&&p2.dnf?'var(--red)':'var(--green)')+'">'+(p2?'P'+(p2.dnf?'OUT':p2.pos):'?')+'</div></div><div class="hud-box"><div class="hud-label">Tyres</div><div class="hud-value">'+(rs.pPit?'Fresh':rs.tS.charAt(0).toUpperCase()+rs.tS.slice(1))+'</div></div>';drawTrack(rs.grid)}
 
-// QUALIFYING
 var qualiState=null,qualiEngineMode='balanced';
 function startQuali(skip){document.getElementById('preRace').style.display='none';
+if(!game.aiLineups||Object.keys(game.aiLineups).length===0)initAiLineups();
 var pC=(game.car.speed+game.car.aero)/10;var entries=[];
-for(var i=0;i<D.length;i++){var d=D[i],ispl=ip(d.id);var aiCar=game.aiCars&&game.aiCars[d.team]?game.aiCars[d.team]:null;var car=ispl?pC:aiCar?(aiCar.speed+aiCar.aero)/10:TC[d.team];var mb=ispl?((game.morale[d.id]||50)-50)/8:0;entries.push({id:d.id,name:d.name,flag:d.flag,team:ispl?ptl():d.team,isPlayer:ispl,base:d.skill+car+mb,elim:false,bestTime:0,gap:''})}
+// Build entries from aiLineups (all teams)
+var allLin={};
+Object.keys(game.aiLineups).forEach(function(tn){allLin[tn]=game.aiLineups[tn]});
+if(!game.isRealTeam)allLin[game.teamName]=game.drivers;
+Object.keys(allLin).forEach(function(tn){
+  (allLin[tn]||[]).forEach(function(dId){
+    var d=getD(dId);if(!d)return;
+    var ispl=ip(dId);
+    var aiCar=game.aiCars&&game.aiCars[tn]?game.aiCars[tn]:null;
+    var car=ispl?pC:aiCar?(aiCar.speed+aiCar.aero)/10:(TC[tn]||5);
+    var mb=ispl?((game.morale[dId]||50)-50)/8:0;
+    entries.push({id:dId,name:d.name,flag:d.flag,team:ispl?ptl():tn,isPlayer:ispl,base:d.skill+car+mb,elim:false,bestTime:0,gap:''});
+  });
+});
 qualiState={entries:entries,session:1,eliminated:[]};
 if(skip){runQualiSession(1,true);runQualiSession(2,true);runQualiSession(3,true);showPreStart()}else{qualiEngineMode='balanced';showQualiSession()}}
 
 function showQualiSession(){document.getElementById('qualifyingPhase').style.display='block';
 var s=qualiState.session;document.getElementById('qualiSessionLabel').textContent='Q'+s;
-var subs=['All 22 drivers \u2014 bottom 5 eliminated','Top 17 \u2014 bottom 5 eliminated','Top 12 \u2014 pole position shootout'];
-document.getElementById('qualiSubLabel').textContent=subs[s-1];
+var subs=['All '+qualiState.entries.length+' drivers \u2014 bottom 5 eliminated','Top '+(qualiState.entries.length-5)+' \u2014 bottom 5 eliminated','Top '+(qualiState.entries.length-10)+' \u2014 pole position shootout'];
+document.getElementById('qualiSubLabel').textContent=subs[s-1]||subs[2];
 for(var p=1;p<=3;p++){var pip=document.getElementById('qPip'+p);pip.className='quali-pip'+(p<s?' done':p===s?' active':'')}
-// Engine mode choice for player
 var modes=[{k:'low',i:'\u{1F7E2}',l:'Low',d:'Safe, -2 pace'},{k:'balanced',i:'\u{1F7E1}',l:'Standard',d:'Normal pace'},{k:'high',i:'\u{1F534}',l:'Full Send',d:'+3 pace, +wear'}];
 var mH='<div class="quali-choice"><div class="quali-choice-label">Engine Mode for Q'+s+'</div><div class="quali-opts">';
-for(var i=0;i<modes.length;i++){var m=modes[i];mH+='<div class="quali-opt'+(qualiEngineMode===m.k?' selected':'')+'" onclick="setQualiEngine(\''+m.k+'\')"><div class="quali-opt-icon">'+m.i+'</div><div class="quali-opt-label">'+m.l+'</div><div class="quali-opt-desc">'+m.d+'</div></div>'}
+for(var i=0;i<modes.length;i++){var m=modes[i];mH+='<div class="quali-opt'+(qualiEngineMode===m.k?' selected':'')+'\" onclick="setQualiEngine(\''+m.k+'\')"><div class="quali-opt-icon">'+m.i+'</div><div class="quali-opt-label">'+m.l+'</div><div class="quali-opt-desc">'+m.d+'</div></div>'}
 mH+='</div></div>';document.getElementById('qualiEngineChoice').innerHTML=mH;
 document.getElementById('qualiGrid').innerHTML='';
 document.getElementById('qualiBtns').innerHTML='<button class="btn btn-primary" onclick="runQualiSessionAnimated()">SEND THEM OUT</button>'}
-
 function setQualiEngine(m){qualiEngineMode=m;showQualiSession()}
-
 function genTime(base,eng){var perf=base+(Math.random()-.5)*12+eng;var lapBase=78;var time=lapBase+(120-perf)*0.15+(Math.random()-.5)*0.8;return Math.max(70,time)}
 function fmtTime(t){var m=Math.floor(t/60);var s=t-m*60;return m+':'+s.toFixed(3).padStart(6,'0')}
-
 function runQualiSession(sNum,silent){var qs=qualiState;var active=qs.entries.filter(function(e){return!e.elim});
 var engBonus={low:-2,balanced:0,high:3};
 active.forEach(function(e){var eng=e.isPlayer?engBonus[qualiEngineMode]:(Math.random()<.3?3:0);e.bestTime=genTime(e.base,eng)});
 active.sort(function(a,b){return a.bestTime-b.bestTime});
 var fastest=active[0].bestTime;active.forEach(function(e,i){e.gap=i===0?'':'+'+((e.bestTime-fastest)).toFixed(3)});
-// Eliminate bottom 5 in Q1/Q2
 if(sNum<3){var cutoff=active.length-5;for(var i=cutoff;i<active.length;i++){active[i].elim=true;qs.eliminated.push(active[i].id)}}
 qs.session=sNum+1}
-
 function runQualiSessionAnimated(){var qs=qualiState;var sNum=qs.session;var active=qs.entries.filter(function(e){return!e.elim});
 var engBonus={low:-2,balanced:0,high:3};
 active.forEach(function(e){var eng=e.isPlayer?engBonus[qualiEngineMode]:(Math.random()<.3?3:0);e.bestTime=genTime(e.base,eng)});
 active.sort(function(a,b){return a.bestTime-b.bestTime});
 var fastest=active[0].bestTime;active.forEach(function(e,i){e.gap=i===0?'':'+'+((e.bestTime-fastest)).toFixed(3)});
 document.getElementById('qualiEngineChoice').innerHTML='';document.getElementById('qualiBtns').innerHTML='';
-// Animate results appearing
 var gridEl=document.getElementById('qualiGrid');gridEl.innerHTML='';var idx=0;
 var iv=setInterval(function(){if(idx>=active.length){clearInterval(iv);
-// Eliminate bottom 5 in Q1/Q2
 if(sNum<3){var cutoff=active.length-5;for(var i=cutoff;i<active.length;i++){active[i].elim=true;qs.eliminated.push(active[i].id)}
-// Mark eliminated rows
 var rows=gridEl.querySelectorAll('.quali-row');for(var j=cutoff;j<rows.length;j++)rows[j].classList.add('elim')}
 qs.session=sNum+1;
 setTimeout(function(){if(sNum<3){document.getElementById('qualiBtns').innerHTML='<button class="btn btn-primary" onclick="showQualiSession()">NEXT: Q'+(sNum+1)+'</button>'}else{document.getElementById('qualiBtns').innerHTML='<button class="btn btn-primary" onclick="showPreStart()">VIEW STARTING GRID</button>'}},500);return}
 var e=active[idx];var isElimZone=sNum<3&&idx>=active.length-5;
-gridEl.innerHTML+='<div class="quali-row'+(e.isPlayer?' player':'')+(isElimZone?' elim':'')+'"><div class="quali-pos">'+(idx+1)+'</div><div class="quali-name">'+e.flag+' '+e.name+'</div><div class="quali-time">'+fmtTime(e.bestTime)+'</div><div class="quali-gap">'+e.gap+'</div>'+(isElimZone?'<div class="quali-elim-tag">OUT</div>':'')+'</div>';
+gridEl.innerHTML+='<div class="quali-row'+(e.isPlayer?' player':'')+(isElimZone?' elim':'')+'""><div class="quali-pos">'+(idx+1)+'</div><div class="quali-name">'+e.flag+' '+e.name+'</div><div class="quali-time">'+fmtTime(e.bestTime)+'</div><div class="quali-gap">'+e.gap+'</div>'+(isElimZone?'<div class="quali-elim-tag">OUT</div>':'')+'</div>';
 idx++},120)}
-
 function showPreStart(){document.getElementById('qualifyingPhase').style.display='none';document.getElementById('preStartRace').style.display='block';
-// Build final grid from qualifying
 var qs=qualiState;var sorted=qs.entries.slice().sort(function(a,b){if(a.elim&&!b.elim)return 1;if(!a.elim&&b.elim)return-1;return a.bestTime-b.bestTime});
-var h='';for(var i=0;i<sorted.length;i++){var e=sorted[i];h+='<div class="result-row'+(e.isPlayer?' player':'')+'"><div class="result-pos'+(i===0?' gold':i===1?' silver':i===2?' bronze':'')+'">'+(i+1)+'</div><div style="flex:1"><div class="result-name">'+e.flag+' '+e.name+'</div><div class="result-team">'+e.team+'</div></div><div class="quali-time">'+fmtTime(e.bestTime)+'</div></div>'}
+var h='';for(var i=0;i<sorted.length;i++){var e=sorted[i];h+='<div class="result-row'+(e.isPlayer?' player':'')+'"><div class="result-pos'+(i===0?' gold':i===1?' silver':i===2?' bronze':'')+'\">'+(i+1)+'</div><div style="flex:1"><div class="result-name">'+e.flag+' '+e.name+'</div><div class="result-team">'+e.team+'</div></div><div class="quali-time">'+fmtTime(e.bestTime)+'</div></div>'}
 document.getElementById('startingGridDisplay').innerHTML=h}
 
 function startRaceSim(skip){skipMode=skip;document.getElementById('preRace').style.display='none';document.getElementById('preStartRace').style.display='none';document.getElementById('qualifyingPhase').style.display='none';document.getElementById('duringRace').style.display='block';
 var race=RACES[game.currentRace],tl=race.laps;var tB={soft:6,medium:3,hard:0},sB={conservative:-2,balanced:2,aggressive:6},sDNF={conservative:.02,balanced:.05,aggressive:.12};
 var pC=(game.car.speed+game.car.aero)/10;var grid=[];
-for(var i=0;i<D.length;i++){var d=D[i],ispl=ip(d.id);var aiCar=game.aiCars&&game.aiCars[d.team]?game.aiCars[d.team]:null;var car=ispl?pC:aiCar?(aiCar.speed+aiCar.aero)/10:TC[d.team];var mb=ispl?((game.morale[d.id]||50)-50)/8:0;grid.push({id:d.id,name:d.name,flag:d.flag,team:ispl?ptl():d.team,isPlayer:ispl,base:d.skill+car+mb,tyreWear:0,pitted:false,dnf:false,pos:0,rP:0})}
-// Use qualifying order if available, else random
-if(qualiState){var qSorted=qualiState.entries.slice().sort(function(a,b){if(a.elim&&!b.elim)return 1;if(!a.elim&&b.elim)return-1;return a.bestTime-b.bestTime});var qOrder={};qSorted.forEach(function(e,i){qOrder[e.id]=i+1});grid.forEach(function(g){g.pos=qOrder[g.id]||22;g.rP=g.base});grid.sort(function(a,b){return a.pos-b.pos})}else{grid.forEach(function(g){g.qP=g.base+(Math.random()-.5)*16});grid.sort(function(a,b){return b.qP-a.qP});grid.forEach(function(g,i){g.pos=i+1;g.rP=g.base})};
+// Build grid from aiLineups
+var allLin={};
+Object.keys(game.aiLineups).forEach(function(tn){allLin[tn]=game.aiLineups[tn]});
+if(!game.isRealTeam)allLin[game.teamName]=game.drivers;
+Object.keys(allLin).forEach(function(tn){
+  (allLin[tn]||[]).forEach(function(dId){
+    var d=getD(dId);if(!d)return;
+    var ispl=ip(dId);
+    var aiCar=game.aiCars&&game.aiCars[tn]?game.aiCars[tn]:null;
+    var car=ispl?pC:aiCar?(aiCar.speed+aiCar.aero)/10:(TC[tn]||5);
+    var mb=ispl?((game.morale[dId]||50)-50)/8:0;
+    grid.push({id:dId,name:d.name,flag:d.flag,team:ispl?ptl():tn,isPlayer:ispl,base:d.skill+car+mb,tyreWear:0,pitted:false,dnf:false,pos:0,rP:0});
+  });
+});
+if(qualiState){var qSorted=qualiState.entries.slice().sort(function(a,b){if(a.elim&&!b.elim)return 1;if(!a.elim&&b.elim)return-1;return a.bestTime-b.bestTime});var qOrder={};qSorted.forEach(function(e,i){qOrder[e.id]=i+1});grid.forEach(function(g){g.pos=qOrder[g.id]||grid.length;g.rP=g.base});grid.sort(function(a,b){return a.pos-b.pos})}
+else{grid.forEach(function(g){g.qP=g.base+(Math.random()-.5)*16});grid.sort(function(a,b){return b.qP-a.qP});grid.forEach(function(g,i){g.pos=i+1;g.rP=g.base})};
 rs={grid:grid,lap:0,tl:tl,pitW:Math.floor(tl*.4)+Math.floor(Math.random()*10),scLap:Math.random()<.3?Math.floor(tl*.3)+Math.floor(Math.random()*Math.floor(tl*.3)):-1,weather:Math.random()<.15?'rain':'dry',pPit:false,tS:game.strategy.tyre,sS:game.strategy.style,tB:tB,sB:sB,sDNF:sDNF,race:race,sc:false,aPit:false,aPush:false,aW:false};
 document.getElementById('raceLog').innerHTML='';document.getElementById('raceDecisions').innerHTML='';addLog('\u{1F3C1} '+race.name.toUpperCase()+' \u2014 '+tl+' LAPS','highlight');
 var p1p=0,p2p=0;grid.forEach(function(g){if(g.id===game.drivers[0])p1p=g.pos;if(g.id===game.drivers[1])p2p=g.pos});
-addLog(D[game.drivers[0]].name+' starts P'+p1p+', '+D[game.drivers[1]].name+' starts P'+p2p,'green');
+var dn1=getD(game.drivers[0]),dn2=getD(game.drivers[1]);
+addLog((dn1?dn1.name:'')+' starts P'+p1p+', '+(dn2?dn2.name:'')+' starts P'+p2p,'green');
 if(rs.weather==='rain')addLog('\u{1F327}\uFE0F Rain!','yellow');else addLog('\u2600\uFE0F '+race.loc,'dim');addLog('Lights out!','');updateHud();
 if(skipMode){while(rs.lap<rs.tl)simLap(true);finishRace()}else setTimeout(function(){advLap()},800)}
 
 function simLap(silent){if(!rs)return;rs.lap++;var twR={soft:.018,medium:.01,hard:.005};
 var raceName=rs.race.name;var nDRS=(DRS[raceName]||[]).length;
 rs.grid.forEach(function(g){if(!g.dnf){var tw=g.isPlayer?twR[rs.tS]:twR['medium'];if(g.pitted)tw*=.5;g.tyreWear+=tw;var strat=g.isPlayer?(rs.tB[rs.tS]+rs.sB[rs.sS]):(Math.random()*8);var luck=(Math.random()-.5)*16;g.rP=g.base+strat+luck-g.tyreWear*12+(rs.weather==='rain'?(Math.random()-.5)*10:0)+(g.pitted?3:0)}});
-// DRS boost: drivers close behind (pos 2+) get a boost per DRS zone, simulating overtake chances
-if(nDRS>0){var sorted=rs.grid.filter(function(g){return!g.dnf}).sort(function(a,b){return b.rP-a.rP});
-for(var di=1;di<sorted.length;di++){var gap=sorted[di-1].rP-sorted[di].rP;if(gap<4){sorted[di].rP+=nDRS*0.5*(Math.random()*0.8+0.2)}}}
+if(nDRS>0){var sorted=rs.grid.filter(function(g){return!g.dnf}).sort(function(a,b){return b.rP-a.rP});for(var di=1;di<sorted.length;di++){var gap=sorted[di-1].rP-sorted[di].rP;if(gap<4){sorted[di].rP+=nDRS*0.5*(Math.random()*0.8+0.2)}}}
 rs.grid.forEach(function(g){if(!g.dnf){var dc=g.isPlayer?(1-game.car.reliability/100)*.003+rs.sDNF[rs.sS]*.005:.002;if(Math.random()<dc){g.dnf=true;if(!silent)addLog('\u{1F4A5} '+g.name+' retires!','highlight')}}});
 var act=rs.grid.filter(function(g){return!g.dnf});act.sort(function(a,b){return b.rP-a.rP});act.forEach(function(g,i){g.pos=i+1});
-// Auto pit AI around pit window
 rs.grid.forEach(function(g){if(!g.isPlayer&&!g.pitted&&!g.dnf&&rs.lap>=rs.pitW-2+Math.floor(Math.random()*5)){g.pitted=true;g.tyreWear*=.2}});
 if(rs.lap>=rs.scLap&&rs.scLap>0&&!rs.sc){rs.sc=true;if(!silent)addLog('\u{1F7E1} SAFETY CAR!','yellow')}
-// Auto decisions in skip mode
 if(skipMode){if(!rs.pPit&&rs.lap>=rs.pitW){rs.pPit=true;rs.grid.forEach(function(g){if(g.isPlayer){g.pitted=true;g.tyreWear*=.2;g.rP-=(100-game.car.pitstops)/100*3}})}}}
-
 function advLap(){if(!rs||rs.lap>=rs.tl)return;
-// Save previous positions for player drivers
 var prevPos={};rs.grid.forEach(function(g){if(g.isPlayer)prevPos[g.id]=g.pos});
 simLap(false);
 var p1=null,p2=null;rs.grid.forEach(function(g){if(g.id===game.drivers[0])p1=g;if(g.id===game.drivers[1])p2=g});
-// DRS overtake messages
 var nDRS=(DRS[rs.race.name]||[]).length;
 rs.grid.forEach(function(g){if(g.isPlayer&&!g.dnf&&prevPos[g.id]&&g.pos<prevPos[g.id]){if(nDRS>0&&Math.random()<0.5)addLog('\u{1F7E2} '+g.name+' uses DRS to pass! Now P'+g.pos,'green');else addLog(g.name+' overtakes! P'+g.pos,'green')}});
-if(rs.lap%3===0||rs.lap>=rs.tl-2)addLog('Lap '+rs.lap+' \u2014 '+p1.name+' P'+(p1.dnf?'OUT':p1.pos),'');
+if(p1&&(rs.lap%3===0||rs.lap>=rs.tl-2))addLog('Lap '+rs.lap+' \u2014 '+(p1.name)+' P'+(p1.dnf?'OUT':p1.pos),'');
 updateHud();
-// Decisions
 if(!rs.pPit&&rs.lap>=rs.pitW&&!rs.aPit){rs.aPit=true;showDec('PIT STOP','Box now?',[{label:'BOX',desc:'Fresh tyres',action:function(){rs.pPit=true;rs.grid.forEach(function(g){if(g.isPlayer){g.pitted=true;g.tyreWear*=.2;g.rP-=(100-game.car.pitstops)/100*3}});addLog('\u{1F527} Pitting!',game.car.pitstops>60?'green':'yellow');updateHud();setTimeout(function(){advLap()},400)}},{label:'STAY',desc:'Push on',action:function(){addLog('Staying out...','dim');setTimeout(function(){advLap()},300)}},{label:'SPLIT',desc:'Pit #1 only',action:function(){rs.pPit=true;rs.grid.forEach(function(g){if(g.id===game.drivers[0]){g.pitted=true;g.tyreWear*=.2}});addLog('\u{1F527} Split!','yellow');updateHud();setTimeout(function(){advLap()},400)}}]);return}
 if(rs.lap>=Math.floor(rs.tl*.65)&&!rs.aPush){rs.aPush=true;showDec('ORDERS','Final stint?',[{label:'PUSH',desc:'+Speed +Risk',action:function(){rs.grid.forEach(function(g){if(g.isPlayer){g.rP+=5;if(Math.random()<.15)g.rP-=12}});addLog('\u26A1 Attack!','green');setTimeout(function(){advLap()},300)}},{label:'HOLD',desc:'Protect',action:function(){addLog('Holding...','dim');setTimeout(function(){advLap()},300)}},{label:'MANAGE',desc:'Save car',action:function(){rs.grid.forEach(function(g){if(g.isPlayer)g.rP+=1});addLog('\u{1F6E1}\uFE0F Managing','');setTimeout(function(){advLap()},300)}}]);return}
 if(rs.weather==='dry'&&rs.lap>=Math.floor(rs.tl*.45)&&!rs.aW&&Math.random()<.02){rs.aW=true;rs.weather='rain';addLog('\u{1F327}\uFE0F Rain!','yellow');showDec('RAIN!','Pit for wets?',[{label:'WETS',desc:'Pit now',action:function(){rs.grid.forEach(function(g){if(g.isPlayer){g.pitted=true;g.rP+=4;g.tyreWear*=.3}});addLog('\u{1F527} Wets!','green');updateHud();setTimeout(function(){advLap()},400)}},{label:'GAMBLE',desc:'Stay on slicks',action:function(){addLog('Gambling...','yellow');setTimeout(function(){advLap()},300)}}]);return}
 if(rs.lap>=rs.tl){finishRace();return}
 setTimeout(function(){advLap()},250)}
-
 function skipRace(){if(!rs)return;skipMode=true;document.getElementById('raceDecisions').innerHTML='';while(rs.lap<rs.tl)simLap(true);finishRace()}
-
 function showDec(t,d,opts){var h='<div class="race-decision"><div class="decision-title">'+t+'</div><div class="decision-desc">'+d+'</div><div class="decision-btns">';for(var i=0;i<opts.length;i++)h+='<div class="decision-btn" id="db'+i+'"><div class="db-label">'+opts[i].label+'</div><div class="db-desc">'+opts[i].desc+'</div></div>';h+='</div></div>';document.getElementById('raceDecisions').innerHTML=h;for(var j=0;j<opts.length;j++)(function(x){document.getElementById('db'+x).onclick=function(){document.getElementById('raceDecisions').innerHTML='';opts[x].action()}})(j)}
-
 function finishRace(){if(!skipMode){addLog('\u{1F3C1} CHEQUERED FLAG!','highlight');var w=null;rs.grid.forEach(function(g){if(g.pos===1&&!g.dnf)w=g});if(w)addLog(w.flag+' '+w.name+' wins!','green');updateHud()}setTimeout(function(){showResults()},skipMode?0:800)}
-
 function showResults(){document.getElementById('duringRace').style.display='none';document.getElementById('postRace').style.display='block';
 var order=rs.grid.slice().sort(function(a,b){if(a.dnf&&!b.dnf)return 1;if(!a.dnf&&b.dnf)return-1;return a.pos-b.pos});var h='',mH='';
 for(var i=0;i<order.length;i++){var e=order[i],pts=(!e.dnf&&i<10)?PTS[i]:0;var pc=i===0?' gold':i===1?' silver':i===2?' bronze':'';
@@ -520,11 +574,45 @@ if(e.isPlayer){var mC=0;if(e.dnf)mC=-18;else if(i<3)mC=8;else if(i<6)mC=3;else i
 var arr=mC>0?'\u2191':mC<0?'\u2193':'\u2192';var col=mC>0?'var(--green)':mC<0?'var(--red)':'var(--text-dim)';mH+='<div class="card" style="padding:10px"><div style="display:flex;justify-content:space-between"><span>'+e.flag+' '+e.name+'</span><span style="color:'+col+';font-weight:600">'+arr+(mC>0?'+':'')+mC+'</span></div></div>'}}
 document.getElementById('raceResults').innerHTML=h;document.getElementById('moraleChanges').innerHTML=mH;game.raceHistory.push({r:game.currentRace})}
 
-function afterRace(){game.currentRace++;var prize=3+Math.floor(Math.random()*6);game.budget+=prize;aiDevelop();rs=null;qualiState=null;skipMode=false;sv();if(game.currentRace>=RACES.length)showSeasonEnd();else{showScreen('hq');document.querySelectorAll('.nav-btn')[0].classList.add('active')}}
+function afterRace(){
+  game.currentRace++;
+  var prize=3+Math.floor(Math.random()*6);game.budget+=prize;
+  aiDevelop();
+  // Develop academy drivers each race
+  if(game.academy&&game.academy.length>0){
+    game.academy.forEach(function(a){
+      if(a.skill<a.potential){
+        a.skill=Math.min(a.potential,a.skill+1+(Math.random()<0.4?1:0));
+        // Sync back to JR pool
+        var jr=JR.find(function(j){return j.id===a.id});
+        if(jr)jr.skill=a.skill;
+      }
+    });
+  }
+  rs=null;qualiState=null;skipMode=false;sv();
+  if(game.currentRace>=RACES.length)showSeasonEnd();
+  else{showScreen('hq');document.querySelectorAll('.nav-btn')[0].classList.add('active')}}
 
-function showSeasonEnd(){document.getElementById('navBar').style.display='none';showScreen('seasonEnd');var sorted=Object.entries(game.driverPoints).sort(function(a,b){return b[1]-a[1]});var cid=parseInt(sorted[0][0]),ch=D[cid],isPC=ip(cid);
-document.getElementById('seasonEndTitle').textContent=isPC?ch.name+' is WORLD CHAMPION!':ch.name+' wins the title';document.getElementById('seasonEndSub').textContent=isPC?'Season '+(game.season||1)+' \u2022 '+game.teamName:'Better luck next season, '+game.teamName;
-var h='';for(var i=0;i<Math.min(10,sorted.length);i++){var d=D[sorted[i][0]],ipl=ip(parseInt(sorted[i][0]));h+='<div class="result-row'+(ipl?' player':'')+'"><div class="result-pos'+(i===0?' gold':'')+'">'+( i+1)+'</div><div style="flex:1"><div class="result-name">'+d.flag+' '+d.name+'</div></div><div class="result-pts">'+sorted[i][1]+'</div></div>'}document.getElementById('finalStandings').innerHTML=h}
+function showSeasonEnd(){document.getElementById('navBar').style.display='none';showScreen('seasonEnd');
+var sorted=Object.entries(game.driverPoints).sort(function(a,b){return b[1]-a[1]});
+var cid=parseInt(sorted[0][0]),ch=getD(cid),isPC=ip(cid);
+document.getElementById('seasonEndTitle').textContent=isPC?(ch?ch.name:'Your Driver')+' is WORLD CHAMPION!':(ch?ch.name:'Unknown')+' wins the title';
+document.getElementById('seasonEndSub').textContent=isPC?'Season '+(game.season||1)+' \u2022 '+game.teamName:'Better luck next season, '+game.teamName;
+var h='';for(var i=0;i<Math.min(10,sorted.length);i++){var d=getD(sorted[i][0]),ipl=ip(parseInt(sorted[i][0]));if(!d)continue;h+='<div class="result-row'+(ipl?' player':'')+'"><div class="result-pos'+(i===0?' gold':'')+'\">'+(i+1)+'</div><div style="flex:1"><div class="result-name">'+d.flag+' '+d.name+'</div></div><div class="result-pts">'+sorted[i][1]+'</div></div>'}
+document.getElementById('finalStandings').innerHTML=h;
+// Show transfer news from THIS season end (will be populated by nextSeason call)
+var tns=document.getElementById('transferNewsSect');
+if(game.transferNews&&game.transferNews.length>0){
+  var th='<div class="card-header">\u{1F4F0} Last Transfer Window</div><div class="xfer-card">';
+  game.transferNews.forEach(function(item){
+    var badge='',label='';
+    if(item.type==='promote'){badge='<span class="xfer-badge promote">'+item.from+' \u2192 F1</span>';label=item.name+' signs for '+item.team;}
+    else if(item.type==='sign'){badge='<span class="xfer-badge sign">SIGNED</span>';label=item.name+' joins '+item.team;}
+    else{badge='<span class="xfer-badge release">RELEASED</span>';label=item.name+' leaves '+item.team;}
+    th+='<div class="xfer-item">'+badge+' '+label+'</div>';
+  });
+  th+='</div>';tns.innerHTML=th;
+}else{tns.innerHTML='<div style="text-align:center;padding:8px;font-size:13px;color:var(--text-dim)">\u{1F4C4} Transfer window opens after season</div>'}}
 
 function renderDev(){if(!game)return;fix();var capL=game.costCap-game.capSpent;var cpP=Math.min(100,Math.round(game.capSpent/game.costCap*100)),cpC=cpP>=90?'var(--red)':cpP>=70?'var(--yellow)':'var(--green)';
 document.getElementById('costCapDisplay').innerHTML='<div class="costcap-bar"><div class="costcap-label"><span>Cost Cap</span><span style="color:'+cpC+'">\u00a3'+game.capSpent+'M / \u00a3'+game.costCap+'M</span></div><div class="costcap-track"><div class="costcap-fill" style="width:'+cpP+'%;background:'+cpC+'"></div></div><div class="costcap-info"><span>\u00a3'+capL+'M left</span><span>'+(capL<=0?'\u{1F6A8} CAP':'')+'</span></div></div>';
@@ -535,47 +623,124 @@ h+='<div class="upgrade-card"><div class="upgrade-header"><div><div class="upgra
 document.getElementById('upgradeCards').innerHTML=h}
 function upg(s,c){if(game.budget<c||game.car[s]>=MAX_STAT||(game.costCap-game.capSpent)<c)return;game.budget-=c;game.capSpent+=c;game.car[s]=Math.min(MAX_STAT,game.car[s]+3+Math.floor(Math.random()*5));if(game.isRealTeam&&game.aiCars)game.aiCars[game.teamName]=JSON.parse(JSON.stringify(game.car));sv();renderDev()}
 
-function renderMorale(){if(!game)return;fix();document.getElementById('moraleBudget').textContent='\u00a3'+game.budget+'M';document.getElementById('moraleBudget').className='budget-amount'+(game.budget<=0?' over':'');
-var h='';for(var i=0;i<game.drivers.length;i++){var did=game.drivers[i],d=D[did],m=game.morale[did]||50;var mc=m>=70?'var(--green)':m>=45?'var(--yellow)':'var(--red)';
-var ml=m>=90?'\u{1F929} Ecstatic':m>=70?'\u{1F60A} Happy':m>=55?'\u{1F610} Neutral':m>=35?'\u{1F615} Frustrated':'\u{1F621} Angry';
-var eff=m>=70?'+'+Math.floor((m-50)/8)+' bonus':m>=50?'No effect':Math.floor((m-50)/8)+' penalty';
-var a=game.moraleActs[did]||{t:false,b:false,d:false};
-h+='<div class="morale-card"><div class="morale-driver"><span class="driver-flag">'+d.flag+'</span><span class="morale-name">'+d.name+'</span><span style="font-family:Orbitron,sans-serif;font-size:16px;font-weight:700;color:'+mc+'">'+m+'</span></div><div class="morale-bar"><div class="morale-bar-fill" style="width:'+m+'%;background:'+mc+'"></div></div><div class="morale-text">'+eff+' \u2022 '+ml+'</div><div class="morale-actions">';
-h+='<button class="morale-btn" onclick="mTalk('+did+')"'+(a.t||m>=95?' disabled':'')+'>\u{1F4AC} Talk<br><span style="font-size:10px;color:var(--text-dim)">+1-4</span></button>';
-h+='<button class="morale-btn" onclick="mBonus('+did+')"'+(a.b||game.budget<5||m>=95?' disabled':'')+'>\u{1F4B0} \u00a35M<br><span style="font-size:10px;color:var(--text-dim)">+4-8</span></button>';
-h+='<button class="morale-btn" onclick="mDay('+did+')"'+(a.d||m>=95?' disabled':'')+'>\u{1F3D6}\uFE0F Off<br><span style="font-size:10px;color:var(--text-dim)">+2-5</span></button>';
-h+='</div>';var used=[];if(a.t)used.push('Talk');if(a.b)used.push('Bonus');if(a.d)used.push('Off');
-if(used.length)h+='<div class="morale-cooldown">Used: '+used.join(', ')+'</div>';h+='</div>'}
-document.getElementById('moraleCards').innerHTML=h}
-function mTalk(d){if(!game.moraleActs[d])game.moraleActs[d]={t:false,b:false,d:false};if(game.moraleActs[d].t)return;game.moraleActs[d].t=true;game.morale[d]=Math.min(100,(game.morale[d]||50)+1+Math.floor(Math.random()*4));sv();renderMorale()}
-function mBonus(d){if(game.budget<5)return;if(!game.moraleActs[d])game.moraleActs[d]={t:false,b:false,d:false};if(game.moraleActs[d].b)return;game.moraleActs[d].b=true;game.budget-=5;game.morale[d]=Math.min(100,(game.morale[d]||50)+4+Math.floor(Math.random()*5));sv();renderMorale()}
-function mDay(d){if(!game.moraleActs[d])game.moraleActs[d]={t:false,b:false,d:false};if(game.moraleActs[d].d)return;game.moraleActs[d].d=true;game.morale[d]=Math.min(100,(game.morale[d]||50)+2+Math.floor(Math.random()*4));sv();renderMorale()}
+// DRIVER MANAGEMENT — tab switching
+function showMoraleTab(t,btn){moraleActiveTab=t;document.querySelectorAll('#morale .tab-btn').forEach(function(b){b.classList.remove('active')});if(btn)btn.classList.add('active');renderMorale()}
+function renderMorale(){if(!game)return;fix();if(moraleActiveTab==='academy')renderAcademy();else renderDrivers()}
 
-// CALENDAR
+function renderDrivers(){
+  if(!game)return;
+  var h='<div class="budget-display"><div class="budget-label">Team Budget</div><div class="budget-amount'+(game.budget<=0?' over':'')+'\">\u00a3'+game.budget+'M</div></div>';
+  for(var i=0;i<game.drivers.length;i++){var did=game.drivers[i],d=getD(did),m=game.morale[did]||50;if(!d)continue;var mc=m>=70?'var(--green)':m>=45?'var(--yellow)':'var(--red)';
+  var ml=m>=90?'\u{1F929} Ecstatic':m>=70?'\u{1F60A} Happy':m>=55?'\u{1F610} Neutral':m>=35?'\u{1F615} Frustrated':'\u{1F621} Angry';
+  var eff=m>=70?'+'+ Math.floor((m-50)/8)+' bonus':m>=50?'No effect':Math.floor((m-50)/8)+' penalty';
+  var a=game.moraleActs[did]||{t:false,b:false,d:false};
+  h+='<div class="morale-card"><div class="morale-driver"><span class="driver-flag">'+d.flag+'</span><span class="morale-name">'+d.name+'</span><span style="font-family:Orbitron,sans-serif;font-size:16px;font-weight:700;color:'+mc+'">'+m+'</span></div><div class="morale-bar"><div class="morale-bar-fill" style="width:'+m+'%;background:'+mc+'"></div></div><div class="morale-text">'+eff+' \u2022 '+ml+'</div><div class="morale-actions">';
+  h+='<button class="morale-btn" onclick="mTalk('+did+')"'+(a.t||m>=95?' disabled':'')+'>&#x1F4AC; Talk<br><span style="font-size:10px;color:var(--text-dim)">+1-4</span></button>';
+  h+='<button class="morale-btn" onclick="mBonus('+did+')"'+(a.b||game.budget<5||m>=95?' disabled':'')+'>&#x1F4B0; &pound;5M<br><span style="font-size:10px;color:var(--text-dim)">+4-8</span></button>';
+  h+='<button class="morale-btn" onclick="mDay('+did+')"'+(a.d||m>=95?' disabled':'')+'>&#x1F3D6;&#xFE0F; Off<br><span style="font-size:10px;color:var(--text-dim)">+2-5</span></button>';
+  h+='</div>';var used=[];if(a.t)used.push('Talk');if(a.b)used.push('Bonus');if(a.d)used.push('Off');if(used.length)h+='<div class="morale-cooldown">Used this race: '+used.join(', ')+'</div>';h+='</div>'}
+  document.getElementById('moraleContent').innerHTML=h}
+
+function renderAcademy(){
+  if(!game)return;
+  if(!game.academy)game.academy=[];
+  // Remove promoted drivers from academy
+  game.academy=game.academy.filter(function(a){return!ip(a.id)});
+  var signed=new Set(game.academy.map(function(a){return a.id}));
+  // Also exclude drivers already in F1 grid from aiLineups
+  var inF1=new Set();
+  Object.keys(game.aiLineups||{}).forEach(function(tn){(game.aiLineups[tn]||[]).forEach(function(id){inF1.add(id)})});
+  game.drivers.forEach(function(id){inF1.add(id)});
+
+  var h='<div class="budget-display"><div class="budget-label">Team Budget</div><div class="budget-amount'+(game.budget<=0?' over':'')+'\">\u00a3'+game.budget+'M</div></div>';
+  h+='<div class="card-header">Your Academy ('+game.academy.length+'/2)</div>';
+  if(game.academy.length===0){
+    h+='<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:13px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;margin-bottom:12px">No academy drivers yet.<br>Sign a junior prospect below.</div>';
+  }else{
+    game.academy.forEach(function(a){
+      var progPct=a.potential>a.startSkill?Math.min(100,Math.round(((a.skill-a.startSkill)/(a.potential-a.startSkill))*100)):0;
+      var readyF2=a.level==='f2'&&a.skill>=80;
+      var readyF3=a.level==='f3'&&a.skill>=72;
+      var ready=readyF2||readyF3;
+      h+='<div class="acad-card"><div class="acad-hdr"><span style="font-size:22px">'+a.flag+'</span><div style="flex:1"><div style="font-weight:700;font-size:14px">'+a.name+'</div><div style="font-size:12px;color:var(--text-dim)">Skill: '+a.skill+' &bull; Potential: '+a.potential+'</div></div><span class="acad-badge '+a.level+'">'+a.level.toUpperCase()+'</span></div>';
+      h+='<div class="acad-prog"><div class="acad-prog-fill'+(ready?' ready':'')+'" style="width:'+progPct+'%"></div></div>';
+      h+='<div style="font-size:11px;color:'+(ready?'var(--green)':'var(--text-dim)')+';margin-bottom:10px">'+(ready?'&#x2705; Ready to promote to F1!':'Developing... '+progPct+'% of potential')+'</div>';
+      h+='<div style="display:flex;gap:6px;flex-wrap:wrap">';
+      if(ready){for(var i=0;i<game.drivers.length;i++){var fd=getD(game.drivers[i]);h+='<button onclick="promoteJunior('+a.id+','+i+')" style="flex:1;min-width:100px;padding:8px;background:rgba(0,210,106,.1);border:1px solid var(--green);border-radius:8px;color:var(--green);font-size:11px;font-weight:700;cursor:pointer;text-align:center">&#x2B06; Replace '+(fd?fd.name.split(' ').pop():'Driver '+(i+1))+'</button>'}}
+      h+='<button onclick="releaseJunior('+a.id+')" style="padding:8px 12px;background:none;border:1px solid var(--border);border-radius:8px;color:var(--text-dim);font-size:11px;font-weight:700;cursor:pointer">Release</button>';
+      h+='</div></div>';
+    });
+  }
+  h+='<div class="card-header" style="margin-top:16px">Available Juniors</div>';
+  var available=JR.filter(function(j){return!signed.has(j.id)&&!inF1.has(j.id)});
+  if(available.length===0){h+='<div style="text-align:center;padding:16px;color:var(--text-dim);font-size:13px">No junior drivers currently available.</div>';}
+  else{
+    h+='<div class="junior-grid">';
+    available.forEach(function(j){
+      var canSign=game.academy.length<2&&game.budget>=j.cost;
+      h+='<div class="junior-card"><span style="font-size:22px">'+j.flag+'</span><div style="flex:1"><div style="font-weight:700;font-size:14px">'+j.name+'</div><div style="font-size:12px;color:var(--text-dim)">'+j.team+' &bull; Skill '+j.skill+' &bull; Pot '+j.potential+'</div></div><span class="acad-badge '+j.level+'" style="margin-right:6px">'+j.level.toUpperCase()+'</span><button '+(canSign?'onclick="signJunior('+j.id+')"':'disabled')+' style="flex-shrink:0;padding:8px 10px;background:'+(canSign?'rgba(225,6,0,.1)':'rgba(40,40,40,.8)')+';border:1px solid '+(canSign?'var(--red)':'#333')+';border-radius:8px;color:'+(canSign?'var(--red)':'#555')+';font-size:11px;font-weight:700;cursor:'+(canSign?'pointer':'not-allowed')+';text-align:center">SIGN<br><span style="font-size:9px;font-weight:400">&pound;'+j.cost+'M</span></button></div>';
+    });
+    h+='</div>';
+  }
+  document.getElementById('moraleContent').innerHTML=h;
+}
+
+function signJunior(id){
+  if(!game.academy)game.academy=[];
+  if(game.academy.length>=2){dlg('Full','Academy already has 2 drivers. Release one first.','OK','OK',function(){});return}
+  var j=JR.find(function(x){return x.id===id});
+  if(!j||game.budget<j.cost)return;
+  game.budget-=j.cost;
+  game.academy.push({id:j.id,name:j.name,flag:j.flag,skill:j.skill,startSkill:j.skill,potential:j.potential,level:j.level,cost:j.cost});
+  sv();renderAcademy();
+}
+function releaseJunior(id){
+  if(!game.academy)return;
+  dlg('Release?','Release this driver from your academy?','Release','Cancel',function(){
+    game.academy=game.academy.filter(function(a){return a.id!==id});sv();renderAcademy();
+  });
+}
+function promoteJunior(jId,slot){
+  if(!game.academy)return;
+  var acad=game.academy.find(function(a){return a.id===jId});if(!acad)return;
+  var oldId=game.drivers[slot];var oldD=getD(oldId);
+  dlg('Promote '+acad.name+'?',(oldD?oldD.name:'Your driver')+' will be released as a free agent.','CONFIRM','Cancel',function(){
+    // Ensure promoted driver is in D pool
+    if(!D.find(function(d){return d.id===acad.id})){
+      D.push({id:acad.id,name:acad.name,flag:acad.flag,team:game.teamName,skill:acad.skill,cost:acad.cost||3});
+    }else{
+      var ex=D.find(function(d){return d.id===acad.id});ex.team=game.teamName;ex.skill=acad.skill;
+    }
+    game.morale[acad.id]=65;
+    if(!game.moraleActs)game.moraleActs={};
+    game.moraleActs[acad.id]={t:false,b:false,d:false};
+    game.driverPoints[acad.id]=game.driverPoints[acad.id]||0;
+    game.drivers[slot]=acad.id;
+    if(game.isRealTeam&&game.aiLineups)game.aiLineups[game.teamName]=game.drivers.slice();
+    game.academy=game.academy.filter(function(a){return a.id!==jId});
+    sv();moraleActiveTab='drivers';document.getElementById('mTab0').classList.add('active');document.getElementById('mTab1').classList.remove('active');renderMorale();
+  });
+}
+
+function mTalk(d){if(!game.moraleActs[d])game.moraleActs[d]={t:false,b:false,d:false};if(game.moraleActs[d].t)return;game.moraleActs[d].t=true;game.morale[d]=Math.min(100,(game.morale[d]||50)+1+Math.floor(Math.random()*4));sv();renderDrivers()}
+function mBonus(d){if(game.budget<5)return;if(!game.moraleActs[d])game.moraleActs[d]={t:false,b:false,d:false};if(game.moraleActs[d].b)return;game.moraleActs[d].b=true;game.budget-=5;game.morale[d]=Math.min(100,(game.morale[d]||50)+4+Math.floor(Math.random()*5));sv();renderDrivers()}
+function mDay(d){if(!game.moraleActs[d])game.moraleActs[d]={t:false,b:false,d:false};if(game.moraleActs[d].d)return;game.moraleActs[d].d=true;game.morale[d]=Math.min(100,(game.morale[d]||50)+2+Math.floor(Math.random()*4));sv();renderDrivers()}
+
 function renderCalendar(){if(!game)return;document.getElementById('calTitle').textContent='Season '+(game.season||1)+' Calendar';
 var h='';for(var i=0;i<RACES.length;i++){var r=RACES[i];var done=i<game.currentRace;var next=i===game.currentRace;var cls='cal-race'+(done?' completed':'')+(next?' next':'');
-h+='<div class="'+cls+'">';
-h+='<div class="cal-round">'+(i+1)+'</div>';
-h+='<div class="cal-flag">'+r.flag+'</div>';
-h+='<div class="cal-info"><div class="cal-name">'+r.name+'</div><div class="cal-loc">'+r.loc+' \u2022 '+r.laps+' laps</div></div>';
-if(done){var rh=game.raceHistory[i];var d1pts=0,d2pts=0,d1p='',d2p='';
-// Find player results from stored points changes
-var pd1=game.drivers[0],pd2=game.drivers[1];
-// Show best finishing driver position from history
-h+='<div class="cal-status">\u2705</div>'}
-else if(next){h+='<div class="cal-status" style="color:var(--red)">\u25B6</div>'}
-else{h+='<div class="cal-status">\u23F3</div>'}
-h+='</div>'}
-document.getElementById('calendarList').innerHTML=h}
+h+='<div class="'+cls+'"><div class="cal-round">'+(i+1)+'</div><div class="cal-flag">'+r.flag+'</div><div class="cal-info"><div class="cal-name">'+r.name+'</div><div class="cal-loc">'+r.loc+' \u2022 '+r.laps+' laps</div></div>';
+if(done)h+='<div class="cal-status">\u2705</div>';
+else if(next)h+='<div class="cal-status" style="color:var(--red)">\u25B6</div>';
+else h+='<div class="cal-status">\u23F3</div>';
+h+='</div>'}document.getElementById('calendarList').innerHTML=h}
 
 function showStandingsTab(t,b){document.querySelectorAll('.tab-btn').forEach(function(x){x.classList.remove('active')});if(b)b.classList.add('active');renderStand(t)}
 function renderStand(tab){if(!game)return;var div=document.getElementById('standingsContent'),h='';
-if(tab==='drivers'){var s=Object.entries(game.driverPoints).sort(function(a,b){return b[1]-a[1]});for(var i=0;i<s.length;i++){var d=D[s[i][0]],ipl=ip(parseInt(s[i][0]));h+='<div class="standing-row'+(ipl?' player':'')+'"><div class="standing-pos">'+(i+1)+'</div><div style="flex:1"><div class="standing-name">'+d.flag+' '+d.name+'</div><div class="standing-team-label">'+(ipl?esc(ptl()):d.team)+'</div></div><div class="standing-pts">'+s[i][1]+'</div></div>'}}
-else{var s2=Object.entries(game.constructorPoints).sort(function(a,b){return b[1]-a[1]});for(var j=0;j<s2.length;j++){var ip2=s2[j][0]===ptl();h+='<div class="standing-row'+(ip2?' player':'')+'"><div class="standing-pos">'+(j+1)+'</div><div style="flex:1"><div class="standing-name">'+esc(s2[j][0])+'</div></div><div class="standing-pts">'+s2[j][1]+'</div></div>'}}div.innerHTML=h}
+if(tab==='drivers'){var s=Object.entries(game.driverPoints).sort(function(a,b){return b[1]-a[1]});for(var i=0;i<s.length;i++){var d=getD(parseInt(s[i][0])),ipl=ip(parseInt(s[i][0]));if(!d)continue;h+='<div class="standing-row'+(ipl?' player':'')+'"><div class="standing-pos">'+(i+1)+'</div><div style="flex:1"><div class="standing-name">'+d.flag+' '+d.name+'</div><div class="standing-team-label">'+(ipl?ptl():d.team)+'</div></div><div class="standing-pts">'+s[i][1]+'</div></div>'}}
+else{var s2=Object.entries(game.constructorPoints).sort(function(a,b){return b[1]-a[1]});for(var j=0;j<s2.length;j++){var ip2=s2[j][0]===ptl();h+='<div class="standing-row'+(ip2?' player':'')+'"><div class="standing-pos">'+(j+1)+'</div><div style="flex:1"><div class="standing-name">'+s2[j][0]+'</div></div><div class="standing-pts">'+s2[j][1]+'</div></div>'}}div.innerHTML=h}
 
 (function(){chkSaved()})();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
-
 </script>
 </body>
 </html>
