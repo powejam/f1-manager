@@ -690,6 +690,8 @@ var PARTS=[
   {id:'crew',     area:'pit',    icon:'👥', name:'Crew Training',  desc:'Stop practice & coordination',  stats:[{k:'pitstops',v:4}],                     costs:[4,7,11],        max:3}
 ];
 var DEV_LEAD={power:3,aero:2,chassis:2,pit:1};
+var AREA_TABS=[{id:'power',label:'⚡ Power'},{id:'aero',label:'💨 Aero'},{id:'chassis',label:'🔧 Chassis'},{id:'pit',label:'🔩 Pit Ops'}];
+var devTab='power';
 
 function renderDev(){
   if(!game)return;fix();
