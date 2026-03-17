@@ -113,6 +113,28 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
 .cal-status{font-size:18px;width:28px;text-align:center}
 /* DRS */
 .drs-zone{opacity:.6}
+/* PENALTIES */
+.penalty-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
+.penalty-badge.engine{background:rgba(255,107,0,.15);color:var(--orange);border:1px solid rgba(255,107,0,.3)}
+.penalty-badge.incident{background:rgba(225,6,0,.15);color:var(--red);border:1px solid rgba(225,6,0,.3)}
+.penalty-badge.warning{background:rgba(255,193,7,.12);color:var(--yellow);border:1px solid rgba(255,193,7,.25)}
+.grid-penalty-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)}
+.grid-penalty-row:last-child{border-bottom:none}
+/* SMART HQ */
+.hq-quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.hq-action{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 12px;cursor:pointer;transition:all .2s;text-align:center}
+.hq-action:hover{border-color:var(--red)}.hq-action:active{transform:scale(.97)}
+.hq-action-icon{font-size:22px;margin-bottom:4px}
+.hq-action-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-mid)}
+.hq-action-value{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;margin-top:2px}
+.hq-alert{background:rgba(225,6,0,.08);border:1px solid rgba(225,6,0,.25);border-radius:10px;padding:12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:13px;animation:slideUp .3s ease}
+.hq-alert-icon{font-size:20px;flex-shrink:0}
+.hq-alert-text{flex:1;line-height:1.4}
+.hq-alert-text strong{color:var(--red)}
+.engine-tracker{display:flex;gap:4px;margin-top:4px}
+.engine-pip{width:14px;height:14px;border-radius:3px;background:#222;border:1px solid #333;font-size:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#555}
+.engine-pip.used{background:rgba(255,107,0,.2);border-color:var(--orange);color:var(--orange)}
+.engine-pip.penalty{background:rgba(225,6,0,.3);border-color:var(--red);color:var(--red)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
 .skip-btn{position:absolute;top:8px;right:8px;padding:6px 12px;background:rgba(0,0,0,.7);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-family:'Barlow',sans-serif;font-size:11px;font-weight:600;cursor:pointer;z-index:10;text-transform:uppercase;letter-spacing:1px}.skip-btn:hover{border-color:var(--red);color:var(--red)}
@@ -144,7 +166,7 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
   <div class="screen active" id="welcome"><div class="lights-out"><div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div></div><div class="welcome-title"><span class="f1">F1</span><span class="manager">MANAGER</span></div><div class="welcome-season">&mdash; CAREER MODE &mdash;</div><div class="welcome-tagline">Build your team across multiple seasons. Develop your car. Manage your drivers. Win the championship.</div><div class="welcome-btns"><button class="btn btn-primary" onclick="goToSlots('new')">NEW CAREER</button><button class="btn btn-secondary" id="savedGamesBtn" onclick="goToSlots('load')" style="display:none">CONTINUE CAREER</button></div></div>
   <div class="screen" id="slots"><button class="back-link" onclick="showScreen('welcome')">&#8592; Back</button><div class="page-title" id="slotsTitle"></div><p style="font-size:13px;color:var(--text-dim);margin-bottom:16px" id="slotsHint"></p><div id="slotsList"></div></div>
   <div class="screen" id="setupMode"><button class="back-link" onclick="showScreen('slots')">&#8592; Back</button><div class="page-title" id="setupTitle">Choose Your Path</div><div class="mode-choice" id="modeChoiceDiv"><div class="mode-btn selected" id="modeReal" onclick="pickMode('real')"><div class="mode-btn-icon">&#127937;</div><div class="mode-btn-label">Real Team</div><div class="mode-btn-desc">Manage a 2026 team</div></div><div class="mode-btn" id="modeCustom" onclick="pickMode('custom')"><div class="mode-btn-icon">&#128296;</div><div class="mode-btn-label">Custom Team</div><div class="mode-btn-desc">Create your own</div></div></div><div id="realTeamSetup"><div class="setup-label">Select Your Team</div><div class="team-grid" id="teamGrid"></div><button class="btn btn-primary" id="startRealBtn" onclick="startRealTeam()" disabled>TAKE OVER TEAM</button></div><div id="customTeamSetup" style="display:none"><div class="setup-step"><div class="setup-label">Team Name</div><input class="input-field" id="teamNameInput" placeholder="e.g. Apex Racing" maxlength="24" oninput="updateCustomSetup()"></div><div class="budget-display"><div class="budget-label">Remaining Budget</div><div class="budget-amount" id="setupBudget">&pound;150M</div></div><div class="selected-drivers"><div class="selected-slot" id="slot_d0">Driver 1</div><div class="selected-slot" id="slot_d1">Driver 2</div></div><div class="setup-step"><div class="setup-label">Select 2 Drivers</div><div class="driver-grid" id="driverGrid"></div></div><button class="btn btn-primary" id="startCustomBtn" onclick="startCustomTeam()" disabled>START SEASON</button></div></div>
-  <div class="screen" id="hq"><div class="hq-header"><div class="hq-team-name" id="hqTeamName"></div><div class="hq-subtitle" id="hqSub">Team HQ</div></div><div class="next-race-card" id="nextRaceCard"></div><div class="card"><div class="card-header">Finances</div><div id="hqBudget"></div></div><div class="card"><div class="card-header">Your Drivers</div><div id="hqDrivers"></div></div><div class="card"><div class="card-header">Car Performance</div><div id="hqCarStats"></div></div><div class="card"><div class="card-header">Top 3</div><div id="hqStandings"></div></div><div style="margin-top:8px"><button class="btn btn-secondary" onclick="saveAndQuit()">&#128190; SAVE &amp; QUIT</button></div></div>
+  <div class="screen" id="hq"><div class="hq-header"><div class="hq-team-name" id="hqTeamName"></div><div class="hq-subtitle" id="hqSub">Team HQ</div></div><div id="hqAlerts"></div><div class="next-race-card" id="nextRaceCard"></div><div class="hq-quick-actions" id="hqActions"></div><div class="card"><div class="card-header">Your Drivers</div><div id="hqDrivers"></div></div><div class="card"><div class="card-header">Car Performance</div><div id="hqCarStats"></div></div><div class="card"><div class="card-header">Penalties &amp; Engine Usage</div><div id="hqPenalties"></div></div><div class="card"><div class="card-header">Top 3</div><div id="hqStandings"></div></div><div style="margin-top:8px"><button class="btn btn-secondary" onclick="saveAndQuit()">&#128190; SAVE &amp; QUIT</button></div></div>
   <div class="screen" id="race"><div class="page-title" id="raceTitle"></div><div id="preRace"><div class="strategy-section"><div class="card-header">Tyre Strategy</div><div class="strategy-options" id="tyreOptions"></div></div><div class="strategy-section"><div class="card-header">Driving Style</div><div class="strategy-options" id="styleOptions"></div></div><div style="margin-top:20px;display:flex;flex-direction:column;gap:10px"><button class="btn btn-primary" onclick="startQuali(false)">START QUALIFYING</button><button class="btn-ghost btn" onclick="startQuali(true)">&#9193; SKIP QUALIFYING</button></div></div><div id="qualifyingPhase" style="display:none"><div class="quali-header"><div class="quali-session" id="qualiSessionLabel">Q1</div><div class="quali-sub" id="qualiSubLabel">All 22 drivers &mdash; bottom 5 eliminated</div></div><div class="quali-progress"><div class="quali-pip active" id="qPip1"></div><div class="quali-pip" id="qPip2"></div><div class="quali-pip" id="qPip3"></div></div><div id="qualiEngineChoice"></div><div class="quali-grid" id="qualiGrid"></div><div id="qualiBtns"></div></div><div id="preStartRace" style="display:none"><div class="card-header" style="margin-bottom:8px">Starting Grid</div><div class="card" style="padding:0;overflow:hidden" id="startingGridDisplay"></div><div style="margin-top:16px;display:flex;flex-direction:column;gap:10px"><button class="btn btn-primary" onclick="startRaceSim(false)">LIGHTS OUT AND AWAY WE GO</button><button class="btn-ghost btn" onclick="startRaceSim(true)">&#9193; SIMULATE &amp; SKIP RACE</button></div></div><div id="duringRace" style="display:none;position:relative"><button class="skip-btn" onclick="skipRace()">SKIP &#9193;</button><div class="race-hud" id="raceHud"></div><div class="track-view" id="trackView"></div><div class="race-log" id="raceLog"></div><div id="raceDecisions"></div></div><div id="postRace" style="display:none"><div class="card-header" style="margin-bottom:8px">Race Results</div><div class="card" style="padding:0;overflow:hidden" id="raceResults"></div><div id="moraleChanges" style="margin-top:12px"></div><div style="margin-top:16px"><button class="btn btn-primary" onclick="afterRace()">CONTINUE</button></div></div></div>
   <div class="screen" id="develop"><div class="page-title">R&amp;D Centre</div><div id="costCapDisplay"></div><div class="budget-display"><div class="budget-label">Team Budget</div><div class="budget-amount" id="devBudget">&pound;0M</div></div><div id="upgradeCards"></div></div>
   <div class="screen" id="morale"><div class="page-title">Driver Management</div><div class="budget-display"><div class="budget-label">Team Budget</div><div class="budget-amount" id="moraleBudget">&pound;0M</div></div><div id="moraleCards"></div></div>
@@ -239,7 +261,7 @@ var RACES=[
 var PTS=[25,18,15,12,10,8,6,4,2,1],MS=5,CAP=135,MAX_STAT=150;
 var game=null,activeSlot=null,setupSelected=[],slotsMode='new',setupMode='real',selectedTeamIdx=-1,rs=null,skipMode=false;
 
-function fg(){return{teamName:"",budget:150,drivers:[],car:{speed:40,aero:40,reliability:40,pitstops:40},morale:{},moraleActs:{},currentRace:0,driverPoints:{},constructorPoints:{},raceHistory:[],strategy:{tyre:"medium",style:"balanced"},isRealTeam:false,costCap:CAP,capSpent:0,season:1,aiCars:{}}}
+function fg(){return{teamName:"",budget:150,drivers:[],car:{speed:40,aero:40,reliability:40,pitstops:40},morale:{},moraleActs:{},currentRace:0,driverPoints:{},constructorPoints:{},raceHistory:[],strategy:{tyre:"medium",style:"balanced"},isRealTeam:false,costCap:CAP,capSpent:0,season:1,aiCars:{},engines:{},penalties:{},incidentLog:[]}}
 
 // SAVE
 function gS(){try{return JSON.parse(localStorage.getItem('f1m26c'))||[null,null,null,null,null]}catch(e){return[null,null,null,null,null]}}
@@ -247,7 +269,8 @@ function sS(s){localStorage.setItem('f1m26c',JSON.stringify(s))}
 function sv(){if(activeSlot===null||!game)return;var s=gS();s[activeSlot]=JSON.parse(JSON.stringify(game));sS(s)}
 function hS(){return gS().some(function(s){return s!==null})}
 function loadSlot(i){var s=gS();if(!s[i])return;game=JSON.parse(JSON.stringify(s[i]));fix();activeSlot=i;document.getElementById('navBar').style.display='flex';showScreen('hq')}
-function fix(){if(!game.moraleActs)game.moraleActs={};if(!game.capSpent)game.capSpent=0;if(!game.costCap)game.costCap=CAP;if(!game.season)game.season=1;if(!game.aiCars)game.aiCars={}}
+function fix(){if(!game.moraleActs)game.moraleActs={};if(!game.capSpent)game.capSpent=0;if(!game.costCap)game.costCap=CAP;if(!game.season)game.season=1;if(!game.aiCars)game.aiCars={};if(!game.engines)game.engines={};if(!game.penalties)game.penalties={};if(!game.incidentLog)game.incidentLog=[];
+game.drivers.forEach(function(did){if(!game.engines[did])game.engines[did]=1;if(!game.penalties[did])game.penalties[did]=0})}
 function deleteSlot(i){dlg('Delete?','Delete this career?','Delete','Cancel',function(){var s=gS();s[i]=null;sS(s);renderSlots()})}
 function dlg(t,tx,cl,ca,fn){document.getElementById('dialogOverlay').innerHTML='<div class="overlay" onclick="cDlg(event)"><div class="dialog" onclick="event.stopPropagation()"><div class="dialog-title">'+t+'</div><div class="dialog-text">'+tx+'</div><div class="dialog-btns"><button class="btn btn-secondary" style="font-size:13px;padding:10px" onclick="cDlg()">'+ca+'</button><button class="btn btn-primary" style="font-size:13px;padding:10px" id="dC">'+cl+'</button></div></div></div>';document.getElementById('dC').onclick=function(){cDlg();fn()}}
 function cDlg(e){if(e&&e.target!==e.currentTarget)return;document.getElementById('dialogOverlay').innerHTML=''}
@@ -281,11 +304,11 @@ document.getElementById('teamGrid').innerHTML=h;document.getElementById('startRe
 function selectTeam(i){selectedTeamIdx=i;buildTeamGrid()}
 function startRealTeam(){if(selectedTeamIdx<0)return;var t=TEAMS[selectedTeamIdx];game.teamName=t.name;game.isRealTeam=true;game.drivers=t.drivers.slice();
 var carSrc=game.aiCars&&game.aiCars[t.name]?game.aiCars[t.name]:t.car;
-game.car=JSON.parse(JSON.stringify(carSrc));game.budget=game.season>1?Math.max(20,t.budget+Math.floor(Math.random()*10)):t.budget;game.costCap=CAP;game.capSpent=0;game.morale={};game.moraleActs={};game.morale[t.drivers[0]]=65;game.morale[t.drivers[1]]=65;initPts();sv();document.getElementById('navBar').style.display='flex';showScreen('hq')}
+game.car=JSON.parse(JSON.stringify(carSrc));game.budget=game.season>1?Math.max(20,t.budget+Math.floor(Math.random()*10)):t.budget;game.costCap=CAP;game.capSpent=0;game.morale={};game.moraleActs={};game.morale[t.drivers[0]]=65;game.morale[t.drivers[1]]=65;game.engines={};game.penalties={};game.incidentLog=[];game.engines[t.drivers[0]]=1;game.engines[t.drivers[1]]=1;game.penalties[t.drivers[0]]=0;game.penalties[t.drivers[1]]=0;initPts();sv();document.getElementById('navBar').style.display='flex';showScreen('hq')}
 function buildDriverGrid(){var g=document.getElementById('driverGrid'),h='';for(var i=0;i<D.length;i++){var d=D[i],sel=setupSelected.indexOf(d.id)>-1?' selected':'';h+='<div class="driver-card'+sel+'" onclick="toggleDriver('+d.id+')"><div class="driver-flag">'+d.flag+'</div><div class="driver-info"><div class="driver-name">'+d.name+'</div><div class="driver-team">'+d.team+'</div></div><div class="driver-stats"><div class="driver-rating">'+d.skill+'</div><div class="driver-cost">\u00a3'+d.cost+'M</div></div></div>'}g.innerHTML=h;updateCustomSetup()}
 function toggleDriver(id){var i=setupSelected.indexOf(id);if(i>-1)setupSelected.splice(i,1);else if(setupSelected.length<2)setupSelected.push(id);buildDriverGrid()}
 function updateCustomSetup(){var tc=0;for(var i=0;i<setupSelected.length;i++)tc+=D[setupSelected[i]].cost;var rem=150-tc;var b=document.getElementById('setupBudget');b.textContent='\u00a3'+rem+'M';b.className='budget-amount'+(rem<0?' over':'');for(var j=0;j<2;j++){var sl=document.getElementById('slot_d'+j);if(setupSelected[j]!==undefined){var d=D[setupSelected[j]];sl.textContent=d.flag+' '+d.name;sl.className='selected-slot filled'}else{sl.textContent='Driver '+(j+1);sl.className='selected-slot'}}var n=(document.getElementById('teamNameInput').value||'').trim();document.getElementById('startCustomBtn').disabled=!(n.length>0&&setupSelected.length===2&&rem>=0)}
-function startCustomTeam(){var n=document.getElementById('teamNameInput').value.trim();game.teamName=n;game.isRealTeam=false;game.drivers=setupSelected.slice();var tc=0;for(var i=0;i<setupSelected.length;i++)tc+=D[setupSelected[i]].cost;game.budget=150-tc;game.car={speed:40,aero:40,reliability:40,pitstops:40};game.costCap=CAP;game.capSpent=0;game.morale={};game.moraleActs={};game.morale[game.drivers[0]]=65;game.morale[game.drivers[1]]=65;initPts();sv();document.getElementById('navBar').style.display='flex';showScreen('hq')}
+function startCustomTeam(){var n=document.getElementById('teamNameInput').value.trim();game.teamName=n;game.isRealTeam=false;game.drivers=setupSelected.slice();var tc=0;for(var i=0;i<setupSelected.length;i++)tc+=D[setupSelected[i]].cost;game.budget=150-tc;game.car={speed:40,aero:40,reliability:40,pitstops:40};game.costCap=CAP;game.capSpent=0;game.morale={};game.moraleActs={};game.morale[game.drivers[0]]=65;game.morale[game.drivers[1]]=65;game.engines={};game.penalties={};game.incidentLog=[];game.engines[game.drivers[0]]=1;game.engines[game.drivers[1]]=1;game.penalties[game.drivers[0]]=0;game.penalties[game.drivers[1]]=0;initPts();sv();document.getElementById('navBar').style.display='flex';showScreen('hq')}
 function initPts(){game.currentRace=0;game.driverPoints={};game.constructorPoints={};game.raceHistory=[];for(var j=0;j<D.length;j++)game.driverPoints[D[j].id]=0;var ts={};for(var k=0;k<D.length;k++)ts[D[k].team]=true;Object.keys(ts).forEach(function(t){game.constructorPoints[t]=0});if(!game.isRealTeam)game.constructorPoints[game.teamName]=0;initAiCars()}
 function initAiCars(){if(!game.aiCars)game.aiCars={};TEAMS.forEach(function(t){if(!game.aiCars[t.name])game.aiCars[t.name]=JSON.parse(JSON.stringify(t.car))})}
 function saveAndQuit(){sv();activeSlot=null;game=null;document.getElementById('navBar').style.display='none';showScreen('welcome')}
@@ -297,18 +320,41 @@ function aiDevelop(){TEAMS.forEach(function(t){if(t.name===game.teamName&&game.i
 // NEXT SEASON / MOVE TEAM
 function nextSeason(){game.season=(game.season||1)+1;game.currentRace=0;game.capSpent=0;game.costCap=CAP;game.driverPoints={};game.constructorPoints={};game.raceHistory=[];for(var j=0;j<D.length;j++)game.driverPoints[D[j].id]=0;var ts={};for(var k=0;k<D.length;k++)ts[D[k].team]=true;Object.keys(ts).forEach(function(t){game.constructorPoints[t]=0});if(!game.isRealTeam)game.constructorPoints[game.teamName]=0;
 game.budget+=30+Math.floor(Math.random()*20);game.morale[game.drivers[0]]=Math.max(50,game.morale[game.drivers[0]]-5);game.morale[game.drivers[1]]=Math.max(50,game.morale[game.drivers[1]]-5);
-game.moraleActs={};sv();document.getElementById('navBar').style.display='flex';showScreen('hq')}
+game.moraleActs={};game.engines={};game.penalties={};game.incidentLog=[];game.engines[game.drivers[0]]=1;game.engines[game.drivers[1]]=1;game.penalties[game.drivers[0]]=0;game.penalties[game.drivers[1]]=0;sv();document.getElementById('navBar').style.display='flex';showScreen('hq')}
 function moveTeam(){sv();selectedTeamIdx=-1;showScreen('setupMode')}
 
 function renderHQ(){if(!game)return;fix();document.getElementById('hqTeamName').textContent=game.teamName;document.getElementById('hqSub').textContent='Season '+(game.season||1)+' \u2022 Team HQ';
+// Next race card
 var nrc=document.getElementById('nextRaceCard');if(game.currentRace>=RACES.length)nrc.innerHTML='<div class="race-round">Season Complete</div><div class="race-flag">\u{1F3C1}</div><div class="race-name">All 24 Races Done</div>';
-else{var r=RACES[game.currentRace];nrc.innerHTML='<div class="race-round">Round '+(game.currentRace+1)+' of 24</div><div class="race-flag">'+r.flag+'</div><div class="race-name">'+r.name+'</div><div style="font-size:13px;color:var(--text-dim)">'+r.loc+' \u2022 '+r.laps+' laps</div>'}
-var cpP=Math.min(100,Math.round(game.capSpent/game.costCap*100)),cpC=cpP>=90?'var(--red)':cpP>=70?'var(--yellow)':'var(--green)';
-document.getElementById('hqBudget').innerHTML='<div class="stat-row"><span class="stat-label">Budget</span><span class="stat-value" style="color:var(--green)">\u00a3'+game.budget+'M</span></div><div class="stat-row"><span class="stat-label">Cost Cap</span><span class="stat-value" style="color:'+cpC+'">\u00a3'+game.capSpent+'M / \u00a3'+game.costCap+'M</span></div>';
-var dH='';for(var i=0;i<game.drivers.length;i++){var d=D[game.drivers[i]],m=game.morale[d.id]||50;var mc=m>=70?'var(--green)':m>=45?'var(--yellow)':'var(--red)';dH+='<div class="stat-row"><span>'+d.flag+' '+d.name+'</span><span style="font-size:12px;color:'+mc+'">'+(game.driverPoints[d.id]||0)+' pts \u2022 '+m+' morale</span></div>'}document.getElementById('hqDrivers').innerHTML=dH;
+else{var r=RACES[game.currentRace];var nDRS=(DRS[r.name]||[]).length;nrc.innerHTML='<div class="race-round">Round '+(game.currentRace+1)+' of 24</div><div class="race-flag">'+r.flag+'</div><div class="race-name">'+r.name+'</div><div style="font-size:13px;color:var(--text-dim)">'+r.loc+' \u2022 '+r.laps+' laps \u2022 '+nDRS+' DRS zone'+(nDRS!==1?'s':'')+'</div>'}
+// Alerts
+var alerts='';var cpP=Math.min(100,Math.round(game.capSpent/game.costCap*100));
+if(cpP>=85)alerts+='<div class="hq-alert"><div class="hq-alert-icon">\u{1F6A8}</div><div class="hq-alert-text"><strong>Cost cap at '+cpP+'%</strong> \u2014 only \u00a3'+(game.costCap-game.capSpent)+'M of upgrades left this season</div></div>';
+game.drivers.forEach(function(did){var d=D[did];if(game.penalties[did]>0)alerts+='<div class="hq-alert"><div class="hq-alert-icon">\u26A0\uFE0F</div><div class="hq-alert-text"><strong>'+d.name+'</strong> has a <strong>'+game.penalties[did]+'-place grid penalty</strong> for next race</div></div>';
+if((game.morale[did]||50)<35)alerts+='<div class="hq-alert"><div class="hq-alert-icon">\u{1F621}</div><div class="hq-alert-text"><strong>'+d.name+'</strong> morale is critical! Performance suffering.</div></div>';
+if((game.engines[did]||1)>=4)alerts+='<div class="hq-alert"><div class="hq-alert-icon">\u{1F527}</div><div class="hq-alert-text"><strong>'+d.name+'</strong> on engine '+(game.engines[did]||1)+'/4 \u2014 next change = 10-place penalty</div></div>'});
+document.getElementById('hqAlerts').innerHTML=alerts;
+// Quick actions
+var conPos='-';var sorted=Object.entries(game.constructorPoints).sort(function(a,b){return b[1]-a[1]});for(var ci=0;ci<sorted.length;ci++){if(sorted[ci][0]===ptl()){conPos=ci+1;break}}
+document.getElementById('hqActions').innerHTML='<div class="hq-action" onclick="navigate(\'race\')"><div class="hq-action-icon">\u{1F3C1}</div><div class="hq-action-label">Next Race</div><div class="hq-action-value" style="color:var(--red)">'+(game.currentRace<RACES.length?RACES[game.currentRace].name:'Done')+'</div></div>'+
+'<div class="hq-action" onclick="navigate(\'develop\')"><div class="hq-action-icon">\u{1F527}</div><div class="hq-action-label">Budget</div><div class="hq-action-value" style="color:var(--green)">\u00a3'+game.budget+'M</div></div>'+
+'<div class="hq-action" onclick="navigate(\'standings\')"><div class="hq-action-icon">\u{1F3C6}</div><div class="hq-action-label">Constructor Pos</div><div class="hq-action-value" style="color:var(--yellow)">P'+conPos+'</div></div>'+
+'<div class="hq-action" onclick="navigate(\'calendar\')"><div class="hq-action-icon">\u{1F4C5}</div><div class="hq-action-label">Races Done</div><div class="hq-action-value" style="color:var(--text-mid)">'+game.currentRace+'/24</div></div>';
+// Drivers
+var dH='';for(var i=0;i<game.drivers.length;i++){var d=D[game.drivers[i]],m=game.morale[d.id]||50;var mc=m>=70?'var(--green)':m>=45?'var(--yellow)':'var(--red)';var ml=m>=70?'\u{1F60A}':m>=45?'\u{1F610}':'\u{1F621}';
+dH+='<div class="stat-row"><span>'+d.flag+' '+d.name+' '+ml+'</span><span style="font-size:12px;color:var(--yellow)">'+(game.driverPoints[d.id]||0)+' pts</span></div>'}document.getElementById('hqDrivers').innerHTML=dH;
+// Car stats
 var stats=[{l:"Speed",v:game.car.speed,c:"var(--red)"},{l:"Aero",v:game.car.aero,c:"var(--blue)"},{l:"Reliability",v:game.car.reliability,c:"var(--green)"},{l:"Pit Crew",v:game.car.pitstops,c:"var(--orange)"}];var sH='';for(var s=0;s<stats.length;s++)sH+='<div class="stat-row"><span class="stat-label">'+stats[s].l+'</span><div class="stat-bar-wrap"><div class="stat-bar"><div class="stat-bar-fill" style="width:'+Math.min(100,stats[s].v/MAX_STAT*100)+'%;background:'+stats[s].c+'"></div></div><span class="stat-value" style="color:'+stats[s].c+'">'+stats[s].v+'</span></div></div>';document.getElementById('hqCarStats').innerHTML=sH;
-var sorted=Object.entries(game.driverPoints).sort(function(a,b){return b[1]-a[1]}).slice(0,3);var hS=document.getElementById('hqStandings');
-if(sorted.length&&sorted[0][1]>0){var medals=['\u{1F947}','\u{1F948}','\u{1F949}'],mH='<div class="mini-standings">';for(var mi=0;mi<sorted.length;mi++){var dd=D[sorted[mi][0]];mH+='<div class="mini-stand"><div class="mini-stand-pos">'+medals[mi]+'</div><div class="mini-stand-name">'+(dd?dd.name.split(' ').pop():'-')+'</div><div class="mini-stand-pts">'+sorted[mi][1]+'</div></div>'}hS.innerHTML=mH+'</div>'}else hS.innerHTML='<div style="text-align:center;color:var(--text-dim);padding:8px;font-size:13px">No races yet</div>'}
+// Penalties & engines
+var pH='';game.drivers.forEach(function(did){var d=D[did];var eng=game.engines[did]||1;var pen=game.penalties[did]||0;
+pH+='<div class="grid-penalty-row"><span>'+d.flag+' '+d.name+'</span><div><div class="engine-tracker">';
+for(var e=1;e<=5;e++)pH+='<div class="engine-pip'+(e<=eng?(e>4?' penalty':' used'):'')+'">'+(e<=eng?e:'')+'</div>';
+pH+='</div></div></div>';
+if(pen>0)pH+='<div class="grid-penalty-row"><span style="color:var(--red)">\u26A0\uFE0F Grid penalty</span><span class="penalty-badge engine">'+pen+' places</span></div>'});
+document.getElementById('hqPenalties').innerHTML=pH;
+// Top 3
+var dSorted=Object.entries(game.driverPoints).sort(function(a,b){return b[1]-a[1]}).slice(0,3);var hS=document.getElementById('hqStandings');
+if(dSorted.length&&dSorted[0][1]>0){var medals=['\u{1F947}','\u{1F948}','\u{1F949}'],mH='<div class="mini-standings">';for(var mi=0;mi<dSorted.length;mi++){var dd=D[dSorted[mi][0]];mH+='<div class="mini-stand"><div class="mini-stand-pos">'+medals[mi]+'</div><div class="mini-stand-name">'+(dd?dd.name.split(' ').pop():'-')+'</div><div class="mini-stand-pts">'+dSorted[mi][1]+'</div></div>'}hS.innerHTML=mH+'</div>'}else hS.innerHTML='<div style="text-align:center;color:var(--text-dim);padding:8px;font-size:13px">No races yet</div>'}
 
 // TRACK SVG
 // REAL TRACK OUTLINES - simplified bird's eye SVG paths for all 24 circuits
@@ -487,17 +533,30 @@ gridEl.innerHTML+='<div class="quali-row'+(e.isPlayer?' player':'')+(isElimZone?
 idx++},120)}
 
 function showPreStart(){document.getElementById('qualifyingPhase').style.display='none';document.getElementById('preStartRace').style.display='block';
-// Build final grid from qualifying
+// Build final grid from qualifying then apply penalties
 var qs=qualiState;var sorted=qs.entries.slice().sort(function(a,b){if(a.elim&&!b.elim)return 1;if(!a.elim&&b.elim)return-1;return a.bestTime-b.bestTime});
-var h='';for(var i=0;i<sorted.length;i++){var e=sorted[i];h+='<div class="result-row'+(e.isPlayer?' player':'')+'"><div class="result-pos'+(i===0?' gold':i===1?' silver':i===2?' bronze':'')+'">'+(i+1)+'</div><div style="flex:1"><div class="result-name">'+e.flag+' '+e.name+'</div><div class="result-team">'+e.team+'</div></div><div class="quali-time">'+fmtTime(e.bestTime)+'</div></div>'}
-document.getElementById('startingGridDisplay').innerHTML=h}
+// Apply grid penalties to player drivers
+sorted.forEach(function(e){e.gridPenalty=0});
+if(game&&game.penalties){sorted.forEach(function(e){if(e.isPlayer&&game.penalties[e.id]>0){e.gridPenalty=game.penalties[e.id]}})}
+// Also random AI penalties (15% chance per race for any driver)
+sorted.forEach(function(e){if(!e.isPlayer&&Math.random()<0.07){e.gridPenalty=Math.random()<0.5?5:10}});
+// Reorder: move penalised drivers down by their penalty amount
+var penalised=sorted.filter(function(e){return e.gridPenalty>0});
+penalised.forEach(function(p){var idx=sorted.indexOf(p);var newIdx=Math.min(sorted.length-1,idx+p.gridPenalty);sorted.splice(idx,1);sorted.splice(newIdx,0,p)});
+var h='';for(var i=0;i<sorted.length;i++){var e=sorted[i];var penTag=e.gridPenalty>0?' <span class="penalty-badge engine">+'+e.gridPenalty+'</span>':'';
+h+='<div class="result-row'+(e.isPlayer?' player':'')+'"><div class="result-pos'+(i===0?' gold':i===1?' silver':i===2?' bronze':'')+'">'+(i+1)+'</div><div style="flex:1"><div class="result-name">'+e.flag+' '+e.name+penTag+'</div><div class="result-team">'+e.team+'</div></div><div class="quali-time">'+fmtTime(e.bestTime)+'</div></div>'}
+document.getElementById('startingGridDisplay').innerHTML=h;
+// Store the grid order for race start
+qualiState.finalGrid=sorted;
+// Clear applied penalties
+if(game&&game.penalties){game.drivers.forEach(function(did){game.penalties[did]=0})}}
 
 function startRaceSim(skip){skipMode=skip;document.getElementById('preRace').style.display='none';document.getElementById('preStartRace').style.display='none';document.getElementById('qualifyingPhase').style.display='none';document.getElementById('duringRace').style.display='block';
 var race=RACES[game.currentRace],tl=race.laps;var tB={soft:6,medium:3,hard:0},sB={conservative:-2,balanced:2,aggressive:6},sDNF={conservative:.02,balanced:.05,aggressive:.12};
 var pC=(game.car.speed+game.car.aero)/10;var grid=[];
 for(var i=0;i<D.length;i++){var d=D[i],ispl=ip(d.id);var aiCar=game.aiCars&&game.aiCars[d.team]?game.aiCars[d.team]:null;var car=ispl?pC:aiCar?(aiCar.speed+aiCar.aero)/10:TC[d.team];var mb=ispl?((game.morale[d.id]||50)-50)/8:0;grid.push({id:d.id,name:d.name,flag:d.flag,team:ispl?ptl():d.team,isPlayer:ispl,base:d.skill+car+mb,tyreWear:0,pitted:false,dnf:false,pos:0,rP:0})}
 // Use qualifying order if available, else random
-if(qualiState){var qSorted=qualiState.entries.slice().sort(function(a,b){if(a.elim&&!b.elim)return 1;if(!a.elim&&b.elim)return-1;return a.bestTime-b.bestTime});var qOrder={};qSorted.forEach(function(e,i){qOrder[e.id]=i+1});grid.forEach(function(g){g.pos=qOrder[g.id]||22;g.rP=g.base});grid.sort(function(a,b){return a.pos-b.pos})}else{grid.forEach(function(g){g.qP=g.base+(Math.random()-.5)*16});grid.sort(function(a,b){return b.qP-a.qP});grid.forEach(function(g,i){g.pos=i+1;g.rP=g.base})};
+if(qualiState){var qSorted=qualiState.finalGrid||qualiState.entries.slice().sort(function(a,b){if(a.elim&&!b.elim)return 1;if(!a.elim&&b.elim)return-1;return a.bestTime-b.bestTime});var qOrder={};qSorted.forEach(function(e,i){qOrder[e.id]=i+1});grid.forEach(function(g){g.pos=qOrder[g.id]||22;g.rP=g.base});grid.sort(function(a,b){return a.pos-b.pos})}else{grid.forEach(function(g){g.qP=g.base+(Math.random()-.5)*16});grid.sort(function(a,b){return b.qP-a.qP});grid.forEach(function(g,i){g.pos=i+1;g.rP=g.base})};
 rs={grid:grid,lap:0,tl:tl,pitW:Math.floor(tl*.4)+Math.floor(Math.random()*10),scLap:Math.random()<.3?Math.floor(tl*.3)+Math.floor(Math.random()*Math.floor(tl*.3)):-1,weather:Math.random()<.15?'rain':'dry',pPit:false,tS:game.strategy.tyre,sS:game.strategy.style,tB:tB,sB:sB,sDNF:sDNF,race:race,sc:false,aPit:false,aPush:false,aW:false};
 document.getElementById('raceLog').innerHTML='';document.getElementById('raceDecisions').innerHTML='';addLog('\u{1F3C1} '+race.name.toUpperCase()+' \u2014 '+tl+' LAPS','highlight');
 var p1p=0,p2p=0;grid.forEach(function(g){if(g.id===game.drivers[0])p1p=g.pos;if(g.id===game.drivers[1])p2p=g.pos});
@@ -551,7 +610,18 @@ if(e.isPlayer){var mC=0;if(e.dnf)mC=-18;else if(i<3)mC=8;else if(i<6)mC=3;else i
 var arr=mC>0?'\u2191':mC<0?'\u2193':'\u2192';var col=mC>0?'var(--green)':mC<0?'var(--red)':'var(--text-dim)';mH+='<div class="card" style="padding:10px"><div style="display:flex;justify-content:space-between"><span>'+e.flag+' '+e.name+'</span><span style="color:'+col+';font-weight:600">'+arr+(mC>0?'+':'')+mC+'</span></div></div>'}}
 document.getElementById('raceResults').innerHTML=h;document.getElementById('moraleChanges').innerHTML=mH;game.raceHistory.push({r:game.currentRace})}
 
-function afterRace(){game.currentRace++;var prize=3+Math.floor(Math.random()*6);game.budget+=prize;aiDevelop();rs=null;qualiState=null;skipMode=false;sv();if(game.currentRace>=RACES.length)showSeasonEnd();else{showScreen('hq');document.querySelectorAll('.nav-btn')[0].classList.add('active')}}
+function afterRace(){game.currentRace++;var prize=3+Math.floor(Math.random()*6);game.budget+=prize;aiDevelop();
+// ENGINE WEAR: ~20% chance per driver per race that engine degrades and needs changing
+// 4 engines allowed per season - 5th+ triggers 10-place grid penalty
+game.drivers.forEach(function(did){var d=D[did];
+var reliabilityFactor=(100-game.car.reliability)/100;var wearChance=0.12+reliabilityFactor*0.12;
+if(Math.random()<wearChance){var eng=(game.engines[did]||1)+1;game.engines[did]=eng;
+if(eng>4){game.penalties[did]=(game.penalties[did]||0)+10;game.incidentLog.push({race:game.currentRace-1,driver:d.name,type:'engine',text:d.name+' takes new engine (#'+eng+') \u2014 10-PLACE GRID PENALTY'})}}});
+// RACE INCIDENTS: ~8% chance per driver of a time penalty converted to grid drop for next race
+game.drivers.forEach(function(did){var d=D[did];if(Math.random()<0.08){var pen=Math.random()<0.6?3:5;game.penalties[did]=(game.penalties[did]||0)+pen;
+var reasons=['track limits','unsafe pit release','causing a collision','ignoring blue flags','pit lane speeding'];var reason=reasons[Math.floor(Math.random()*reasons.length)];
+game.incidentLog.push({race:game.currentRace-1,driver:d.name,type:'incident',text:d.name+' \u2014 '+pen+'-place penalty for '+reason})}});
+rs=null;qualiState=null;skipMode=false;sv();if(game.currentRace>=RACES.length)showSeasonEnd();else{showScreen('hq');document.querySelectorAll('.nav-btn')[0].classList.add('active')}}
 
 function showSeasonEnd(){document.getElementById('navBar').style.display='none';showScreen('seasonEnd');var sorted=Object.entries(game.driverPoints).sort(function(a,b){return b[1]-a[1]});var cid=parseInt(sorted[0][0]),ch=D[cid],isPC=ip(cid);
 document.getElementById('seasonEndTitle').textContent=isPC?ch.name+' is WORLD CHAMPION!':ch.name+' wins the title';document.getElementById('seasonEndSub').textContent=isPC?'Season '+(game.season||1)+' \u2022 '+game.teamName:'Better luck next season, '+game.teamName;
@@ -606,9 +676,17 @@ else{var s2=Object.entries(game.constructorPoints).sort(function(a,b){return b[1
 
 // ===== DEV TERMINAL =====
 var CHANGELOG=[
+  {ver:'v1.3.0',date:'17 Mar 2026',changes:[
+    {tag:'new',text:'Engine penalty system — each driver has 4 free engines per season'},
+    {tag:'new',text:'Taking a 5th+ engine triggers a grid penalty (10 places back)'},
+    {tag:'new',text:'HQ now shows engine usage pips and penalty warnings for each driver'},
+    {tag:'new',text:'Smart HQ alerts — cost cap warnings appear when you hit 85%+'},
+    {tag:'new',text:'Quick action buttons on HQ for faster navigation'},
+    {tag:'feat',text:'Next race card now shows number of DRS zones at the circuit'}
+  ]},
   {ver:'v1.2.0',date:'17 Mar 2026',changes:[
     {tag:'new',text:'Dev Terminal added — tap ⌨ any time to see the full update history'},
-    {tag:'fix',text:'Restored working version of the game — buttons now respond correctly'}
+    {tag:'fix',text:'Restored working version — buttons respond correctly again'}
   ]},
   {ver:'v1.1.0',date:'17 Mar 2026',changes:[
     {tag:'sec',text:'Removed Google Fonts — browser uses system fonts for privacy'},
