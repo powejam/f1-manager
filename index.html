@@ -851,10 +851,10 @@ function updateHud(){
       var row1=document.createElement('div');row1.className='dp-btn-row';row1.style.marginBottom='4px';
 
       var pitBtn=document.createElement('button');
-      pitBtn.className='dp-btn pit'+(rs.pitReq[did]?' pitting':'');
-      pitBtn.textContent=rs.pitReq[did]?'BOXING...':'PIT';
+      pitBtn.className='dp-btn pit'+(rs.pitReq[did]?' pitting':'')+(rs.hasPitted[did]?' pitted-once':'');
+      pitBtn.textContent=rs.pitReq[did]?'BOXING...':rs.hasPitted[did]?'PIT AGAIN':'PIT \u26A0';
       pitBtn.setAttribute('data-did',did);
-      pitBtn.disabled=!!g.pitted&&lapsOn<3;
+      pitBtn.disabled=!!rs.pitReq[did]; // only disabled while already queued
       pitBtn.addEventListener('click',function(){
         var id=parseInt(this.getAttribute('data-did'));
         rs.pitReq[id]=true;
@@ -992,12 +992,13 @@ function startRaceSim(skip){
   }
   // Per-driver strategy state
   fix();
-  var dTyre={},dStyle={},pitReq={};
+  var dTyre={},dStyle={},pitReq={},hasPitted={};
   game.drivers.forEach(function(did){
     var strat=game.driverStrategies[did]||{tyre:'medium',style:'balanced'};
     dTyre[did]=strat.tyre;
     dStyle[did]=strat.style;
     pitReq[did]=false;
+    hasPitted[did]=false;
     // Set starting tyre on grid entry
     grid.forEach(function(g){if(g.id===did)g.tyreType=strat.tyre;});
   });
@@ -1005,7 +1006,7 @@ function startRaceSim(skip){
     pitW:Math.floor(tl*.4)+Math.floor(Math.random()*10),
     scLap:Math.random()<.3?Math.floor(tl*.3)+Math.floor(Math.random()*Math.floor(tl*.3)):-1,
     weather:Math.random()<.15?'rain':'dry',
-    dTyre:dTyre,dStyle:dStyle,pitReq:pitReq,
+    dTyre:dTyre,dStyle:dStyle,pitReq:pitReq,hasPitted:hasPitted,
     sDNF:sDNF,race:race,sc:false,aPush:false,aW:false};
   document.getElementById('raceLog').innerHTML='';
   document.getElementById('raceDecisions').innerHTML='';
@@ -1040,6 +1041,7 @@ function simLap(silent){
         }
       });
       rs.pitReq[did]=false;
+      rs.hasPitted[did]=true;
       if(!silent)addLog('\u{1F527} '+D[did].name.split(' ').pop()+' pits!',game.car.pitstops>60?'green':'yellow');
     }
   });
@@ -1115,6 +1117,7 @@ function simLap(silent){
       var g=null;rs.grid.forEach(function(x){if(x.id===did)g=x;});
       if(g&&!g.pitted&&!g.dnf&&rs.lap>=rs.pitW){
         g.pitted=true;g.tyreWear*=0.15;g.tyreLaps=0;g.rP-=(100-game.car.pitstops)/100*3;
+        rs.hasPitted[did]=true;
       }
     });
   }
@@ -1163,8 +1166,44 @@ function advLap(){
     if(p1)addLog('Lap '+rs.lap+'/'+rs.tl,'dim');
   }
 
+  // Mandatory pit warnings in final laps
+  var lapsLeft=rs.tl-rs.lap;
+  game.drivers.forEach(function(did){
+    if(!rs.hasPitted[did]){
+      var g=null;rs.grid.forEach(function(x){if(x.id===did)g=x;});
+      if(g&&!g.dnf){
+        if(lapsLeft===10)addLog('\u26A0\uFE0F '+D[did].name.split(' ').pop()+' MUST PIT — 10 laps left!','yellow');
+        if(lapsLeft===5)addLog('\u{1F6A8} '+D[did].name.split(' ').pop()+' MANDATORY STOP REQUIRED — 5 laps!','highlight');
+        if(lapsLeft===2)addLog('\u{1F6A8} STEWARDS: '+D[did].name.split(' ').pop()+' last chance to pit!','highlight');
+      }
+    }
+  });
+
   updateHud();
-  if(rs.lap>=rs.tl){finishRace();return;}
+
+  // Race end — enforce mandatory pit stop
+  if(rs.lap>=rs.tl){
+    var penalised=[];
+    game.drivers.forEach(function(did){
+      if(!rs.hasPitted[did]){
+        var g=null;rs.grid.forEach(function(x){if(x.id===did)g=x;});
+        if(g&&!g.dnf){
+          // DSQ-style: drop 5 places for skipping mandatory stop
+          var newPos=Math.min(rs.grid.filter(function(x){return!x.dnf;}).length, g.pos+5);
+          g.pos=newPos;
+          penalised.push(D[did].name.split(' ').pop());
+        }
+      }
+    });
+    if(penalised.length>0){
+      addLog('\u{1F6A8} '+penalised.join(' & ')+' — 5-place penalty for skipping mandatory pit stop!','highlight');
+      // Re-resolve positions after penalty
+      var act=rs.grid.filter(function(g){return!g.dnf;});
+      act.sort(function(a,b){return a.pos-b.pos;});
+      act.forEach(function(g,i){g.pos=i+1;});
+    }
+    finishRace();return;
+  }
   setTimeout(function(){advLap();},lapSpeedMs); // speed controlled by Settings
 }
 
