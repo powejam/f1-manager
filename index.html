@@ -203,6 +203,18 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
 .dp-btn:disabled{opacity:.3;cursor:not-allowed}
 .dp-btn.pitting{background:rgba(255,107,0,.2);animation:pulse .5s infinite}
 /* ===== DEV TERMINAL (hidden) ===== */
+/* ===== SETTINGS ===== */
+.settings-section{margin-bottom:20px}
+.settings-section-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.settings-row:last-child{border-bottom:none}
+.settings-row-label{font-size:14px;font-weight:500}
+.settings-row-sub{font-size:11px;color:var(--text-dim);margin-top:2px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+.settings-row-right{flex-shrink:0;margin-left:12px}
+.speed-btns{display:flex;gap:6px}
+.speed-btn{padding:6px 12px;background:#111;border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .15s}
+.speed-btn.active{border-color:var(--red);color:var(--red);background:rgba(225,6,0,.1)}
+.settings-ver{text-align:center;padding:20px 0 8px;font-family:'Barlow Condensed',sans-serif;font-size:11px;color:#333;letter-spacing:2px}
 </style>
 </head>
 <body>
@@ -216,6 +228,36 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
   <div class="screen" id="morale"><div class="page-title">Driver Management</div><div class="budget-display"><div class="budget-label">Team Budget</div><div class="budget-amount" id="moraleBudget">&pound;0M</div></div><div id="moraleCards"></div></div>
   <div class="screen" id="calendar"><div class="page-title" id="calTitle">Race Calendar</div><div id="calendarList"></div></div>
   <div class="screen" id="standings"><div class="page-title">Championship</div><div class="tabs"><button class="tab-btn active" onclick="showStandingsTab('drivers',this)">Drivers</button><button class="tab-btn" onclick="showStandingsTab('constructors',this)">Constructors</button></div><div id="standingsContent"></div></div>
+  <div class="screen" id="settings">
+    <div class="page-title">Settings</div>
+    <div class="settings-section">
+      <div class="settings-section-title">Gameplay</div>
+      <div class="card" style="padding:0 16px">
+        <div class="settings-row">
+          <div><div class="settings-row-label">Race Lap Speed</div><div class="settings-row-sub">How fast each lap ticks by</div></div>
+          <div class="settings-row-right"><div class="speed-btns" id="lapSpeedBtns"></div></div>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Race Calendar</div><div class="settings-row-sub">View the full 24-race schedule</div></div>
+          <div class="settings-row-right"><button class="btn-ghost btn" style="width:auto;padding:8px 14px" onclick="navigate('calendar')">VIEW</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Save Data</div>
+      <div class="card" style="padding:0 16px" id="settingsSaveSlots"></div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Danger Zone</div>
+      <div class="card" style="padding:0 16px">
+        <div class="settings-row">
+          <div><div class="settings-row-label">Delete All Save Data</div><div class="settings-row-sub">Wipes every save slot permanently</div></div>
+          <div class="settings-row-right"><button class="btn-ghost btn" style="width:auto;padding:8px 14px;border-color:var(--red);color:var(--red)" onclick="deleteAllSaves()">DELETE ALL</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="settings-ver">F1 MANAGER 2026 — v1.9 — powejam.github.io</div>
+  </div>
   <div class="screen" id="seasonEnd"><div class="trophy">&#127942;</div><div class="champ-text" id="seasonEndTitle"></div><div style="text-align:center;color:var(--text-dim);margin-bottom:24px" id="seasonEndSub"></div><div class="card" style="padding:0;overflow:hidden" id="finalStandings"></div><div style="margin-top:20px;display:flex;flex-direction:column;gap:10px"><button class="btn btn-primary" onclick="nextSeason()">NEXT SEASON</button><button class="btn btn-secondary" onclick="moveTeam()">MOVE TO ANOTHER TEAM</button><button class="btn-ghost btn" onclick="backToMenu()">MAIN MENU</button></div></div>
 </div>
 <div id="dialogOverlay"></div>
@@ -226,7 +268,7 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
   <button class="nav-btn" onclick="navigate('develop',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>R&amp;D</button>
   <button class="nav-btn" onclick="navigate('morale',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Drivers</button>
   <button class="nav-btn" onclick="navigate('standings',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>Table</button>
-  <button class="nav-btn" onclick="navigate('calendar',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Calendar</button>
+  <button class="nav-btn" onclick="navigate('settings',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</button>
 </nav>
 <script>
 "use strict";
@@ -321,7 +363,7 @@ function cDlg(e){if(e&&e.target!==e.currentTarget)return;document.getElementById
 
 function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});document.getElementById(id).classList.add('active');
 if(id==='welcome'){document.getElementById('navBar').style.display='none';chkSaved()}
-if(id==='slots')renderSlots();if(id==='setupMode')renderSetupMode();if(id==='hq')renderHQ();if(id==='race')renderRace();if(id==='develop')renderDev();if(id==='morale')renderMorale();if(id==='standings')renderStand('drivers');if(id==='calendar')renderCalendar()}
+if(id==='slots')renderSlots();if(id==='setupMode')renderSetupMode();if(id==='hq')renderHQ();if(id==='race')renderRace();if(id==='develop')renderDev();if(id==='morale')renderMorale();if(id==='standings')renderStand('drivers');if(id==='calendar')renderCalendar();if(id==='settings')renderSettings();}
 function navigate(id,btn){document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active')});if(btn)btn.classList.add('active');showScreen(id)}
 function chkSaved(){document.getElementById('savedGamesBtn').style.display=hS()?'block':'none'}
 function goToSlots(m){slotsMode=m;showScreen('slots')}
@@ -414,6 +456,79 @@ function initPts(){game.currentRace=0;game.driverPoints={};game.constructorPoint
 function initAiCars(){if(!game.aiCars)game.aiCars={};TEAMS.forEach(function(t){if(!game.aiCars[t.name])game.aiCars[t.name]=JSON.parse(JSON.stringify(t.car))})}
 function saveAndQuit(){sv();activeSlot=null;game=null;document.getElementById('navBar').style.display='none';showScreen('welcome')}
 function backToMenu(){sv();activeSlot=null;game=null;document.getElementById('navBar').style.display='none';showScreen('welcome')}
+
+var lapSpeedMs=2000; // ms per lap during race — default 2s
+
+function renderSettings(){
+  // Lap speed buttons
+  var speedEl=document.getElementById('lapSpeedBtns');
+  if(speedEl){
+    speedEl.innerHTML='';
+    var speeds=[{label:'Fast',ms:800},{label:'Normal',ms:2000},{label:'Slow',ms:3500}];
+    speeds.forEach(function(s){
+      var btn=document.createElement('button');
+      btn.className='speed-btn'+(lapSpeedMs===s.ms?' active':'');
+      btn.textContent=s.label;
+      btn.setAttribute('data-ms',s.ms);
+      btn.addEventListener('click',function(){
+        lapSpeedMs=parseInt(this.getAttribute('data-ms'));
+        renderSettings();
+      });
+      speedEl.appendChild(btn);
+    });
+  }
+
+  // Save slots
+  var slotsEl=document.getElementById('settingsSaveSlots');
+  if(!slotsEl)return;
+  slotsEl.innerHTML='';
+  var saves=gS();
+  var hasAny=false;
+  for(var i=0;i<saves.length;i++){
+    var s=saves[i];
+    if(!s)continue;
+    hasAny=true;
+    var row=document.createElement('div');
+    row.className='settings-row';
+    var d1=getD(s.drivers[0]),d2=getD(s.drivers[1]);
+    var info=document.createElement('div');
+    info.innerHTML='<div class="settings-row-label">Slot '+(i+1)+' — '+s.teamName+'</div>'+
+      '<div class="settings-row-sub">Season '+(s.season||1)+' • Rd '+(s.currentRace+1)+'/24 • '+
+      (d1?d1.flag+' '+d1.name.split(' ').pop():'')+' & '+
+      (d2?d2.flag+' '+d2.name.split(' ').pop():'')+
+      '</div>';
+    var delBtn=document.createElement('button');
+    delBtn.className='btn-ghost btn';
+    delBtn.style.cssText='width:auto;padding:8px 14px';
+    delBtn.textContent='Delete';
+    delBtn.setAttribute('data-slot',i);
+    delBtn.addEventListener('click',function(){
+      var idx=parseInt(this.getAttribute('data-slot'));
+      dlg('Delete Slot '+(idx+1)+'?','This save will be permanently deleted.','Delete','Cancel',function(){
+        var saves=gS();saves[idx]=null;sS(saves);renderSettings();
+      });
+    });
+    var right=document.createElement('div');
+    right.className='settings-row-right';
+    right.appendChild(delBtn);
+    row.appendChild(info);
+    row.appendChild(right);
+    slotsEl.appendChild(row);
+  }
+  if(!hasAny){
+    var empty=document.createElement('div');
+    empty.className='settings-row';
+    empty.innerHTML='<div style="color:var(--text-dim);font-size:13px;padding:4px 0">No saved careers</div>';
+    slotsEl.appendChild(empty);
+  }
+}
+
+function deleteAllSaves(){
+  dlg('Delete Everything?','All 5 save slots will be permanently wiped. This cannot be undone.','DELETE ALL','Cancel',function(){
+    sS([null,null,null,null,null]);
+    renderSettings();
+  });
+}
 
 // AI DEVELOPMENT - runs after each race
 function aiDevelop(){TEAMS.forEach(function(t){if(t.name===game.teamName&&game.isRealTeam)return;if(!game.aiCars[t.name])game.aiCars[t.name]=JSON.parse(JSON.stringify(t.car));var c=game.aiCars[t.name];var stats=['speed','aero','reliability','pitstops'];var pick=stats[Math.floor(Math.random()*stats.length)];var gain=Math.floor(Math.random()*3);c[pick]=Math.min(MAX_STAT,c[pick]+gain)})}
@@ -1050,7 +1165,7 @@ function advLap(){
 
   updateHud();
   if(rs.lap>=rs.tl){finishRace();return;}
-  setTimeout(function(){advLap();},2000); // 2 seconds per lap — real time feel
+  setTimeout(function(){advLap();},lapSpeedMs); // speed controlled by Settings
 }
 
 function skipRace(){if(!rs)return;skipMode=true;document.getElementById('raceDecisions').innerHTML='';while(rs.lap<rs.tl)simLap(true);finishRace()}
