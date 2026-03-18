@@ -44,7 +44,10 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
 .mode-choice{display:flex;gap:10px;margin-bottom:20px}.mode-btn{flex:1;padding:16px 10px;background:var(--bg-card);border:2px solid var(--border);border-radius:12px;text-align:center;cursor:pointer;transition:all .2s}.mode-btn:hover{border-color:#444}.mode-btn.selected{border-color:var(--red);background:rgba(225,6,0,.08)}.mode-btn-icon{font-size:28px;margin-bottom:6px}.mode-btn-label{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px}.mode-btn-desc{font-size:11px;color:var(--text-dim);margin-top:2px}
 .team-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:16px;max-height:450px;overflow-y:auto}
 .team-card{display:flex;align-items:center;gap:12px;padding:14px;background:var(--bg-card);border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s}.team-card:hover{border-color:#444}.team-card.selected{border-color:var(--red);background:rgba(225,6,0,.08)}
-.team-color{width:6px;height:40px;border-radius:3px}.team-info{flex:1}.team-name-label{font-weight:700;font-size:15px}.team-drivers-label{font-size:12px;color:var(--text-dim)}
+.team-badge{width:48px;height:48px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:9px;font-weight:800;letter-spacing:1px;color:#fff;position:relative;overflow:hidden}
+.team-badge svg{position:absolute;inset:0;width:100%;height:100%}
+.team-badge span{position:relative;z-index:1;text-align:center;line-height:1.2}
+.team-info{flex:1}.team-name-label{font-weight:700;font-size:15px}.team-drivers-label{font-size:12px;color:var(--text-dim)}
 .team-stats-label{text-align:right}.team-car-label{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;color:var(--yellow)}.team-budget-label{font-size:11px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif}
 .setup-step{margin-bottom:24px}.setup-label{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
 .driver-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:16px;max-height:350px;overflow-y:auto}.driver-card{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg-card);border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s}.driver-card:hover{border-color:#444}.driver-card.selected{border-color:var(--red);background:rgba(225,6,0,.08)}
@@ -372,12 +375,69 @@ function startNewInSlot(i){activeSlot=i;game=fg();setupSelected=[];selectedTeamI
 function overwriteSlot(i){dlg('Replace?','Overwrite?','Replace','Cancel',function(){var s=gS();s[i]=null;sS(s);startNewInSlot(i)})}
 function pickMode(m){setupMode=m;document.getElementById('modeReal').className='mode-btn'+(m==='real'?' selected':'');document.getElementById('modeCustom').className='mode-btn'+(m==='custom'?' selected':'');document.getElementById('realTeamSetup').style.display=m==='real'?'block':'none';document.getElementById('customTeamSetup').style.display=m==='custom'?'block':'none'}
 function renderSetupMode(){document.getElementById('setupTitle').textContent=game&&game.season>1?'Move Team \u2014 Season '+(game.season):'Choose Your Path';document.getElementById('modeChoiceDiv').style.display=game&&game.season>1?'none':'flex';if(game&&game.season>1){document.getElementById('realTeamSetup').style.display='block';document.getElementById('customTeamSetup').style.display='none'}else{pickMode(setupMode)}buildTeamGrid();buildDriverGrid()}
-function buildTeamGrid(){var h='';for(var i=0;i<TEAMS.length;i++){var t=TEAMS[i],d1=D[t.drivers[0]],d2=D[t.drivers[1]];
-var carObj=game&&game.aiCars&&game.aiCars[t.name]?game.aiCars[t.name]:t.car;
-var ca=Math.round((carObj.speed+carObj.aero+carObj.reliability+carObj.pitstops)/4);
-var budg=game&&game.season>1?Math.max(20,t.budget+Math.floor(Math.random()*10)):t.budget;
-h+='<div class="team-card'+(selectedTeamIdx===i?' selected':'')+'" onclick="selectTeam('+i+')"><div class="team-color" style="background:'+t.color+'"></div><div class="team-info"><div class="team-name-label">'+t.name+'</div><div class="team-drivers-label">'+d1.flag+' '+d1.name.split(' ').pop()+' & '+d2.flag+' '+d2.name.split(' ').pop()+'</div></div><div class="team-stats-label"><div class="team-car-label">'+ca+'</div><div class="team-budget-label">\u00a3'+budg+'M</div></div></div>'}
-document.getElementById('teamGrid').innerHTML=h;document.getElementById('startRealBtn').disabled=selectedTeamIdx<0}
+// Team badge SVG designs — each team gets a unique geometric shape in their colour
+var TEAM_META={
+  "Mercedes":  {abbr:"AMG",   bg:"#27F4D2", fg:"#000",
+    shape:'<polygon points="24,4 44,14 44,34 24,44 4,34 4,14" fill="rgba(0,0,0,0.25)"/><polygon points="24,10 38,17 38,31 24,38 10,31 10,17" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>'},
+  "Ferrari":   {abbr:"SF",    bg:"#E8002D", fg:"#fff",
+    shape:'<rect x="8" y="8" width="32" height="32" rx="4" fill="rgba(0,0,0,0.2)"/><rect x="13" y="13" width="22" height="10" rx="2" fill="rgba(255,255,255,0.25)"/><rect x="13" y="26" width="22" height="6" rx="2" fill="rgba(255,255,255,0.15)"/>'},
+  "McLaren":   {abbr:"MCL",   bg:"#FF8000", fg:"#000",
+    shape:'<ellipse cx="24" cy="24" rx="18" ry="18" fill="rgba(0,0,0,0.2)"/><ellipse cx="24" cy="24" rx="11" ry="11" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2"/><circle cx="24" cy="24" r="4" fill="rgba(255,255,255,0.4)"/>'},
+  "Red Bull":  {abbr:"RBR",   bg:"#3671C6", fg:"#fff",
+    shape:'<polygon points="24,5 42,42 6,42" fill="rgba(0,0,0,0.2)"/><polygon points="24,14 36,37 12,37" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>'},
+  "Haas":      {abbr:"HAAS",  bg:"#ffffff", fg:"#000",
+    shape:'<rect x="6" y="6" width="36" height="36" fill="rgba(0,0,0,0.08)"/><line x1="6" y1="24" x2="42" y2="24" stroke="#B6BABD" stroke-width="3"/><line x1="24" y1="6" x2="24" y2="42" stroke="#B6BABD" stroke-width="3"/>'},
+  "Racing Bulls":{abbr:"VCARB",bg:"#6692FF", fg:"#fff",
+    shape:'<polygon points="24,6 42,18 42,30 24,42 6,30 6,18" fill="rgba(0,0,0,0.2)"/><circle cx="24" cy="24" r="8" fill="rgba(255,255,255,0.25)"/>'},
+  "Alpine":    {abbr:"BWT",   bg:"#0093CC", fg:"#fff",
+    shape:'<path d="M24 6 L42 24 L24 42 L6 24 Z" fill="rgba(0,0,0,0.2)"/><path d="M24 13 L35 24 L24 35 L13 24 Z" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>'},
+  "Audi":      {abbr:"AUDI",  bg:"#52E252", fg:"#000",
+    shape:'<circle cx="14" cy="24" r="9" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="3"/><circle cx="24" cy="24" r="9" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="3"/><circle cx="34" cy="24" r="9" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="3"/>'},
+  "Williams":  {abbr:"WIL",   bg:"#64C4FF", fg:"#000",
+    shape:'<path d="M8 36 L16 12 L24 28 L32 12 L40 36" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="3" stroke-linejoin="round"/><path d="M8 36 L16 12 L24 28 L32 12 L40 36" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="1.5" stroke-linejoin="round"/>'},
+  "Aston Martin":{abbr:"AMR", bg:"#229971", fg:"#fff",
+    shape:'<rect x="7" y="7" width="30" height="30" rx="15" fill="rgba(0,0,0,0.2)"/><rect x="13" y="13" width="18" height="18" rx="9" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>'},
+  "Cadillac":  {abbr:"CAD",   bg:"#C0C0C0", fg:"#000",
+    shape:'<polygon points="24,8 40,16 40,32 24,40 8,32 8,16" fill="rgba(0,0,0,0.1)"/><polygon points="24,15 33,19.5 33,28.5 24,33 15,28.5 15,19.5" fill="rgba(255,255,255,0.2)"/>'}
+};
+
+function getTeamBadge(teamName){
+  var m=TEAM_META[teamName];
+  if(!m)return '<div class="team-badge" style="background:#333"><span>?</span></div>';
+  var hasDark=(m.bg==='#ffffff'||m.bg==='#C0C0C0'||m.bg==='#B6BABD');
+  return '<div class="team-badge" style="background:'+m.bg+';color:'+m.fg+'">'+
+    '<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">'+m.shape+'</svg>'+
+    '<span style="font-size:'+(m.abbr.length>3?'7':'9')+'px;text-shadow:'+(hasDark?'none':'0 1px 3px rgba(0,0,0,0.5)')+'">'+m.abbr+'</span>'+
+    '</div>';
+}
+
+function buildTeamGrid(){
+  var grid=document.getElementById('teamGrid');
+  grid.innerHTML='';
+  for(var i=0;i<TEAMS.length;i++){
+    var t=TEAMS[i];
+    var d1=D[t.drivers[0]],d2=D[t.drivers[1]];
+    var carObj=game&&game.aiCars&&game.aiCars[t.name]?game.aiCars[t.name]:t.car;
+    var ca=Math.round((carObj.speed+carObj.aero+carObj.reliability+carObj.pitstops)/4);
+    var budg=game&&game.season>1?Math.max(20,t.budget+Math.floor(Math.random()*10)):t.budget;
+    var card=document.createElement('div');
+    card.className='team-card'+(selectedTeamIdx===i?' selected':'');
+    card.innerHTML=
+      getTeamBadge(t.name)+
+      '<div class="team-info">'+
+        '<div class="team-name-label">'+t.name+'</div>'+
+        '<div class="team-drivers-label">'+d1.flag+' '+d1.name.split(' ').pop()+' &amp; '+d2.flag+' '+d2.name.split(' ').pop()+'</div>'+
+      '</div>'+
+      '<div class="team-stats-label">'+
+        '<div class="team-car-label">'+ca+'</div>'+
+        '<div class="team-budget-label">\u00a3'+budg+'M</div>'+
+      '</div>';
+    card.setAttribute('data-idx',i);
+    card.addEventListener('click',function(){selectTeam(parseInt(this.getAttribute('data-idx')));});
+    grid.appendChild(card);
+  }
+  document.getElementById('startRealBtn').disabled=selectedTeamIdx<0;
+}
 function selectTeam(i){selectedTeamIdx=i;buildTeamGrid()}
 function startRealTeam(){if(selectedTeamIdx<0)return;var t=TEAMS[selectedTeamIdx];game.teamName=t.name;game.isRealTeam=true;game.drivers=t.drivers.slice();
 var carSrc=game.aiCars&&game.aiCars[t.name]?game.aiCars[t.name]:t.car;
@@ -400,7 +460,22 @@ game.budget+=30+Math.floor(Math.random()*20);game.morale[game.drivers[0]]=Math.m
 game.moraleActs={};game.engines={};game.penalties={};game.incidentLog=[];game.engines[game.drivers[0]]=1;game.engines[game.drivers[1]]=1;game.penalties[game.drivers[0]]=0;game.penalties[game.drivers[1]]=0;sv();document.getElementById('navBar').style.display='flex';showScreen('hq')}
 function moveTeam(){sv();selectedTeamIdx=-1;showScreen('setupMode')}
 
-function renderHQ(){if(!game)return;fix();document.getElementById('hqTeamName').textContent=game.teamName;document.getElementById('hqSub').textContent='Season '+(game.season||1)+' \u2022 Team HQ';
+function renderHQ(){if(!game)return;fix();
+// Set team name and badge in header
+document.getElementById('hqTeamName').textContent=game.teamName;
+document.getElementById('hqSub').textContent='Season '+(game.season||1)+' \u2022 Team HQ';
+// Add badge next to team name if it's a real team
+var hdr=document.querySelector('.hq-header');
+if(hdr){
+  var existing=hdr.querySelector('.hq-team-badge');
+  if(!existing&&game.isRealTeam){
+    var badgeWrap=document.createElement('div');
+    badgeWrap.className='hq-team-badge';
+    badgeWrap.style.cssText='display:flex;justify-content:center;margin-bottom:8px';
+    badgeWrap.innerHTML=getTeamBadge(game.teamName).replace('width:48px;height:48px','width:56px;height:56px');
+    hdr.insertBefore(badgeWrap,hdr.firstChild);
+  }
+}
 // Next race card
 var nrc=document.getElementById('nextRaceCard');if(game.currentRace>=RACES.length)nrc.innerHTML='<div class="race-round">Season Complete</div><div class="race-flag">\u{1F3C1}</div><div class="race-name">All 24 Races Done</div>';
 else{var r=RACES[game.currentRace];var nDRS=(DRS[r.name]||[]).length;nrc.innerHTML='<div class="race-round">Round '+(game.currentRace+1)+' of 24</div><div class="race-flag">'+r.flag+'</div><div class="race-name">'+r.name+'</div><div style="font-size:13px;color:var(--text-dim)">'+r.loc+' \u2022 '+r.laps+' laps \u2022 '+nDRS+' DRS zone'+(nDRS!==1?'s':'')+'</div>'}
