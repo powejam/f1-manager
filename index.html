@@ -202,6 +202,24 @@ body{background-image:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.06) 0%,tra
 .dp-btn.mode-active{border-color:var(--red);color:var(--red);background:rgba(225,6,0,.1)}
 .dp-btn:disabled{opacity:.3;cursor:not-allowed}
 .dp-btn.pitting{background:rgba(255,107,0,.2);animation:pulse .5s infinite}
+/* STRATEGY */
+.dp-gap{font-size:10px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;margin-bottom:4px;display:flex;gap:6px}
+.dp-gap-ahead{color:var(--text-mid)}
+.dp-gap-behind{color:var(--text-dim)}
+.dp-advice{font-size:9px;font-weight:700;letter-spacing:1px;padding:3px 7px;border-radius:4px;margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;display:inline-block}
+.dp-advice.undercut{background:rgba(255,107,0,.15);color:var(--orange);border:1px solid rgba(255,107,0,.3)}
+.dp-advice.overcut{background:rgba(0,153,255,.15);color:var(--blue);border:1px solid rgba(0,153,255,.3)}
+.dp-advice.stay{background:rgba(0,210,106,.1);color:var(--green);border:1px solid rgba(0,210,106,.25)}
+.tyre-picker{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:250;display:flex;align-items:flex-end;justify-content:center;padding-bottom:100px}
+.tyre-picker-box{background:#111;border:1px solid var(--border);border-radius:16px;padding:20px;width:100%;max-width:380px}
+.tyre-picker-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px}
+.tyre-picker-sub{font-size:12px;color:var(--text-dim);margin-bottom:16px}
+.tyre-picker-opts{display:flex;gap:8px}
+.tyre-opt{flex:1;padding:14px 8px;background:var(--bg-card);border:2px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;transition:all .2s}
+.tyre-opt:hover{border-color:#555}
+.tyre-opt-icon{font-size:24px;margin-bottom:4px}
+.tyre-opt-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.tyre-opt-desc{font-size:9px;color:var(--text-dim);margin-top:2px}
 /* ===== DEV TERMINAL (hidden) ===== */
 /* ===== SETTINGS ===== */
 .settings-section{margin-bottom:20px}
@@ -788,6 +806,114 @@ function buildPreRaceSetup(){
 
 function addLog(t,c){var l=document.getElementById('raceLog');var d=document.createElement('div');d.className='log-entry '+(c||'');d.textContent=t;l.appendChild(d);l.scrollTop=l.scrollHeight;}
 
+// Returns strategy advice object {type, label} or null
+function getStrategyAdvice(did,g,sorted,lapsOn,life,overLife){
+  if(!rs||g.dnf)return null;
+  var lapsLeft=rs.tl-rs.lap;
+  var myIdx=sorted.findIndex(function(x){return x.id===did;});
+
+  // Check if rival directly ahead has OLD tyres (overcut opportunity)
+  // Check if rival directly ahead has FRESH tyres after recent pit (they've undercut us)
+  var aheadJustPitted=false;
+  var aheadWorn=false;
+  if(myIdx>0){
+    var ahead=sorted[myIdx-1];
+    if(ahead.pitted&&(ahead.tyreLaps||0)<=2)aheadJustPitted=true;
+    var aheadTyre=ahead.tyreType||'medium';
+    var aheadLife={soft:22,medium:35,hard:50}[aheadTyre]||35;
+    if((ahead.tyreLaps||0)>aheadLife-5)aheadWorn=true;
+  }
+
+  // Undercut: pit now to get faster tyres before rival stops
+  // Best when: you're within ~3 laps of the pit window, rival is on worn rubber
+  var atPitWindow=lapsOn>=(life-6)&&lapsOn<life+3;
+  if(atPitWindow&&aheadWorn&&!rs.pitReq[did]){
+    return{type:'undercut',label:'UNDERCUT — pit before rival'};
+  }
+
+  // Overcut: stay out while rival pits, build gap on clean air
+  // Best when: rival just pitted (you're temporarily ahead on track), push hard
+  if(aheadJustPitted&&lapsOn<life+2){
+    return{type:'overcut',label:'OVERCUT — push on clean air'};
+  }
+
+  // Stay out: tyres still have life, gap ahead is comfortable
+  if(lapsOn<life-8&&myIdx>0){
+    var gap=Math.abs(sorted[myIdx>0?myIdx-1:0].rP-g.rP);
+    if(gap>3)return{type:'stay',label:'STAY — tyres OK'};
+  }
+
+  return null;
+}
+
+// Tyre picker overlay — shown when player presses PIT
+function showTyrePicker(did){
+  var existing=document.getElementById('tyrePicker');
+  if(existing)existing.remove();
+
+  var overlay=document.createElement('div');
+  overlay.className='tyre-picker';
+  overlay.id='tyrePicker';
+
+  var box=document.createElement('div');
+  box.className='tyre-picker-box';
+
+  var title=document.createElement('div');
+  title.className='tyre-picker-title';
+  title.textContent='Box box! — '+D[did].name.split(' ').pop();
+  box.appendChild(title);
+
+  var sub=document.createElement('div');
+  sub.className='tyre-picker-sub';
+  sub.textContent='Choose next tyre compound:';
+  box.appendChild(sub);
+
+  var opts=document.createElement('div');
+  opts.className='tyre-picker-opts';
+
+  var tyres=[
+    {k:'soft',  icon:'\uD83D\uDD34',label:'Soft',  desc:'+Speed\nwears fast'},
+    {k:'medium',icon:'\uD83D\uDFE1',label:'Medium',desc:'Balanced\ncompound'},
+    {k:'hard',  icon:'\u26AA',      label:'Hard',  desc:'Durable\nslower pace'}
+  ];
+
+  tyres.forEach(function(t){
+    var opt=document.createElement('div');
+    opt.className='tyre-opt';
+    opt.innerHTML='<div class="tyre-opt-icon">'+t.icon+'</div>'+
+      '<div class="tyre-opt-label">'+t.label+'</div>'+
+      '<div class="tyre-opt-desc">'+t.desc+'</div>';
+    opt.setAttribute('data-did',did);
+    opt.setAttribute('data-tyre',t.k);
+    opt.addEventListener('click',function(){
+      var id=parseInt(this.getAttribute('data-did'));
+      var tyre=this.getAttribute('data-tyre');
+      // Commit the pit
+      rs.pitReq[id]=true;
+      rs.dTyre[id]=tyre; // change to chosen tyre
+      addLog('\uD83D\uDD27 Box box! '+D[id].name.split(' ').pop()+' pitting — '+tyre+' tyres next lap','yellow');
+      document.getElementById('tyrePicker').remove();
+      updateHud();
+    });
+    opts.appendChild(opt);
+  });
+  box.appendChild(opts);
+
+  // Cancel button
+  var cancel=document.createElement('button');
+  cancel.className='btn btn-secondary';
+  cancel.style.cssText='margin-top:12px;font-size:13px;padding:10px';
+  cancel.textContent='STAY OUT';
+  cancel.addEventListener('click',function(){
+    document.getElementById('tyrePicker').remove();
+    addLog(D[did].name.split(' ').pop()+' stays out','dim');
+  });
+  box.appendChild(cancel);
+
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
 function updateHud(){
   if(!rs)return;
   // Lap bar
@@ -807,11 +933,12 @@ function updateHud(){
 
   // Driver panels
   var tyreLife={soft:22,medium:35,hard:50};
-  var tBonuses={soft:6,medium:3,hard:0};
-  var sBonuses={conservative:-2,balanced:2,aggressive:6};
   var panels=document.getElementById('driverPanels');
   if(!panels)return;
   panels.innerHTML='';
+
+  // Build sorted position list for gap calculation
+  var sorted=rs.grid.filter(function(g){return!g.dnf;}).slice().sort(function(a,b){return a.pos-b.pos;});
 
   game.drivers.forEach(function(did){
     var g=null;rs.grid.forEach(function(x){if(x.id===did)g=x;});
@@ -829,6 +956,12 @@ function updateHud(){
     // Name
     var nameEl=document.createElement('div');nameEl.className='dp-name';
     nameEl.textContent=d.name.split(' ').pop();
+    if(!rs.hasPitted[did]){
+      var mustTag=document.createElement('span');
+      mustTag.style.cssText='font-size:8px;background:rgba(225,6,0,.2);color:var(--red);border-radius:3px;padding:1px 4px;margin-left:4px;font-family:Barlow Condensed,sans-serif;letter-spacing:1px';
+      mustTag.textContent='MUST PIT';
+      nameEl.appendChild(mustTag);
+    }
     panel.appendChild(nameEl);
 
     // Position
@@ -838,28 +971,57 @@ function updateHud(){
     posEl.style.color=g.dnf?'var(--red)':g.pos<=3?'#ffd700':g.pos<=10?'var(--green)':'var(--text)';
     panel.appendChild(posEl);
 
+    // Gap to car ahead and behind
+    if(!g.dnf&&sorted.length>1){
+      var myIdx=sorted.findIndex(function(x){return x.id===did;});
+      var gapEl=document.createElement('div');gapEl.className='dp-gap';
+      if(myIdx>0){
+        var ahead=sorted[myIdx-1];
+        var aGap=Math.max(0,(ahead.rP-g.rP)).toFixed(1);
+        var aSpan=document.createElement('span');aSpan.className='dp-gap-ahead';
+        aSpan.textContent='\u25B2'+aGap+'s';
+        gapEl.appendChild(aSpan);
+      }
+      if(myIdx<sorted.length-1){
+        var behind=sorted[myIdx+1];
+        var bGap=Math.max(0,(g.rP-behind.rP)).toFixed(1);
+        var bSpan=document.createElement('span');bSpan.className='dp-gap-behind';
+        bSpan.textContent='\u25BC'+bGap+'s';
+        gapEl.appendChild(bSpan);
+      }
+      panel.appendChild(gapEl);
+    }
+
+    // Strategy advice
+    if(!g.dnf){
+      var advice=getStrategyAdvice(did,g,sorted,lapsOn,life,overLife);
+      if(advice){
+        var advEl=document.createElement('div');
+        advEl.className='dp-advice '+advice.type;
+        advEl.textContent=advice.label;
+        panel.appendChild(advEl);
+      }
+    }
+
     // Tyre info
     var tyreEl=document.createElement('div');tyreEl.className='dp-tyre';
-    var tyreIcon={soft:'🔴',medium:'🟡',hard:'⚪'};
-    var ageLabel=g.pitted?'FRESH':lapsOn+' laps';
+    var tyreIcon={soft:'\uD83D\uDD34',medium:'\uD83D\uDFE1',hard:'\u26AA'};
+    var ageLabel=g.pitted&&lapsOn===0?'FRESH':lapsOn+' laps';
     var ageClass=overLife>=6?'critical':overLife>=3?'worn':'fresh';
-    tyreEl.innerHTML=tyreIcon[tyre]+' '+(tyre.charAt(0).toUpperCase()+tyre.slice(1))+'<span class="dp-tyre-age '+ageClass+'">'+ageLabel+'</span>';
+    tyreEl.innerHTML=(tyreIcon[tyre]||'\u26AA')+' '+(tyre.charAt(0).toUpperCase()+tyre.slice(1))+'<span class="dp-tyre-age '+ageClass+'">'+ageLabel+'</span>';
     panel.appendChild(tyreEl);
 
     if(!g.dnf){
-      // Pit button row
+      // Pit button
       var row1=document.createElement('div');row1.className='dp-btn-row';row1.style.marginBottom='4px';
-
       var pitBtn=document.createElement('button');
-      pitBtn.className='dp-btn pit'+(rs.pitReq[did]?' pitting':'')+(rs.hasPitted[did]?' pitted-once':'');
+      pitBtn.className='dp-btn pit'+(rs.pitReq[did]?' pitting':'');
       pitBtn.textContent=rs.pitReq[did]?'BOXING...':rs.hasPitted[did]?'PIT AGAIN':'PIT \u26A0';
       pitBtn.setAttribute('data-did',did);
-      pitBtn.disabled=!!rs.pitReq[did]; // only disabled while already queued
+      pitBtn.disabled=!!rs.pitReq[did];
       pitBtn.addEventListener('click',function(){
         var id=parseInt(this.getAttribute('data-did'));
-        rs.pitReq[id]=true;
-        addLog('Box box! '+D[id].name.split(' ').pop()+' pitting next lap','yellow');
-        updateHud();
+        showTyrePicker(id);
       });
       row1.appendChild(pitBtn);
       panel.appendChild(row1);
@@ -1036,13 +1198,15 @@ function simLap(silent){
     if(rs.pitReq[did]){
       rs.grid.forEach(function(g){
         if(g.id===did&&!g.dnf){
-          g.pitted=true;g.tyreWear*=0.15;g.tyreLaps=0;
+          g.pitted=false; // reset so they can pit again
+          g.tyreWear=0.05;g.tyreLaps=0;
           g.rP-=(100-game.car.pitstops)/100*3;
         }
       });
       rs.pitReq[did]=false;
       rs.hasPitted[did]=true;
-      if(!silent)addLog('\u{1F527} '+D[did].name.split(' ').pop()+' pits!',game.car.pitstops>60?'green':'yellow');
+      if(!silent)addLog('\uD83D\uDD27 '+D[did].name.split(' ').pop()+' pits — '+
+        (rs.dTyre[did]||'medium')+' tyres on!',game.car.pitstops>60?'green':'yellow');
     }
   });
 
@@ -1135,11 +1299,31 @@ function advLap(){
       var nDRS=(DRS[rs.race.name]||[]).length;
       var nm=g.name.split(' ').pop();
       if(g.pos<prevPos[g.id]){
-        if(nDRS>0&&Math.random()<0.5)addLog('\u{1F7E2} '+nm+' uses DRS — P'+g.pos,'green');
-        else addLog('\u{1F7E2} '+nm+' overtakes! P'+g.pos,'green');
-      }else if(g.pos>prevPos[g.id]+1){
-        addLog('\u{1F534} '+nm+' loses place — P'+g.pos,'highlight');
+        // Check if this gain was after a pit stop (undercut worked)
+        if(g.tyreLaps<=3&&g.tyreLaps>0){
+          addLog('\uD83D\uDFE2 UNDERCUT WORKS! '+nm+' jumps to P'+g.pos+' on fresh tyres','green');
+        } else if(nDRS>0&&Math.random()<0.5){
+          addLog('\uD83D\uDFE2 '+nm+' uses DRS — P'+g.pos,'green');
+        } else {
+          addLog('\uD83D\uDFE2 '+nm+' overtakes! P'+g.pos,'green');
+        }
+      } else if(g.pos>prevPos[g.id]+1){
+        addLog('\uD83D\uDD34 '+nm+' loses place — P'+g.pos,'highlight');
       }
+    }
+  });
+
+  // Overcut message: if rival pitted and player stayed ahead
+  rs.grid.forEach(function(g){
+    if(g.isPlayer&&!g.dnf){
+      // Find a rival who just pitted (tyreLaps==1) who was ahead last lap but is now behind
+      rs.grid.forEach(function(rival){
+        if(!rival.isPlayer&&!rival.dnf&&rival.tyreLaps===1){
+          if(prevPos[g.id]&&rival.pos>g.pos&&(prevPos[g.id]>rival.pos||false)){
+            addLog('\uD83D\uDFE2 OVERCUT! '+g.name.split(' ').pop()+' stays ahead of '+rival.name.split(' ').pop(),'green');
+          }
+        }
+      });
     }
   });
 
