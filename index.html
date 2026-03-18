@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>F1 Manager 2026 — v1.7</title>
+<title>F1 Manager 2026 — v1.9</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a0a0a">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1421,7 +1421,23 @@ function closeTerminal(e){
 }
 
 (function(){chkSaved()})();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+// Force clear all old caches then register fresh SW
+if('serviceWorker' in navigator){
+  // Unregister all old service workers first
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    regs.forEach(function(r){r.unregister();});
+  });
+  // Clear all caches
+  if(window.caches){
+    caches.keys().then(function(keys){
+      keys.forEach(function(k){caches.delete(k);});
+    });
+  }
+  // Re-register fresh
+  setTimeout(function(){
+    navigator.serviceWorker.register('sw.js?v=14').catch(function(){});
+  },500);
+}
 
 </script>
 </body>
